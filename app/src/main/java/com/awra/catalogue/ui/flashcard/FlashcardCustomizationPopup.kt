@@ -232,7 +232,7 @@ fun FlashcardCustomizationPopup(
                             contentColor = MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Text("Start Session", fontWeight = FontWeight.Bold)
+                        Text("Start Flash", fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the fundamental problem of Economics?",
+    "choices": ["Money", "Scarcity", "Taxes", "Inflation"],
+    "tip": "Unlimited wants vs limited resources.",
+    "explanation": "Scarcity forces societies to make choices about how to allocate limited resources.",
+    "chapter": "Nature of Economics",
+    "topic": "Scarcity and Choice"
+  },
+  {
+    "question": "What does 'GDP' stand for?",
+    "choices": ["General Domestic Product", "Gross Domestic Product", "Great Development Plan", "Gross Department Policy"],
+    "tip": "It measures national output.",
+    "explanation": "Gross Domestic Product is the total value of all goods and services produced within a country.",
+    "chapter": "Macroeconomics",
+    "topic": "Measuring GDP"
+  }
+]

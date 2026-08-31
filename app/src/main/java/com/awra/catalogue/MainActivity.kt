@@ -10,8 +10,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.awra.catalogue.data.database.AppDatabase
-import com.awra.catalogue.data.model.MaterialType
-import com.awra.catalogue.data.model.Subject
+import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.repository.CatalogueRepository
 import com.awra.catalogue.ui.handout.HandoutListScreen
 import com.awra.catalogue.ui.handout.HandoutViewModel
@@ -21,6 +20,7 @@ import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.flashcard.*
 import com.awra.catalogue.ui.term.TermsScreen
 import com.awra.catalogue.ui.term.TermsViewModel
+import com.awra.catalogue.ui.utility.*
 import com.awra.catalogue.ui.subject.SubjectDetailScreen
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.data.model.Topic
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         
         val homeViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(repository) as T
+                return HomeViewModel(application, repository) as T
             }
         })[HomeViewModel::class.java]
 
@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
                 var currentSubject by remember { mutableStateOf<Subject?>(null) }
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
                 var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
+                var currentUtility by remember { mutableStateOf<Utility?>(null) }
                 var quizConfig by remember { mutableStateOf<QuizConfig?>(null) }
                 var showQuizCustomization by remember { mutableStateOf(false) }
 
@@ -156,6 +157,24 @@ class MainActivity : ComponentActivity() {
                                 currentMaterialType = null
                             }
                         )
+                    }
+                    currentMaterialType == MaterialType.UTILITY -> {
+                        if (currentUtility == null) {
+                            val utilityViewModel = remember(currentSubject!!.id) {
+                                UtilityViewModel(repository, currentSubject!!.id)
+                            }
+                            UtilityListScreen(
+                                subject = currentSubject!!,
+                                viewModel = utilityViewModel,
+                                onBackClick = { currentMaterialType = null },
+                                onUtilityClick = { currentUtility = it }
+                            )
+                        } else {
+                            UtilityDetailScreen(
+                                utility = currentUtility!!,
+                                onBackClick = { currentUtility = null }
+                            )
+                        }
                     }
                     else -> {
                         Button(onClick = { currentMaterialType = null }) {

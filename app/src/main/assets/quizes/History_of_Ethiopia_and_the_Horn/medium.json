@@ -1,0 +1,18 @@
+[
+  {
+    "question": "Which ancient Ethiopian empire was famous for its monolithic stelae and maritime trade?",
+    "choices": ["Zagwe Dynasty", "Aksumite Empire", "Solomonic Dynasty", "Damot"],
+    "tip": "It flourished from the 1st to 7th century AD.",
+    "explanation": "The Aksumite Empire was a global power known for its architectural achievements and trade links.",
+    "chapter": "Ancient Polities",
+    "topic": "The Aksumite Empire"
+  },
+  {
+    "question": "What was the significance of the Battle of Adwa in 1896?",
+    "choices": ["It marked the start of Italian colonization", "It was a decisive victory for Ethiopia against colonial Italy", "It was a civil war", "It ended the Aksumite empire"],
+    "tip": "It is a symbol of African resistance.",
+    "explanation": "The victory at Adwa ensured Ethiopia's independence during the Scramble for Africa.",
+    "chapter": "1800 to 1941",
+    "topic": "Formation of Modern Empire"
+  }
+]

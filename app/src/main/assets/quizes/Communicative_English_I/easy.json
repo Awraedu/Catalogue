@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the primary focus of 'Study Skills' in English I?",
+    "choices": ["Learning how to take lecture notes effectively", "Memorizing every word of a textbook", "Drawing diagrams for physics", "Calculating mathematical formulas"],
+    "tip": "Think about academic performance skills.",
+    "explanation": "Study skills focus on practical academic techniques like note-taking and reading strategies.",
+    "chapter": "Study Skills",
+    "topic": "Nature of Lectures and Note-taking"
+  },
+  {
+    "question": "Which of these is a healthy lifestyle habit?",
+    "choices": ["Sleeping 2 hours a night", "Regular physical exercise", "Eating only junk food", "Avoiding all social contact"],
+    "tip": "Think about physical and mental well-being.",
+    "explanation": "Regular exercise is a cornerstone of a healthy lifestyle as taught in the module.",
+    "chapter": "Health and Fitness",
+    "topic": "Healthy Lifestyles"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the physical significance of the 'First Law of Thermodynamics'?",
+    "choices": ["Energy cannot be created or destroyed, only transformed", "Heat flows from hot to cold", "Entropy always increases", "Absolute zero is unreachable"],
+    "tip": "Conservation principle.",
+    "explanation": "The first law is an application of the conservation of energy principle to thermal systems.",
+    "chapter": "Thermodynamics",
+    "topic": "First Law of Thermodynamics"
+  },
+  {
+    "question": "In rotational motion, what is the rotational analogue of mass?",
+    "choices": ["Torque", "Angular Momentum", "Moment of Inertia", "Angular Velocity"],
+    "tip": "It relates to resistance to rotational acceleration.",
+    "explanation": "Moment of inertia measures an object's resistance to change in its rotation.",
+    "chapter": "Rotational Motion",
+    "topic": "Moment of Inertia"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the difference between Microeconomics and Macroeconomics?",
+    "choices": ["One is for small countries, the other for large", "One is for rich people, the other for poor", "Micro focuses on individual agents; Macro focuses on the whole economy", "There is no difference"],
+    "tip": "Individual vs Aggregate.",
+    "explanation": "Microeconomics studies individuals and firms; Macroeconomics looks at aggregate indicators like GDP and unemployment.",
+    "chapter": "Nature of Economics",
+    "topic": "Micro vs Macroeconomics"
+  },
+  {
+    "question": "What is 'Fiscal Policy'?",
+    "choices": ["The management of the money supply by the central bank", "The use of government spending and taxation to influence the economy", "The regulation of international trade", "The setting of interest rates"],
+    "tip": "Think about government budget.",
+    "explanation": "Fiscal policy involves government decisions on taxation and spending to manage economic growth.",
+    "chapter": "Macroeconomics",
+    "topic": "Fiscal and Monetary Policy"
+  }
+]

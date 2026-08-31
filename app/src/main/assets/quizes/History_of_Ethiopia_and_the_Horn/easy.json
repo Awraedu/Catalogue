@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What are the two main sources of history?",
+    "choices": ["Primary and Secondary", "Old and New", "Oral and Written only", "Internet and Books only"],
+    "tip": "Think about the origin of information.",
+    "explanation": "History relies on primary sources (firsthand accounts) and secondary sources (analysis of primary sources).",
+    "chapter": "Nature of History",
+    "topic": "Sources of History"
+  },
+  {
+    "question": "Where is the 'Cradle of Mankind' located according to archaeological evidence?",
+    "choices": ["Europe", "Asia", "East Africa (including Ethiopia)", "North America"],
+    "tip": "Think about Lucy (Dinknesh).",
+    "explanation": "Ethiopia and the Horn region are globally recognized as the cradle of mankind due to significant fossil finds.",
+    "chapter": "Peoples and Cultures",
+    "topic": "Human Origins"
+  }
+]

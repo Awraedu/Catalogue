@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is 'Historiography'?",
+    "choices": ["The study of geography", "The study of how history is written and interpreted", "A list of historical dates", "The study of fossils"],
+    "tip": "It's the 'history of history'.",
+    "explanation": "Historiography examines the methods, biases, and evolution of historical writing over time.",
+    "chapter": "Nature of History",
+    "topic": "Historiography"
+  },
+  {
+    "question": "How did the 'Zemene Mesafint' (Age of Princes) affect the central authority of the Ethiopian state?",
+    "choices": ["It strengthened the Emperor's power", "It led to the fragmentation of power among regional lords", "It had no impact", "It introduced democracy"],
+    "tip": "Think about central vs regional power.",
+    "explanation": "Zemene Mesafint was a period of political instability where regional lords held more power than the puppet Emperors.",
+    "chapter": "16th to 19th Century",
+    "topic": "Zemene Mesafint"
+  }
+]

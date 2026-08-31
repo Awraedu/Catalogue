@@ -1,0 +1,18 @@
+[
+  {
+    "question": "In the context of 'Wildlife Conservation', how does the 'Passive Voice' improve report writing?",
+    "choices": ["By making the report more personal", "By emphasizing the action or the object being acted upon rather than the person performing the action", "By making the sentences longer and more complex", "By using more adjectives"],
+    "tip": "Passive voice is often more objective.",
+    "explanation": "Reports often use the passive voice to maintain an objective tone and focus on the scientific or observational data.",
+    "chapter": "Wildlife",
+    "topic": "Grammar: Passive Voice for Reports"
+  },
+  {
+    "question": "Which of these is a complex reading strategy for identifying academic bias?",
+    "choices": ["Reading only the first paragraph", "Analyzing the author's tone, word choice, and source citations", "Looking at the pictures only", "Checking the publication year"],
+    "tip": "Bias is subtle and requires deep analysis.",
+    "explanation": "Critical reading involves evaluating how an author presents their argument to spot potential bias.",
+    "chapter": "Study Skills",
+    "topic": "Reading for Study: Pre, While and Post-reading"
+  }
+]

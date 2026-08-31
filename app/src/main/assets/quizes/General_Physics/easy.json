@@ -1,0 +1,18 @@
+[
+  {
+    "question": "Which of the following is a vector quantity?",
+    "choices": ["Distance", "Speed", "Velocity", "Mass"],
+    "tip": "Think about direction.",
+    "explanation": "Velocity has both magnitude and direction, making it a vector.",
+    "chapter": "Vectors",
+    "topic": "Vector Addition and Subtraction"
+  },
+  {
+    "question": "What is Newton's First Law of Motion often called?",
+    "choices": ["Law of Gravity", "Law of Inertia", "Law of Action-Reaction", "Law of Acceleration"],
+    "tip": "Think about objects at rest.",
+    "explanation": "Newton's first law states objects maintain their state of motion unless acted upon, which is inertia.",
+    "chapter": "Dynamics",
+    "topic": "Newton's Laws of Motion"
+  }
+]

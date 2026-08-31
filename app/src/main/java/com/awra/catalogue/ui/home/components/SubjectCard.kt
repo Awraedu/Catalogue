@@ -25,51 +25,58 @@ import com.kyant.capsule.ContinuousRoundedRectangle
 @Composable
 fun SubjectCard(
     subject: Subject,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardShape = ContinuousRoundedRectangle(32.dp)
     val colorRoles = getSubjectAdaptiveColors(subject.id)
     
-    Column(
+    Card(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(0.85f)
-            .clip(cardShape)
-            .background(colorRoles.container)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+            .aspectRatio(0.85f),
+        shape = cardShape,
+        colors = CardDefaults.cardColors(containerColor = colorRoles.container)
     ) {
-        // Icon Container with adaptive background
-        Box(
+        Column(
             modifier = Modifier
-                .size(48.dp)
-                .clip(subject.shape.toShape())
-                .background(colorRoles.content.copy(alpha = 0.1f)),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = getIconForSubject(subject.name),
-                contentDescription = null,
-                tint = colorRoles.content,
-                modifier = Modifier.size(24.dp)
-            )
-        }
+            // Icon Container with adaptive background
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(subject.shape.toShape())
+                    .background(colorRoles.content.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = getIconForSubject(subject.name),
+                    contentDescription = null,
+                    tint = colorRoles.content,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
 
-        Column {
-            Text(
-                text = subject.name,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = colorRoles.content
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = subject.description,
-                style = MaterialTheme.typography.bodySmall,
-                color = colorRoles.content.copy(alpha = 0.8f),
-                lineHeight = 16.sp,
-                maxLines = 2
-            )
+            Column {
+                Text(
+                    text = subject.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = colorRoles.content
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subject.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colorRoles.content.copy(alpha = 0.8f),
+                    lineHeight = 16.sp,
+                    maxLines = 2
+                )
+            }
         }
     }
 }

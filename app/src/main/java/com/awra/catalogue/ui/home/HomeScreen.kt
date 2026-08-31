@@ -135,7 +135,7 @@ fun HomeScreenContent(
             items(subjects, key = { it.id }) { subject ->
                 SubjectCard(
                     subject = subject,
-                    modifier = Modifier.clickable { onSubjectClick(subject) }
+                    onClick = { onSubjectClick(subject) }
                 )
             }
             

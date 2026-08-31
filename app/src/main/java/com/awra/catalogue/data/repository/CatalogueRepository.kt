@@ -1,5 +1,6 @@
 package com.awra.catalogue.data.repository
 
+import android.content.Context
 import com.awra.catalogue.data.database.DatabaseSeeder
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
@@ -11,7 +12,7 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     suspend fun getSubjectCount(): Int = catalogueDao.getSubjectCount()
 
-    suspend fun seedDatabase() = DatabaseSeeder.seed(catalogueDao)
+    suspend fun seedDatabase(context: Context) = DatabaseSeeder.seed(context, catalogueDao)
 
     suspend fun seedSubjects(subjects: List<Subject>) = catalogueDao.insertSubjects(subjects)
 

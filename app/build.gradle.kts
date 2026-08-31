@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.symbol.processing)
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 android {
@@ -54,6 +55,8 @@ dependencies {
 
     // Capsule (Bottom Sheet / Dynamic Island like UI)
     implementation(libs.capsule)
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

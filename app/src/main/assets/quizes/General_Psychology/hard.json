@@ -1,0 +1,18 @@
+[
+  {
+    "question": "Which theory of personality emphasizes the 'Collective Unconscious'?",
+    "choices": ["Sigmund Freud's Psychoanalysis", "Carl Jung's Analytical Psychology", "B.F. Skinner's Behaviorism", "Abraham Maslow's Humanism"],
+    "tip": "It's a specific psychodynamic theory.",
+    "explanation": "Carl Jung proposed that humans share a inherited store of archetypes called the collective unconscious.",
+    "chapter": "Personality",
+    "topic": "Psychoanalytic Theory"
+  },
+  {
+    "question": "What is the primary difference between Retroactive and Proactive interference in memory?",
+    "choices": ["One affects old info, the other affects new info", "One is about forgetting, the other is about storage", "Retroactive is for short-term, Proactive for long-term", "There is no difference"],
+    "tip": "Retro (Backward) vs Pro (Forward).",
+    "explanation": "Retroactive interference is when new info hinders old; Proactive is when old info hinders new.",
+    "chapter": "Memory and Forgetting",
+    "topic": "Forgetting Theories"
+  }
+]

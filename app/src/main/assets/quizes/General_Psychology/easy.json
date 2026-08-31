@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the scientific definition of Psychology?",
+    "choices": ["The study of spirits and ghosts", "The scientific study of behavior and mental processes", "The study of brain anatomy only", "The art of reading people's minds"],
+    "tip": "Think about behavior and mind.",
+    "explanation": "Psychology is a science that looks at both observable behavior and internal mental states.",
+    "chapter": "Essence of Psychology",
+    "topic": "Definition and Goals"
+  },
+  {
+    "question": "Which of these is a basic goal of psychology?",
+    "choices": ["To control people's lives", "To describe, explain, predict, and control behavior", "To make everyone happy", "To win arguments"],
+    "tip": "DEPC.",
+    "explanation": "The four main goals are description, explanation, prediction, and control/influence of behavior.",
+    "chapter": "Essence of Psychology",
+    "topic": "Definition and Goals"
+  }
+]

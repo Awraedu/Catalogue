@@ -1,0 +1,18 @@
+[
+  {
+    "question": "An object moves in a circular path at constant speed. Does it have acceleration?",
+    "choices": ["No, speed is constant", "Yes, because its direction is changing", "Only if it speeds up", "Only if the radius changes"],
+    "tip": "Recall the definition of acceleration.",
+    "explanation": "Acceleration is the rate of change of velocity. Even if speed is constant, changing direction counts as acceleration (centripetal).",
+    "chapter": "Dynamics",
+    "topic": "Circular Motion"
+  },
+  {
+    "question": "What is the unit of Power?",
+    "choices": ["Joule", "Newton", "Watt", "Pascal"],
+    "tip": "Power is work done per unit time.",
+    "explanation": "One Watt is defined as one Joule per second.",
+    "chapter": "Work, Energy and Power",
+    "topic": "Power"
+  }
+]

@@ -10,7 +10,11 @@ enum class Stream {
 }
 
 enum class MaterialType {
-    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY
+    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY, TERM
+}
+
+enum class Difficulty {
+    EASY, MEDIUM, HARD
 }
 
 enum class ExpressiveShape {
@@ -99,7 +103,8 @@ data class Flashcard(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val topicId: Long,
     val front: String,
-    val back: String
+    val back: String,
+    val difficulty: Difficulty = Difficulty.MEDIUM
 )
 
 @Entity(
@@ -137,7 +142,10 @@ data class QuizQuestion(
     val topicId: Long,
     val question: String,
     val options: List<String>,
-    val correctOptionIndex: Int
+    val correctOptionIndex: Int,
+    val difficulty: Difficulty = Difficulty.MEDIUM,
+    val hint: String = "",
+    val explanation: String = ""
 )
 
 @Entity(

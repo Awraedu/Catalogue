@@ -1,0 +1,337 @@
+package com.awra.catalogue.ui.quiz
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import com.awra.catalogue.data.model.ChapterWithTopics
+import com.awra.catalogue.data.model.Difficulty
+import com.awra.catalogue.data.model.Subject
+import com.kyant.capsule.ContinuousRoundedRectangle
+import kotlin.math.roundToInt
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun QuizCustomizationPopup(
+    subject: Subject,
+    chapters: List<ChapterWithTopics>,
+    onDismiss: () -> Unit,
+    onStartQuiz: (QuizConfig) -> Unit
+) {
+    val counts = listOf(5, 15, 25, 30, 50, 100)
+    var sliderPosition by remember { mutableFloatStateOf(1f) } // Default to 15 (index 1)
+    val selectedCount = counts[sliderPosition.roundToInt()]
+
+    var selectedDifficulty by remember { mutableStateOf(Difficulty.MEDIUM) }
+    var selectedChapterIds by remember(chapters) { 
+        mutableStateOf(chapters.map { it.chapter.id }.toSet()) 
+    }
+    var showUnitGrid by remember { mutableStateOf(true) } // Visible by default
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = ContinuousRoundedRectangle(32.dp),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Text(
+                    text = "Quiz Settings",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black
+                )
+
+                // Number of Questions Slider
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Questions",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            contentColor = MaterialTheme.colorScheme.surface
+                        ) {
+                            Text(
+                                text = selectedCount.toString(),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                    
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 0f..5f,
+                        steps = 4,
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.onSurface,
+                            activeTrackColor = MaterialTheme.colorScheme.onSurface,
+                            inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
+                            activeTickColor = Color.Transparent,
+                            inactiveTickColor = Color.Transparent
+                        )
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        counts.forEachIndexed { index, count ->
+                            val isSelected = index == sliderPosition.roundToInt()
+                            Text(
+                                text = count.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                // Difficulty Segmented Buttons
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Difficulty",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    SingleChoiceSegmentedButtonRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Difficulty.entries.forEachIndexed { index, difficulty ->
+                            SegmentedButton(
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = Difficulty.entries.size),
+                                onClick = { selectedDifficulty = difficulty },
+                                selected = selectedDifficulty == difficulty,
+                                colors = SegmentedButtonDefaults.colors(
+                                    activeContainerColor = MaterialTheme.colorScheme.onSurface,
+                                    activeContentColor = MaterialTheme.colorScheme.surface,
+                                    inactiveContainerColor = Color.Transparent
+                                )
+                            ) {
+                                Text(difficulty.name.lowercase().replaceFirstChar { it.uppercase() })
+                            }
+                        }
+                    }
+                }
+
+                // Unit Selector Split Button
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Unit Selection",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    SplitButtonLayout(
+                        onToggleAll = {
+                            selectedChapterIds = if (selectedChapterIds.size == chapters.size) {
+                                emptySet()
+                            } else {
+                                chapters.map { it.chapter.id }.toSet()
+                            }
+                        },
+                        onToggleGrid = { showUnitGrid = !showUnitGrid },
+                        isAllSelected = selectedChapterIds.size == chapters.size,
+                        selectedCount = selectedChapterIds.size,
+                        showUnitGrid = showUnitGrid,
+                        accentColor = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    if (showUnitGrid) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.heightIn(max = 200.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(chapters) { chapterWithTopics ->
+                                val isSelected = selectedChapterIds.contains(chapterWithTopics.chapter.id)
+                                ChapterChip(
+                                    title = "Ch ${chapterWithTopics.chapter.number}",
+                                    isSelected = isSelected,
+                                    onClick = {
+                                        selectedChapterIds = if (isSelected) {
+                                            selectedChapterIds - chapterWithTopics.chapter.id
+                                        } else {
+                                            selectedChapterIds + chapterWithTopics.chapter.id
+                                        }
+                                    },
+                                    accentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Action Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f),
+                        shape = ContinuousRoundedRectangle(20.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        Text("Cancel")
+                    }
+                    Button(
+                        onClick = {
+                            if (selectedChapterIds.isNotEmpty()) {
+                                onStartQuiz(
+                                    QuizConfig(
+                                        chapterIds = selectedChapterIds.toList(),
+                                        difficulty = selectedDifficulty,
+                                        limit = selectedCount
+                                    )
+                                )
+                            }
+                        },
+                        enabled = selectedChapterIds.isNotEmpty(),
+                        modifier = Modifier.weight(1f),
+                        shape = ContinuousRoundedRectangle(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onSurface,
+                            contentColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {
+                        Text("Start Quiz", fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SplitButtonLayout(
+    onToggleAll: () -> Unit,
+    onToggleGrid: () -> Unit,
+    isAllSelected: Boolean,
+    selectedCount: Int,
+    showUnitGrid: Boolean,
+    accentColor: Color
+) {
+    SplitButtonLayout(
+        leadingButton = {
+            SplitButtonDefaults.LeadingButton(
+                onClick = onToggleAll,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = accentColor.copy(alpha = 0.1f),
+                    contentColor = accentColor
+                )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    if (isAllSelected) {
+                        Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
+                    Text(
+                        text = if (isAllSelected) "All Units Selected" else "$selectedCount Units Selected",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        },
+        trailingButton = {
+            SplitButtonDefaults.TrailingButton(
+                onClick = onToggleGrid,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = accentColor.copy(alpha = 0.2f),
+                    contentColor = accentColor
+                )
+            ) {
+                Icon(
+                    imageVector = if (showUnitGrid) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Toggle Grid",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun ChapterChip(
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    accentColor: Color
+) {
+    FilterChip(
+        selected = isSelected,
+        onClick = onClick,
+        label = { 
+            Text(
+                text = title,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+            ) 
+        },
+        leadingIcon = if (isSelected) {
+            {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        } else null,
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = accentColor,
+            selectedLabelColor = MaterialTheme.colorScheme.surface,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = isSelected,
+            borderColor = Color.Transparent,
+            selectedBorderColor = Color.Transparent
+        ),
+        shape = ContinuousRoundedRectangle(16.dp),
+        modifier = Modifier.fillMaxWidth()
+    )
+}

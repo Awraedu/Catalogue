@@ -7,7 +7,9 @@ import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HomeFAB() {
+fun HomeFAB(
+    onTermsClick: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     
     val inverseSurface = MaterialTheme.colorScheme.inverseSurface
@@ -42,7 +44,10 @@ fun HomeFAB() {
             containerColor = inverseSurface
         )
         FloatingActionButtonMenuItem(
-            onClick = { expanded = false },
+            onClick = { 
+                expanded = false
+                onTermsClick()
+            },
             icon = { Icon(Icons.Default.Book, contentDescription = null, tint = inverseOnSurface) },
             text = { Text("Terms", color = inverseOnSurface) },
             containerColor = inverseSurface

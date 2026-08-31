@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
         StudySession::class,
         Utility::class
     ],
-    version = 9,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -45,17 +45,6 @@ abstract class AppDatabase : RoomDatabase() {
                     "catalogue_database"
                 )
                 .fallbackToDestructiveMigration()
-                .addCallback(object : RoomDatabase.Callback() {
-                    override fun onOpen(db: SupportSQLiteDatabase) {
-                        super.onOpen(db)
-                        val coroutineScope = CoroutineScope(Dispatchers.IO)
-                        coroutineScope.launch {
-                            INSTANCE?.let { database ->
-                                DatabaseSeeder.seed(database.catalogueDao())
-                            }
-                        }
-                    }
-                })
                 .build()
                 INSTANCE = instance
                 instance

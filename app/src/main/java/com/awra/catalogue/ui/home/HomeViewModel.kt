@@ -22,9 +22,7 @@ class HomeViewModel(private val repository: CatalogueRepository) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            if (repository.getSubjectCount() == 0) {
-                repository.seedSubjects(DatabaseSeeder.initialSubjects)
-            }
+            repository.seedDatabase()
         }
     }
 

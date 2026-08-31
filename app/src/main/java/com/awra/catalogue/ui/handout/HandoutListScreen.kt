@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.ui.theme.YourAppTheme
-import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -37,7 +36,7 @@ fun HandoutListScreen(
     onHandoutClick: (Handout) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState(initial = emptyList())
-    val subjectColors = getSubjectAdaptiveColors(subject.id)
+    val neutralColor = MaterialTheme.colorScheme.onSurface
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +77,7 @@ fun HandoutListScreen(
                 chapterSection(
                     chapterWithTopics = chapterWithTopics,
                     onHandoutClick = onHandoutClick,
-                    accentColor = subjectColors.content
+                    accentColor = neutralColor
                 )
                 
                 if (index < chapters.size - 1) {

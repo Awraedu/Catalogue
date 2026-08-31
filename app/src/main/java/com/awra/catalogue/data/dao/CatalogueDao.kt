@@ -27,6 +27,10 @@ interface CatalogueDao {
     @Query("SELECT * FROM chapters WHERE subjectId = :subjectId ORDER BY number ASC")
     fun getChaptersWithHandoutsBySubject(subjectId: Long): Flow<List<ChapterWithTopics>>
 
+    @Transaction
+    @Query("SELECT * FROM chapters WHERE subjectId = :subjectId ORDER BY number ASC")
+    fun getChaptersWithQuizzesBySubject(subjectId: Long): Flow<List<ChapterWithQuizTopics>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChapter(chapter: Chapter): Long
 
@@ -48,9 +52,39 @@ interface CatalogueDao {
     @Query("SELECT * FROM flashcards WHERE topicId = :topicId")
     fun getFlashcardsByTopic(topicId: Long): Flow<List<Flashcard>>
 
+    @Query("""
+        SELECT * FROM flashcards 
+        INNER JOIN topics ON flashcards.topicId = topics.id
+        WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun getCustomFlashcards(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<Flashcard>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFlashcard(flashcard: Flashcard): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFlashcards(flashcards: List<Flashcard>): List<Long>
+
     // Quiz Questions
     @Query("SELECT * FROM quiz_questions WHERE topicId = :topicId")
     fun getQuizQuestionsByTopic(topicId: Long): Flow<List<QuizQuestion>>
+
+    @Query("""
+        SELECT * FROM quiz_questions 
+        INNER JOIN topics ON quiz_questions.topicId = topics.id
+        WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun getCustomQuizQuestions(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<QuizQuestion>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuizQuestion(quizQuestion: QuizQuestion): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuizQuestions(quizQuestions: List<QuizQuestion>): List<Long>
 
     // Terms (Dictionary)
     @Query("SELECT * FROM terms WHERE topicId = :topicId")
@@ -68,6 +102,9 @@ interface CatalogueDao {
     @Update
     suspend fun updateTerm(term: Term)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTerms(terms: List<Term>): List<Long>
+
     // Search Terms across subject
     @Query("""
         SELECT * FROM terms 
@@ -76,6 +113,12 @@ interface CatalogueDao {
         WHERE chapters.subjectId = :subjectId AND (word LIKE '%' || :query || '%' OR definition LIKE '%' || :query || '%')
     """)
     fun searchTermsInSubject(subjectId: Long, query: String): Flow<List<Term>>
+
+    @Query("""
+        SELECT * FROM terms 
+        WHERE word LIKE '%' || :query || '%' OR definition LIKE '%' || :query || '%'
+    """)
+    fun searchAllTerms(query: String): Flow<List<Term>>
 
     // Analytics
     @Insert

@@ -37,7 +37,8 @@ import com.awra.catalogue.ui.theme.YourAppTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onSubjectClick: (Subject) -> Unit
+    onSubjectClick: (Subject) -> Unit,
+    onTermsClick: () -> Unit
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
@@ -46,7 +47,8 @@ fun HomeScreen(
         selectedStream = selectedStream,
         subjects = subjects,
         onStreamSelected = { viewModel.selectStream(it) },
-        onSubjectClick = onSubjectClick
+        onSubjectClick = onSubjectClick,
+        onTermsClick = onTermsClick
     )
 }
 
@@ -56,7 +58,8 @@ fun HomeScreenContent(
     selectedStream: Stream,
     subjects: List<Subject>,
     onStreamSelected: (Stream) -> Unit,
-    onSubjectClick: (Subject) -> Unit
+    onSubjectClick: (Subject) -> Unit,
+    onTermsClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -65,7 +68,7 @@ fun HomeScreenContent(
             HomeTopBar()
         },
         floatingActionButton = {
-            HomeFAB()
+            HomeFAB(onTermsClick = onTermsClick)
         },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = { }
@@ -154,7 +157,8 @@ fun HomeScreenPreview() {
                 Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4)
             ),
             onStreamSelected = {},
-            onSubjectClick = {}
+            onSubjectClick = {},
+            onTermsClick={}
         )
     }
 }

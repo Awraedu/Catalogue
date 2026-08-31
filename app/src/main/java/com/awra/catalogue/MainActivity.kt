@@ -17,8 +17,13 @@ import com.awra.catalogue.ui.handout.HandoutListScreen
 import com.awra.catalogue.ui.handout.HandoutViewModel
 import com.awra.catalogue.ui.home.HomeScreen
 import com.awra.catalogue.ui.home.HomeViewModel
+import com.awra.catalogue.ui.quiz.*
+import com.awra.catalogue.ui.flashcard.*
+import com.awra.catalogue.ui.term.TermsScreen
+import com.awra.catalogue.ui.term.TermsViewModel
 import com.awra.catalogue.ui.subject.SubjectDetailScreen
 import com.awra.catalogue.ui.theme.YourAppTheme
+import com.awra.catalogue.data.model.Topic
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,21 +43,62 @@ class MainActivity : ComponentActivity() {
             YourAppTheme {
                 var currentSubject by remember { mutableStateOf<Subject?>(null) }
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
+                var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
+                var quizConfig by remember { mutableStateOf<QuizConfig?>(null) }
+                var showQuizCustomization by remember { mutableStateOf(false) }
+
+                var flashcardConfig by remember { mutableStateOf<FlashcardConfig?>(null) }
+                var showFlashcardCustomization by remember { mutableStateOf(false) }
                 
                 when {
-                    currentSubject == null -> {
+                    currentSubject == null && currentMaterialType != MaterialType.TERM -> {
                         HomeScreen(
                             viewModel = homeViewModel,
-                            onSubjectClick = { currentSubject = it }
+                            onSubjectClick = { currentSubject = it },
+                            onTermsClick = { currentMaterialType = MaterialType.TERM }
                         )
                     }
                     currentMaterialType == null -> {
                         SubjectDetailScreen(
                             subject = currentSubject!!,
                             onBackClick = { currentSubject = null },
-                            onCategoryClick = { currentMaterialType = it },
+                            onCategoryClick = { 
+                                when (it) {
+                                    MaterialType.QUIZ -> showQuizCustomization = true
+                                    MaterialType.FLASHCARD -> showFlashcardCustomization = true
+                                    else -> currentMaterialType = it
+                                }
+                            },
                             onContinueClick = { /* Handle resume */ }
                         )
+
+                        if (showQuizCustomization) {
+                            val chapters by repository.getChapters(currentSubject!!.id).collectAsState(initial = emptyList())
+                            QuizCustomizationPopup(
+                                subject = currentSubject!!,
+                                chapters = chapters,
+                                onDismiss = { showQuizCustomization = false },
+                                onStartQuiz = { config ->
+                                    quizConfig = config
+                                    showQuizCustomization = false
+                                    currentMaterialType = MaterialType.QUIZ
+                                }
+                            )
+                        }
+
+                        if (showFlashcardCustomization) {
+                            val chapters by repository.getChapters(currentSubject!!.id).collectAsState(initial = emptyList())
+                            FlashcardCustomizationPopup(
+                                subject = currentSubject!!,
+                                chapters = chapters,
+                                onDismiss = { showFlashcardCustomization = false },
+                                onStartSession = { config ->
+                                    flashcardConfig = config
+                                    showFlashcardCustomization = false
+                                    currentMaterialType = MaterialType.FLASHCARD
+                                }
+                            )
+                        }
                     }
                     currentMaterialType == MaterialType.HANDOUT -> {
                         val handoutViewModel = remember(currentSubject!!.id) {
@@ -63,6 +109,52 @@ class MainActivity : ComponentActivity() {
                             viewModel = handoutViewModel,
                             onBackClick = { currentMaterialType = null },
                             onHandoutClick = { /* Handle opening handout */ }
+                        )
+                    }
+                    currentMaterialType == MaterialType.QUIZ -> {
+                        val quizViewModel = remember(quizConfig, currentQuizTopic) {
+                            QuizViewModel(
+                                repository = repository,
+                                config = quizConfig,
+                                topicId = currentQuizTopic?.id
+                            )
+                        }
+                        QuizScreen(
+                            subject = currentSubject!!,
+                            viewModel = quizViewModel,
+                            onBackClick = { 
+                                currentMaterialType = null
+                                quizConfig = null
+                                currentQuizTopic = null
+                            }
+                        )
+                    }
+                    currentMaterialType == MaterialType.FLASHCARD -> {
+                        val flashcardViewModel = remember(flashcardConfig) {
+                            FlashcardViewModel(
+                                repository = repository,
+                                config = flashcardConfig
+                            )
+                        }
+                        FlashcardScreen(
+                            subject = currentSubject!!,
+                            viewModel = flashcardViewModel,
+                            onBackClick = {
+                                currentMaterialType = null
+                                flashcardConfig = null
+                            }
+                        )
+                    }
+                    currentMaterialType == MaterialType.TERM -> {
+                        val termsViewModel = remember(currentSubject?.id) {
+                            TermsViewModel(repository, currentSubject?.id)
+                        }
+                        TermsScreen(
+                            subject = currentSubject,
+                            viewModel = termsViewModel,
+                            onBackClick = { 
+                                currentMaterialType = null
+                            }
                         )
                     }
                     else -> {

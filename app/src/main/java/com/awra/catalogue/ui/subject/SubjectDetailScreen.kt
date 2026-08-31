@@ -52,7 +52,7 @@ fun SubjectDetailScreen(
                 title = { 
                     Text(
                         subject.name, 
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     ) 
                 },
@@ -61,11 +61,11 @@ fun SubjectDetailScreen(
                         onClick = onBackClick,
                         modifier = Modifier
                             .padding(start = 4.dp)
-                            .size(48.dp)
+                            .size(40.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", modifier = Modifier.size(20.dp))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

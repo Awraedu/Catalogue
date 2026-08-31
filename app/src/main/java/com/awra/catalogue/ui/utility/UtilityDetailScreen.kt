@@ -775,14 +775,13 @@ private fun TruthTableDisplay(headers: List<String>, rows: List<List<String>>) {
         modifier = Modifier.fillMaxWidth(),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            // Header Row
+        Column {
+            // Header Row - Fills the top width
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
-                    .padding(vertical = 14.dp),
+                    .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 headers.forEachIndexed { index, header ->
@@ -805,67 +804,67 @@ private fun TruthTableDisplay(headers: List<String>, rows: List<List<String>>) {
                 }
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Data Rows
-            rows.forEachIndexed { rowIndex, row ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    row.forEachIndexed { colIndex, cell ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 4.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            val isResult = colIndex == row.size - 1
-                            val isTrue = cell == "T"
-                            
-                            Surface(
-                                shape = CircleShape,
-                                color = when {
-                                    isTrue && isResult -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                                    !isTrue && isResult -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
-                                    else -> Color.Transparent
-                                },
-                                modifier = Modifier.sizeIn(minWidth = 36.dp, minHeight = 36.dp)
+            Column(modifier = Modifier.padding(12.dp)) {
+                // Data Rows
+                rows.forEachIndexed { rowIndex, row ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        row.forEachIndexed { colIndex, cell ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 4.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = cell,
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = if (isResult) FontWeight.Black else FontWeight.Bold,
-                                        color = when {
-                                            isTrue -> if (isResult) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                            else -> if (isResult) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                                        }
-                                    )
+                                val isResult = colIndex == row.size - 1
+                                val isTrue = cell == "T"
+                                
+                                Surface(
+                                    shape = CircleShape,
+                                    color = when {
+                                        isTrue && isResult -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                                        !isTrue && isResult -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
+                                        else -> Color.Transparent
+                                    },
+                                    modifier = Modifier.sizeIn(minWidth = 36.dp, minHeight = 36.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = cell,
+                                            textAlign = TextAlign.Center,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = if (isResult) FontWeight.Black else FontWeight.Bold,
+                                            color = when {
+                                                isTrue -> if (isResult) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                                else -> if (isResult) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                                            }
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        
-                        // Row column divider
-                        if (colIndex < row.size - 1) {
-                            VerticalDivider(
-                                modifier = Modifier.height(24.dp),
-                                thickness = 0.5.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                            )
+                            
+                            // Row column divider
+                            if (colIndex < row.size - 1) {
+                                VerticalDivider(
+                                    modifier = Modifier.height(24.dp),
+                                    thickness = 0.5.dp,
+                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                                )
+                            }
                         }
                     }
-                }
-                
-                if (rowIndex < rows.size - 1) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        thickness = 0.5.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                    )
+                    
+                    if (rowIndex < rows.size - 1) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                        )
+                    }
                 }
             }
         }

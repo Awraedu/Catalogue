@@ -66,7 +66,10 @@ object DatabaseSeeder {
                     seedCriticalThinking(context, dao, subjectId)
                     seedLogicUtilities(dao, subjectId)
                 }
-                "Moral and Civic Education" -> seedCivics(context, dao, subjectId)
+                "Moral and Civic Education" -> {
+                    seedCivics(context, dao, subjectId)
+                    seedCivicsUtilities(dao, subjectId)
+                }
                 "General Physics" -> {
                     seedPhysics(context, dao, subjectId)
                     seedPhysicsUtilities(dao, subjectId)
@@ -322,6 +325,14 @@ object DatabaseSeeder {
             "Constitution and Democracy" to listOf("Features of FDRE Constitution", "Human Rights", "Democratic Values", "Diversity Management")
         )
         seedDetailedSubject(context, dao, subjectId, "Moral and Civic Education", units)
+    }
+
+    private suspend fun seedCivicsUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Constitution Explorer", type = "CONST_EXPLORER", icon = "MenuBook"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Human Rights Charter", type = "HR_CHARTER", icon = "Gavel"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Government Structure", type = "GOV_STRUCTURE", icon = "AccountBalance"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "National Symbols", type = "NAT_SYMBOL", icon = "Flag"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Civic Duties", type = "CIVIC_DUTIES", icon = "Person"))
     }
 
     private suspend fun seedPhysics(context: Context, dao: CatalogueDao, subjectId: Long) {

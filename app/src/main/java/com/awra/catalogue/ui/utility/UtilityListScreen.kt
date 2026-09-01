@@ -124,6 +124,9 @@ private fun UtilityItem(
         "Calculate" -> Icons.Default.Calculate
         "TrendingUp" -> Icons.Default.TrendingUp
         "GridOn" -> Icons.Default.GridOn
+        "AccountBalance" -> Icons.Default.AccountBalance
+        "Flag" -> Icons.Default.Flag
+        "Person" -> Icons.Default.Person
         else -> Icons.Default.Build
     }
 

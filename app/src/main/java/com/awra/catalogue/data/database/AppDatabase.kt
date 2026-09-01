@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
         StudySession::class,
         Utility::class
     ],
-    version = 22,
+    version = 23,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

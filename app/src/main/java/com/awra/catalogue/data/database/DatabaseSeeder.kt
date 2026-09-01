@@ -14,18 +14,24 @@ object DatabaseSeeder {
         Subject(name = "Social Anthropology", description = "Study of human societies and cultures.", stream = Stream.COMMON, shape = ExpressiveShape.SEMICIRCLE),
         Subject(name = "Critical Thinking", description = "Logic and reasoning skills.", stream = Stream.COMMON, shape = ExpressiveShape.ARCH),
         Subject(name = "Moral and Civic Education", description = "Ethics and citizenship.", stream = Stream.COMMON, shape = ExpressiveShape.BUN),
+        Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.COMMON, shape = ExpressiveShape.FAN),
+        Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.COMMON, shape = ExpressiveShape.HEART),
+        Subject(name = "Emerging Technologies", description = "AI, IoT, and future tech.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_4),
+        Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_6),
+        Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_7),
         
         // Natural Stream
-        Subject(name = "General Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.FAN),
-        Subject(name = "General Chemistry", description = "Atomic structure and bonding.", stream = Stream.NATURAL, shape = ExpressiveShape.HEART),
-        Subject(name = "General Biology", description = "Cell biology and genetics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_4),
-        Subject(name = "Mathematics for Natural Sciences", description = "Calculus and linear algebra.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_6),
+        Subject(name = "General Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
+        Subject(name = "General Chemistry", description = "Atomic structure and bonding.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_12),
+        Subject(name = "General Biology", description = "Cell biology and genetics.", stream = Stream.NATURAL, shape = ExpressiveShape.CLOVER_4),
+        Subject(name = "Mathematics for Natural Sciences", description = "Calculus and linear algebra.", stream = Stream.NATURAL, shape = ExpressiveShape.CIRCLE),
         
         // Social Stream
-        Subject(name = "Geography of Ethiopia and the Horn", description = "Physical and human geography.", stream = Stream.SOCIAL, shape = ExpressiveShape.COOKIE_7),
-        Subject(name = "History of Ethiopia and the Horn", description = "Historical developments in the region.", stream = Stream.SOCIAL, shape = ExpressiveShape.COOKIE_9),
-        Subject(name = "Introduction to Economics", description = "Micro and macroeconomics principles.", stream = Stream.SOCIAL, shape = ExpressiveShape.COOKIE_12),
-        Subject(name = "Introduction to Sociology", description = "Social structures and interactions.", stream = Stream.SOCIAL, shape = ExpressiveShape.CLOVER_4)
+        Subject(name = "Geography of Ethiopia and the Horn", description = "Physical and human geography.", stream = Stream.SOCIAL, shape = ExpressiveShape.OVAL),
+        Subject(name = "History of Ethiopia and the Horn", description = "Historical developments in the region.", stream = Stream.SOCIAL, shape = ExpressiveShape.PILL),
+        Subject(name = "Introduction to Economics", description = "Micro and macroeconomics principles.", stream = Stream.SOCIAL, shape = ExpressiveShape.SEMICIRCLE),
+        Subject(name = "Introduction to Sociology", description = "Social structures and interactions.", stream = Stream.SOCIAL, shape = ExpressiveShape.ARCH),
+        Subject(name = "Mathematics for Social Sciences", description = "Probability and statistics.", stream = Stream.SOCIAL, shape = ExpressiveShape.BUN)
     )
 
     private val subjectFolderMap = mapOf(
@@ -35,6 +41,11 @@ object DatabaseSeeder {
         "Social Anthropology" to "Social_Anthropology",
         "Critical Thinking" to "Critical_Thinking",
         "Moral and Civic Education" to "Moral_and_Civic_Education",
+        "Inclusiveness" to "Inclusiveness",
+        "Entrepreneurship" to "Entrepreneurship",
+        "Emerging Technologies" to "Emerging_Technologies",
+        "Fitness" to "Fitness",
+        "Global Trends" to "Global_Trends",
         "General Physics" to "General_Physics",
         "General Chemistry" to "General_Chemistry",
         "General Biology" to "General_Biology",
@@ -42,7 +53,8 @@ object DatabaseSeeder {
         "Geography of Ethiopia and the Horn" to "Geography_of_Ethiopia_and_the_Horn",
         "History of Ethiopia and the Horn" to "History_of_Ethiopia_and_the_Horn",
         "Introduction to Economics" to "Introduction_to_Economics",
-        "Introduction to Sociology" to "Introduction_to_Sociology"
+        "Introduction to Sociology" to "Introduction_to_Sociology",
+        "Mathematics for Social Sciences" to "Mathematics_for_Social_Sciences"
     )
 
     suspend fun seed(context: Context, dao: CatalogueDao) {
@@ -70,6 +82,26 @@ object DatabaseSeeder {
                     seedCivics(context, dao, subjectId)
                     seedCivicsUtilities(dao, subjectId)
                 }
+                "Inclusiveness" -> {
+                    seedInclusiveness(context, dao, subjectId)
+                    seedInclusivenessUtilities(dao, subjectId)
+                }
+                "Entrepreneurship" -> {
+                    seedEntrepreneurship(context, dao, subjectId)
+                    seedEntrepreneurshipUtilities(dao, subjectId)
+                }
+                "Emerging Technologies" -> {
+                    seedEmergingTech(context, dao, subjectId)
+                    seedEmergingTechUtilities(dao, subjectId)
+                }
+                "Fitness" -> {
+                    seedFitness(context, dao, subjectId)
+                    seedFitnessUtilities(dao, subjectId)
+                }
+                "Global Trends" -> {
+                    seedGlobalTrends(context, dao, subjectId)
+                    seedGlobalTrendsUtilities(dao, subjectId)
+                }
                 "General Physics" -> {
                     seedPhysics(context, dao, subjectId)
                     seedPhysicsUtilities(dao, subjectId)
@@ -96,9 +128,104 @@ object DatabaseSeeder {
                     seedEconomicsUtilities(dao, subjectId)
                 }
                 "Introduction to Sociology" -> seedSociology(context, dao, subjectId)
+                "Mathematics for Social Sciences" -> {
+                    seedSocialMath(context, dao, subjectId)
+                    seedMathUtilities(dao, subjectId)
+                }
                 else -> seedGenericSubject(context, dao, subjectId, subject.name)
             }
         }
+    }
+
+    private suspend fun seedInclusiveness(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Understanding Disabilities" to listOf("Models of Disability", "Types of Impairments", "Legal Frameworks"),
+            "Inclusive Education" to listOf("Principles and Benefits", "Classroom Strategies", "Assessment Adaptation"),
+            "Social Inclusion" to listOf("Barrier Identification", "Community Engagement", "Policy Advocacy")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Inclusiveness", units)
+    }
+
+    private suspend fun seedInclusivenessUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Disability Types", type = "DISABILITY_TYPES", icon = "Accessible"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Sign Language", type = "SIGN_LANGUAGE", icon = "SignLanguage"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Braille Chart", type = "BRAILLE", icon = "Braille"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Inclusive Design", type = "INCLUSIVE_DESIGN", icon = "DesignServices"))
+    }
+
+    private suspend fun seedEntrepreneurship(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Mindset and Opportunities" to listOf("Entrepreneurial Characteristics", "Idea Generation", "Market Research"),
+            "Business Planning" to listOf("Business Model Canvas", "Financial Projections", "Operations Strategy"),
+            "Launch and Growth" to listOf("Funding Sources", "Marketing and Sales", "Scaling the Venture")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Entrepreneurship", units)
+    }
+
+    private suspend fun seedEntrepreneurshipUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Business Model Canvas", type = "BMC", icon = "ViewQuilt"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Startup Financials", type = "STARTUP_FINANCE", icon = "AccountBalanceWallet"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Lean Startup Loop", type = "LEAN_STARTUP", icon = "Autorenew"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Growth Metrics", type = "GROWTH_METRICS", icon = "Insights"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Pitch Deck Structure", type = "PITCH_DECK", icon = "PresentToAll"))
+    }
+
+    private suspend fun seedEmergingTech(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Data Science and AI" to listOf("Machine Learning", "Big Data Analytics", "AI Ethics"),
+            "Internet of Things (IoT)" to listOf("Sensors and Connectivity", "Smart Cities", "Industrial IoT"),
+            "Future Frontiers" to listOf("Blockchain", "Augmented Reality", "Quantum Computing")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Emerging Technologies", units)
+    }
+
+    private suspend fun seedEmergingTechUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "AI Ethics", type = "AI_ETHICS", icon = "AutoAwesome"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "IoT Architecture", type = "IOT_STACK", icon = "Layers"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Blockchain Visualizer", type = "BLOCKCHAIN_VIS", icon = "Link"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Cloud Service Models", type = "CLOUD_MODELS", icon = "Cloud"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Tech Roadmap", type = "TECH_TIMELINE", icon = "Timeline"))
+    }
+
+    private suspend fun seedFitness(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Foundations of Health" to listOf("Exercise Physiology", "Nutritional Basics", "Mental Well-being"),
+            "Training Methods" to listOf("Strength and Conditioning", "Cardiovascular Fitness", "Flexibility and Mobility"),
+            "Lifestyle Management" to listOf("Stress Reduction", "Sleep Hygiene", "Habit Formation")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Fitness", units)
+    }
+
+    private suspend fun seedFitnessUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "BMI Calculator", type = "BMI_CALC", icon = "Calculate"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Nutrition Guide", type = "NUTRITION", icon = "Restaurant"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Training Principles", type = "TRAINING_PRO", icon = "FitnessCenter"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Heart Rate Zones", type = "HR_ZONES", icon = "Favorite"))
+    }
+
+    private suspend fun seedGlobalTrends(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Global Governance" to listOf("International Organizations", "Geopolitics", "Diplomatic Relations"),
+            "Economic Trends" to listOf("Globalization", "Sustainable Development", "Trade Policies"),
+            "Social and Tech Issues" to listOf("Human Rights", "Cybersecurity", "Climate Change")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Global Trends", units)
+    }
+
+    private suspend fun seedGlobalTrendsUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "UN & International Orgs", type = "INT_ORGS", icon = "Language"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "African Union (AU)", type = "AU_HUB", icon = "Flag"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Sustainable Goals (SDG)", type = "SDG_GRID", icon = "AutoGraph"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Geopolitical Concepts", type = "GEO_CONCEPTS", icon = "Gavel"))
+    }
+
+    private suspend fun seedSocialMath(context: Context, dao: CatalogueDao, subjectId: Long) {
+        val units = listOf(
+            "Foundations of Math" to listOf("Basic Algebra", "Functions and Graphs", "Equation Solving"),
+            "Data and Statistics" to listOf("Descriptive Statistics", "Probability Basics", "Data Interpretation"),
+            "Business Math" to listOf("Interest and Annuities", "Linear Programming", "Decision Modeling")
+        )
+        seedDetailedSubject(context, dao, subjectId, "Mathematics for Social Sciences", units)
     }
 
     private suspend fun seedDetailedSubject(
@@ -253,6 +380,9 @@ object DatabaseSeeder {
 
     private suspend fun seedGeographyUtilities(dao: CatalogueDao, subjectId: Long) {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Interactive World Map", type = "WORLD_MAP", icon = "Public"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Climate Zones", type = "CLIMATE_ZONES", icon = "WbSunny"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Earth Layers", type = "EARTH_LAYERS", icon = "Layers"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Ethiopia Regions", type = "ETHIOPIA_REGIONS", icon = "Map"))
     }
 
     private suspend fun seedPsychologyUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -283,6 +413,8 @@ object DatabaseSeeder {
 
     private suspend fun seedEconomicsUtilities(dao: CatalogueDao, subjectId: Long) {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Economic Formulas", type = "ECON_FORMULA", icon = "TrendingUp"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Market Structures", type = "MARKET_STRUCTURES", icon = "Storefront"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Supply & Demand", type = "SUPPLY_DEMAND", icon = "CallMerge"))
     }
 
     private suspend fun seedChemistryUtilities(dao: CatalogueDao, subjectId: Long) {

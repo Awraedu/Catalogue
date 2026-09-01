@@ -7,8 +7,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Accessible
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.ViewQuilt
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -139,10 +142,33 @@ private fun UtilityItem(
         "AccessibilityNew" -> Icons.Default.AccessibilityNew
         "Diversity3" -> Icons.Default.Diversity3
         "Public" -> Icons.Default.Public
+        "WbSunny" -> Icons.Default.WbSunny
+        "Layers" -> Icons.Default.Layers
+        "Map" -> Icons.Default.Map
+        "Accessible" -> Icons.AutoMirrored.Filled.Accessible
+        "SignLanguage" -> Icons.Default.SignLanguage
+        "Braille" -> Icons.Default.Blind
+        "DesignServices" -> Icons.Default.DesignServices
+        "ViewQuilt" -> Icons.AutoMirrored.Filled.ViewQuilt
+        "AccountBalanceWallet" -> Icons.Default.AccountBalanceWallet
+        "Autorenew" -> Icons.Default.Autorenew
+        "Insights" -> Icons.Default.Insights
+        "PresentToAll" -> Icons.Default.PresentToAll
+        "Cloud" -> Icons.Default.Cloud
+        "Link" -> Icons.Default.Link
+        "Timeline" -> Icons.Default.Timeline
         "ChangeHistory" -> Icons.Default.ChangeHistory
         "SquareFoot" -> Icons.Default.SquareFoot
         "Percent" -> Icons.Default.Percent
         "BarChart" -> Icons.Default.BarChart
+        "Restaurant" -> Icons.Default.Restaurant
+        "Favorite" -> Icons.Default.Favorite
+        "FitnessCenter" -> Icons.Default.FitnessCenter
+        "Language" -> Icons.Default.Language
+        "AutoGraph" -> Icons.Default.AutoGraph
+        "TrendingUp" -> Icons.Default.TrendingUp
+        "Storefront" -> Icons.Default.Storefront
+        "CallMerge" -> Icons.AutoMirrored.Filled.CallMerge
         else -> Icons.Default.Build
     }
 

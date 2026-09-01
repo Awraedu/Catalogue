@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.Utility
 import com.awra.catalogue.ui.utility.tools.anthropology.ArcheologicalMethodsContent
@@ -16,8 +17,13 @@ import com.awra.catalogue.ui.utility.tools.anthropology.HumanVariationContent
 import com.awra.catalogue.ui.utility.tools.biology.*
 import com.awra.catalogue.ui.utility.tools.chemistry.*
 import com.awra.catalogue.ui.utility.tools.civics.*
-import com.awra.catalogue.ui.utility.tools.geography.CountryDetailSheet
-import com.awra.catalogue.ui.utility.tools.geography.WorldMapContent
+import com.awra.catalogue.ui.utility.tools.common.*
+import com.awra.catalogue.ui.utility.tools.economics.*
+import com.awra.catalogue.ui.utility.tools.emergingtech.*
+import com.awra.catalogue.ui.utility.tools.entrepreneurship.*
+import com.awra.catalogue.ui.utility.tools.fitness.*
+import com.awra.catalogue.ui.utility.tools.geography.*
+import com.awra.catalogue.ui.utility.tools.globaltrends.*
 import com.awra.catalogue.ui.utility.tools.english.GrammarRulesContent
 import com.awra.catalogue.ui.utility.tools.english.LiteraryDevicesContent
 import com.awra.catalogue.ui.utility.tools.english.PhoneticChart
@@ -29,7 +35,6 @@ import com.awra.catalogue.ui.utility.tools.logic.TruthTablesContent
 import com.awra.catalogue.ui.utility.tools.math.*
 import com.awra.catalogue.ui.utility.tools.physics.*
 import com.awra.catalogue.ui.utility.tools.psychology.*
-import com.awra.catalogue.ui.utility.tools.science.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,13 +49,22 @@ fun UtilityDetailScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
+            val isEarthLayers = utility.type == "EARTH_LAYERS"
+            val appBarColor = if (isEarthLayers) Color(0xFF0B1218) else MaterialTheme.colorScheme.surface
+            val contentColor = if (isEarthLayers) Color.White else MaterialTheme.colorScheme.onSurface
+            
             TopAppBar(
                 title = { Text(utility.name) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = appBarColor,
+                    titleContentColor = contentColor,
+                    navigationIconContentColor = contentColor
+                )
             )
         }
     ) { innerPadding ->
@@ -83,6 +97,28 @@ fun UtilityDetailScreen(
                 "GOV_STRUCTURE" -> GovernmentStructureContent(onItemClick)
                 "NAT_SYMBOL" -> NationalSymbolsContent(onItemClick)
                 "CIVIC_DUTIES" -> CivicDutiesContent(onItemClick)
+                "DISABILITY_TYPES" -> DisabilityTypesContent(onItemClick)
+                "SIGN_LANGUAGE" -> SignLanguageContent(onItemClick)
+                "BRAILLE" -> BrailleChartContent(onItemClick)
+                "INCLUSIVE_DESIGN" -> InclusiveDesignContent(onItemClick)
+                "BMC" -> BusinessModelCanvasContent(onItemClick)
+                "STARTUP_FINANCE" -> StartupFinancialsContent(onItemClick)
+                "LEAN_STARTUP" -> LeanStartupContent(onItemClick)
+                "GROWTH_METRICS" -> GrowthMetricsContent(onItemClick)
+                "PITCH_DECK" -> PitchDeckStructureContent(onItemClick)
+                "AI_ETHICS" -> AIEthicsContent(onItemClick)
+                "IOT_STACK" -> IoTStackContent(onItemClick)
+                "BLOCKCHAIN_VIS" -> BlockchainContent(onItemClick)
+                "CLOUD_MODELS" -> CloudModelsContent(onItemClick)
+                "TECH_TIMELINE" -> TechRoadmapContent(onItemClick)
+                "BMI_CALC" -> BMICalculatorContent(onItemClick)
+                "NUTRITION" -> NutritionBasicsContent(onItemClick)
+                "TRAINING_PRO" -> TrainingPrinciplesContent(onItemClick)
+                "HR_ZONES" -> HeartRateZonesContent(onItemClick)
+                "INT_ORGS" -> InternationalOrgsContent(onItemClick)
+                "AU_HUB" -> InternationalOrgsContent(onItemClick) // Reusing since it contains AU
+                "SDG_GRID" -> SDGContent(onItemClick)
+                "GEO_CONCEPTS" -> GeopoliticalConceptsContent(onItemClick)
                 "PERIODIC_TABLE" -> PeriodicTableContent(onItemClick)
                 "SOLUBILITY_RULES" -> SolubilityRulesContent(onItemClick)
                 "GAS_LAWS" -> GasLawsContent(onItemClick)
@@ -91,6 +127,9 @@ fun UtilityDetailScreen(
                 "BODY_SYSTEMS" -> BodySystemsContent(onItemClick)
                 "KINGDOMS_OF_LIFE" -> KingdomsOfLifeContent(onItemClick)
                 "WORLD_MAP" -> WorldMapContent(onItemClick)
+                "CLIMATE_ZONES" -> ClimateZonesContent(onItemClick)
+                "EARTH_LAYERS" -> EarthLayersContent(onItemClick)
+                "ETHIOPIA_REGIONS" -> EthiopiaRegionsContent(onItemClick)
                 "FORMULA_BANK" -> FormulaBankContent(onItemClick)
                 "WAVES_OPTICS" -> WavesOpticsContent(onItemClick)
                 "ELECTROMAGNETISM" -> ElectromagnetismContent(onItemClick)
@@ -103,7 +142,9 @@ fun UtilityDetailScreen(
                 "GEOMETRY" -> GeometryFormulasContent(onItemClick)
                 "LOG_LAWS" -> LogarithmLawsContent(onItemClick)
                 "STATS_GUIDE" -> StatisticsGuideContent(onItemClick)
-                "ECON_FORMULA" -> EconFormulasContent(onItemClick)
+                "ECON_FORMULA" -> EconomicFormulasContent(onItemClick)
+                "MARKET_STRUCTURES" -> MarketStructuresContent(onItemClick)
+                "SUPPLY_DEMAND" -> SupplyDemandContent(onItemClick)
                 else -> Text("Content for ${utility.name} coming soon.", modifier = Modifier.align(Alignment.Center))
             }
 

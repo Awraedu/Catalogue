@@ -13,7 +13,11 @@ import com.awra.catalogue.ui.utility.tools.anthropology.ArcheologicalMethodsCont
 import com.awra.catalogue.ui.utility.tools.anthropology.CultureConceptContent
 import com.awra.catalogue.ui.utility.tools.anthropology.EvolutionStagesContent
 import com.awra.catalogue.ui.utility.tools.anthropology.HumanVariationContent
+import com.awra.catalogue.ui.utility.tools.biology.*
+import com.awra.catalogue.ui.utility.tools.chemistry.*
 import com.awra.catalogue.ui.utility.tools.civics.*
+import com.awra.catalogue.ui.utility.tools.geography.CountryDetailSheet
+import com.awra.catalogue.ui.utility.tools.geography.WorldMapContent
 import com.awra.catalogue.ui.utility.tools.english.GrammarRulesContent
 import com.awra.catalogue.ui.utility.tools.english.LiteraryDevicesContent
 import com.awra.catalogue.ui.utility.tools.english.PhoneticChart
@@ -22,6 +26,8 @@ import com.awra.catalogue.ui.utility.tools.logic.LogicOperatorsContent
 import com.awra.catalogue.ui.utility.tools.logic.LogicalFallaciesContent
 import com.awra.catalogue.ui.utility.tools.logic.ReasoningTypesContent
 import com.awra.catalogue.ui.utility.tools.logic.TruthTablesContent
+import com.awra.catalogue.ui.utility.tools.math.*
+import com.awra.catalogue.ui.utility.tools.physics.*
 import com.awra.catalogue.ui.utility.tools.psychology.*
 import com.awra.catalogue.ui.utility.tools.science.*
 
@@ -77,10 +83,26 @@ fun UtilityDetailScreen(
                 "GOV_STRUCTURE" -> GovernmentStructureContent(onItemClick)
                 "NAT_SYMBOL" -> NationalSymbolsContent(onItemClick)
                 "CIVIC_DUTIES" -> CivicDutiesContent(onItemClick)
-                "FORMULA_PHYS" -> PhysicsFormulasContent(onItemClick)
-                "CONSTANTS" -> PhysicsConstantsContent(onItemClick)
-                "ALGEBRA" -> MathAlgebraContent(onItemClick)
-                "CALCULUS" -> MathCalculusContent(onItemClick)
+                "PERIODIC_TABLE" -> PeriodicTableContent(onItemClick)
+                "SOLUBILITY_RULES" -> SolubilityRulesContent(onItemClick)
+                "GAS_LAWS" -> GasLawsContent(onItemClick)
+                "STOICHIOMETRY" -> StoichiometryContent(onItemClick)
+                "ORGANELLE_LIB" -> OrganelleLibraryContent(onItemClick)
+                "BODY_SYSTEMS" -> BodySystemsContent(onItemClick)
+                "KINGDOMS_OF_LIFE" -> KingdomsOfLifeContent(onItemClick)
+                "WORLD_MAP" -> WorldMapContent(onItemClick)
+                "FORMULA_BANK" -> FormulaBankContent(onItemClick)
+                "WAVES_OPTICS" -> WavesOpticsContent(onItemClick)
+                "ELECTROMAGNETISM" -> ElectromagnetismContent(onItemClick)
+                "PHYS_CONSTANTS" -> PhysicalConstantsContent(onItemClick)
+                "CIRCUIT_SYMBOLS" -> CircuitSymbolsContent(onItemClick)
+                "DYNAMICS_ENERGY" -> DynamicsEnergyContent(onItemClick)
+                "DERIVATIVES" -> DerivativeTableContent(onItemClick)
+                "INTEGRALS" -> IntegrationFormulasContent(onItemClick)
+                "TRIG_IDENTITY" -> TrigIdentitiesContent(onItemClick)
+                "GEOMETRY" -> GeometryFormulasContent(onItemClick)
+                "LOG_LAWS" -> LogarithmLawsContent(onItemClick)
+                "STATS_GUIDE" -> StatisticsGuideContent(onItemClick)
                 "ECON_FORMULA" -> EconFormulasContent(onItemClick)
                 else -> Text("Content for ${utility.name} coming soon.", modifier = Modifier.align(Alignment.Center))
             }
@@ -91,7 +113,13 @@ fun UtilityDetailScreen(
                     sheetState = sheetState,
                     dragHandle = { BottomSheetDefaults.DragHandle() }
                 ) {
-                    UtilityDetailSheetContent(selectedItem!!)
+                    if (utility.type == "PERIODIC_TABLE") {
+                        ElementDetailSheet(selectedItem!!)
+                    } else if (utility.type == "WORLD_MAP") {
+                        CountryDetailSheet(selectedItem!!)
+                    } else {
+                        UtilityDetailSheetContent(selectedItem!!)
+                    }
                 }
             }
         }

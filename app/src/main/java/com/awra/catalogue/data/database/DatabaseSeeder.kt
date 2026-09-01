@@ -74,13 +74,22 @@ object DatabaseSeeder {
                     seedPhysics(context, dao, subjectId)
                     seedPhysicsUtilities(dao, subjectId)
                 }
-                "General Chemistry" -> seedChemistry(context, dao, subjectId)
-                "General Biology" -> seedBiology(context, dao, subjectId)
+                "General Chemistry" -> {
+                    seedChemistry(context, dao, subjectId)
+                    seedChemistryUtilities(dao, subjectId)
+                }
+                "General Biology" -> {
+                    seedBiology(context, dao, subjectId)
+                    seedBiologyUtilities(dao, subjectId)
+                }
                 "Mathematics for Natural Sciences" -> {
                     seedNaturalMath(context, dao, subjectId)
                     seedMathUtilities(dao, subjectId)
                 }
-                "Geography of Ethiopia and the Horn" -> seedGeography(context, dao, subjectId)
+                "Geography of Ethiopia and the Horn" -> {
+                    seedGeography(context, dao, subjectId)
+                    seedGeographyUtilities(dao, subjectId)
+                }
                 "History of Ethiopia and the Horn" -> seedHistory(context, dao, subjectId)
                 "Introduction to Economics" -> {
                     seedEconomics(context, dao, subjectId)
@@ -242,6 +251,10 @@ object DatabaseSeeder {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Phonetic Chart", type = "PHONETIC", icon = "RecordVoiceOver"))
     }
 
+    private suspend fun seedGeographyUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Interactive World Map", type = "WORLD_MAP", icon = "Public"))
+    }
+
     private suspend fun seedPsychologyUtilities(dao: CatalogueDao, subjectId: Long) {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Psychological Perspectives", type = "PSYCH_PERSPECTIVE", icon = "AutoAwesome"))
         dao.insertUtility(Utility(subjectId = subjectId, name = "Defense Mechanisms", type = "DEFENSE_MECH", icon = "Shield"))
@@ -251,17 +264,38 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedPhysicsUtilities(dao: CatalogueDao, subjectId: Long) {
-        dao.insertUtility(Utility(subjectId = subjectId, name = "Formula Sheet", type = "FORMULA_PHYS", icon = "Functions"))
-        dao.insertUtility(Utility(subjectId = subjectId, name = "Physical Constants", type = "CONSTANTS", icon = "Numbers"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Formula Bank", type = "FORMULA_BANK", icon = "Functions"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Waves and Optics", type = "WAVES_OPTICS", icon = "Visibility"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Electromagnetism", type = "ELECTROMAGNETISM", icon = "Bolt"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Physical Constants", type = "PHYS_CONSTANTS", icon = "Numbers"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Circuit Symbols", type = "CIRCUIT_SYMBOLS", icon = "Schema"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Dynamics and Energy", type = "DYNAMICS_ENERGY", icon = "FitnessCenter"))
     }
 
     private suspend fun seedMathUtilities(dao: CatalogueDao, subjectId: Long) {
-        dao.insertUtility(Utility(subjectId = subjectId, name = "Algebra Identities", type = "ALGEBRA", icon = "Calculate"))
-        dao.insertUtility(Utility(subjectId = subjectId, name = "Calculus Rules", type = "CALCULUS", icon = "Timeline"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Derivative Table", type = "DERIVATIVES", icon = "Timeline"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Integration Formulas", type = "INTEGRALS", icon = "Functions"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Trig Identities", type = "TRIG_IDENTITY", icon = "ChangeHistory"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Geometry Formulas", type = "GEOMETRY", icon = "SquareFoot"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Logarithm Laws", type = "LOG_LAWS", icon = "Percent"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Statistics Guide", type = "STATS_GUIDE", icon = "BarChart"))
     }
 
     private suspend fun seedEconomicsUtilities(dao: CatalogueDao, subjectId: Long) {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Economic Formulas", type = "ECON_FORMULA", icon = "TrendingUp"))
+    }
+
+    private suspend fun seedChemistryUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Periodic Table", type = "PERIODIC_TABLE", icon = "GridOn"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Solubility Rules", type = "SOLUBILITY_RULES", icon = "WaterDrop"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Gas Law Tool", type = "GAS_LAWS", icon = "Air"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Stoichiometry Tool", type = "STOICHIOMETRY", icon = "Calculate"))
+    }
+
+    private suspend fun seedBiologyUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Organelle Library", type = "ORGANELLE_LIB", icon = "Dataset"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Body Systems", type = "BODY_SYSTEMS", icon = "AccessibilityNew"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Kingdoms of Life", type = "KINGDOMS_OF_LIFE", icon = "Diversity3"))
     }
 
     private suspend fun seedPsychology(context: Context, dao: CatalogueDao, subjectId: Long) {

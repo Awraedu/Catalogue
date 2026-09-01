@@ -127,6 +127,22 @@ private fun UtilityItem(
         "AccountBalance" -> Icons.Default.AccountBalance
         "Flag" -> Icons.Default.Flag
         "Person" -> Icons.Default.Person
+        "Waves" -> Icons.Default.Waves
+        "Visibility" -> Icons.Default.Visibility
+        "Bolt" -> Icons.Default.Bolt
+        "Schema" -> Icons.Default.Schema
+        "FitnessCenter" -> Icons.Default.FitnessCenter
+        "Speed" -> Icons.Default.Speed
+        "WaterDrop" -> Icons.Default.WaterDrop
+        "Air" -> Icons.Default.Air
+        "Dataset" -> Icons.Default.Dataset
+        "AccessibilityNew" -> Icons.Default.AccessibilityNew
+        "Diversity3" -> Icons.Default.Diversity3
+        "Public" -> Icons.Default.Public
+        "ChangeHistory" -> Icons.Default.ChangeHistory
+        "SquareFoot" -> Icons.Default.SquareFoot
+        "Percent" -> Icons.Default.Percent
+        "BarChart" -> Icons.Default.BarChart
         else -> Icons.Default.Build
     }
 

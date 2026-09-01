@@ -7,13 +7,15 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,9 +26,7 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.awra.catalogue.ui.utility.UtilityItemData
-import com.awra.catalogue.ui.utility.UtilityList
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
 
@@ -37,18 +37,18 @@ fun ConstitutionExplorerContent(onClick: (UtilityItemData) -> Unit) {
     val textFieldState = rememberTextFieldState("")
     val scope = rememberCoroutineScope()
     val onSurface = MaterialTheme.colorScheme.onSurface
-    
+
     val filteredChapters = remember(textFieldState.text) {
-        val query = textFieldState.text.toString()
+        val query = textFieldState.text.toString().trim()
         if (query.isBlank()) {
             allChapters
         } else {
             allChapters.mapNotNull { chapter ->
-                val filteredArticles = chapter.articles.filter { 
-                    it.contains(query, ignoreCase = true) || 
-                    chapter.title.contains(query, ignoreCase = true) 
+                val titleMatches = chapter.title.contains(query, ignoreCase = true)
+                val filteredArticles = chapter.articles.filter {
+                    it.contains(query, ignoreCase = true) || titleMatches
                 }
-                if (filteredArticles.isNotEmpty() || chapter.title.contains(query, ignoreCase = true)) {
+                if (filteredArticles.isNotEmpty()) {
                     chapter.copy(articles = filteredArticles)
                 } else {
                     null
@@ -59,37 +59,42 @@ fun ConstitutionExplorerContent(onClick: (UtilityItemData) -> Unit) {
 
     val searchBarState = rememberSearchBarState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Material 3 Expressive Experimental Search Bar
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .semantics { isTraversalGroup = true }
-        ) {
-            SearchBar(
-                state = searchBarState,
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        textFieldState = textFieldState,
-                        searchBarState = searchBarState,
-                        onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                        placeholder = { Text("Search Articles...") },
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    )
-                },
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .semantics { traversalIndex = 0f },
-                shape = CircleShape
-            )
-        }
+    val inputField = @Composable {
+        SearchBarDefaults.InputField(
+            textFieldState = textFieldState,
+            searchBarState = searchBarState,
+            onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+            placeholder = { Text("Search Articles...") },
+            leadingIcon = {
+                if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                    IconButton(onClick = { scope.launch { searchBarState.animateToCollapsed() } }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                } else {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                }
+            },
+            trailingIcon = {
+                if (textFieldState.text.isNotEmpty()) {
+                    IconButton(onClick = { textFieldState.clearText() }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                    }
+                }
+            }
+        )
+    }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics { isTraversalGroup = true }
+    ) {
+        // Background list (visible when collapsed)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(top = 88.dp, bottom = 100.dp, start = 16.dp, end = 16.dp)
         ) {
-            filteredChapters.forEachIndexed { index, chapter ->
+            allChapters.forEachIndexed { index, chapter ->
                 chapterSection(
                     chapter = chapter,
                     onArticleClick = { articleTitle ->
@@ -103,14 +108,64 @@ fun ConstitutionExplorerContent(onClick: (UtilityItemData) -> Unit) {
                     },
                     accentColor = onSurface
                 )
-                
-                if (index < filteredChapters.size - 1) {
+
+                if (index < allChapters.size - 1) {
                     item { Spacer(modifier = Modifier.height(24.dp)) }
+                }
+            }
+        }
+
+        SearchBar(
+            state = searchBarState,
+            inputField = inputField,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .semantics { traversalIndex = 0f },
+            colors = SearchBarDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
+            shape = CircleShape
+        )
+
+        ExpandedFullScreenSearchBar(
+            state = searchBarState,
+            inputField = inputField
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                filteredChapters.forEachIndexed { index, chapter ->
+                    chapterSection(
+                        chapter = chapter,
+                        onArticleClick = { articleTitle ->
+                            onClick(
+                                UtilityItemData(
+                                    title = articleTitle,
+                                    shortDesc = "Part of ${chapter.title}",
+                                    detailedExplanation = "Complete legal text for $articleTitle."
+                                )
+                            )
+                        },
+                        accentColor = onSurface
+                    )
+                    if (index < filteredChapters.size - 1) {
+                        item { Spacer(modifier = Modifier.height(24.dp)) }
+                    }
+                }
+                if (filteredChapters.isEmpty()) {
+                    item {
+                        Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No results found", style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
                 }
             }
         }
     }
 }
+
 
 private fun LazyListScope.chapterSection(
     chapter: ConstitutionChapter,

@@ -31,9 +31,17 @@ class QuizViewModel(
                 topicId != null -> repository.getQuizQuestions(topicId)
                 else -> emptyFlow()
             }
-            flow.collect {
-                _questions.value = it
-            }
+            val loadedQuestions = flow.firstOrNull() ?: emptyList()
+            _questions.value = loadedQuestions.map { question ->
+                val indexedOptions = question.options.mapIndexed { index, option -> option to index }
+                val shuffledOptions = indexedOptions.shuffled()
+                val newCorrectIndex = shuffledOptions.indexOfFirst { it.second == question.correctOptionIndex }
+                
+                question.copy(
+                    options = shuffledOptions.map { it.first },
+                    correctOptionIndex = newCorrectIndex
+                )
+            }.shuffled()
         }
     }
 

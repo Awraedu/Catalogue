@@ -1,18 +1,2515 @@
 [
   {
-    "question": "Which of the following is a vector quantity?",
-    "choices": ["Distance", "Speed", "Velocity", "Mass"],
-    "tip": "Think about direction.",
-    "explanation": "Velocity has both magnitude and direction, making it a vector.",
-    "chapter": "Vectors",
-    "topic": "Vector Addition and Subtraction"
+    "question": "What is physics?",
+    "choices": ["The study of matter, energy, and their interactions", "The study of plants only", "The study of languages", "The study of history"],
+    "answerIndex": 0,
+    "tip": "Think about matter and energy.",
+    "explanation": "Physics is the branch of science that studies matter, energy, motion, forces, and their interactions.",
+    "chapter": "Introduction to Physics",
+    "topic": "Meaning of Physics"
   },
   {
-    "question": "What is Newton's First Law of Motion often called?",
-    "choices": ["Law of Gravity", "Law of Inertia", "Law of Action-Reaction", "Law of Acceleration"],
-    "tip": "Think about objects at rest.",
-    "explanation": "Newton's first law states objects maintain their state of motion unless acted upon, which is inertia.",
-    "chapter": "Dynamics",
-    "topic": "Newton's Laws of Motion"
-  }
-]
+    "question": "Which of the following is a branch of physics?",
+    "choices": ["Mechanics", "Grammar", "Geography", "Literature"],
+    "answerIndex": 0,
+    "tip": "It studies motion and forces.",
+    "explanation": "Mechanics is a major branch of physics that studies motion and forces.",
+    "chapter": "Introduction to Physics",
+    "topic": "Branches of Physics"
+  },
+  {
+    "question": "Which branch of physics studies motion?",
+    "choices": ["Mechanics", "Optics", "Thermodynamics", "Acoustics"],
+    "answerIndex": 0,
+    "tip": "It deals with forces and motion.",
+    "explanation": "Mechanics is the branch of physics that studies motion and forces.",
+    "chapter": "Introduction to Physics",
+    "topic": "Branches of Physics"
+  },
+  {
+    "question": "Which branch of physics studies heat?",
+    "choices": ["Thermodynamics", "Optics", "Mechanics", "Acoustics"],
+    "answerIndex": 0,
+    "tip": "Think about thermal energy.",
+    "explanation": "Thermodynamics studies heat, temperature, and energy transfer.",
+    "chapter": "Introduction to Physics",
+    "topic": "Branches of Physics"
+  },
+  {
+    "question": "Which branch of physics studies light?",
+    "choices": ["Optics", "Mechanics", "Thermodynamics", "Electricity"],
+    "answerIndex": 0,
+    "tip": "Think about vision and light.",
+    "explanation": "Optics is the branch of physics that studies light and its behavior.",
+    "chapter": "Introduction to Physics",
+    "topic": "Branches of Physics"
+  },
+  {
+    "question": "Which branch of physics studies sound?",
+    "choices": ["Acoustics", "Optics", "Mechanics", "Astronomy"],
+    "answerIndex": 0,
+    "tip": "Think about hearing.",
+    "explanation": "Acoustics is the branch of physics concerned with sound.",
+    "chapter": "Introduction to Physics",
+    "topic": "Branches of Physics"
+  },
+  {
+    "question": "What is the scientific method?",
+    "choices": ["A systematic way of studying natural phenomena", "A way of writing stories", "A method of memorizing poems", "A type of machine"],
+    "answerIndex": 0,
+    "tip": "Science follows organized steps.",
+    "explanation": "The scientific method is a systematic process used to investigate and understand natural phenomena.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "Which usually comes first in scientific investigation?",
+    "choices": ["Observation", "Conclusion", "Theory", "Law"],
+    "answerIndex": 0,
+    "tip": "Scientists first notice something.",
+    "explanation": "Scientific investigation often begins with observation.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "What is an observation?",
+    "choices": ["Carefully noticing an event or phenomenon", "Guessing without evidence", "Changing an answer randomly", "Ignoring results"],
+    "answerIndex": 0,
+    "tip": "Use your senses or instruments.",
+    "explanation": "Observation means carefully noticing and gathering information about something.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "What is a hypothesis?",
+    "choices": ["A testable explanation or prediction", "A final scientific law", "A measuring instrument", "A unit of length"],
+    "answerIndex": 0,
+    "tip": "It can be tested.",
+    "explanation": "A hypothesis is a proposed explanation that can be tested through experiments or observations.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "What is an experiment?",
+    "choices": ["A test used to investigate a hypothesis", "A type of unit", "A branch of literature", "A final answer without testing"],
+    "answerIndex": 0,
+    "tip": "It is used to test ideas.",
+    "explanation": "An experiment is a controlled test used to investigate a hypothesis.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "What is measurement?",
+    "choices": ["Comparing a physical quantity with a standard unit", "Guessing the value of something", "Drawing a picture", "Writing a story"],
+    "answerIndex": 0,
+    "tip": "A standard unit is involved.",
+    "explanation": "Measurement is the comparison of an unknown quantity with an accepted standard unit.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement"
+  },
+  {
+    "question": "What are physical quantities?",
+    "choices": ["Quantities that can be measured", "Things that cannot be described", "Only living organisms", "Only chemical substances"],
+    "answerIndex": 0,
+    "tip": "They have a value and usually a unit.",
+    "explanation": "Physical quantities are properties that can be measured and expressed with a number and a unit.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "Which of the following is a physical quantity?",
+    "choices": ["Length", "Beauty", "Happiness", "Honesty"],
+    "answerIndex": 0,
+    "tip": "Can it be measured?",
+    "explanation": "Length is a measurable physical quantity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "Which of the following is NOT a physical quantity?",
+    "choices": ["Beauty", "Mass", "Time", "Temperature"],
+    "answerIndex": 0,
+    "tip": "It cannot be measured using a standard unit.",
+    "explanation": "Beauty is subjective and is not a standard measurable physical quantity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "What does SI stand for?",
+    "choices": ["International System of Units", "Scientific Information System", "Standard International Science", "Simple Instrument System"],
+    "answerIndex": 0,
+    "tip": "It is the internationally accepted unit system.",
+    "explanation": "SI stands for the International System of Units.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Units"
+  },
+  {
+    "question": "How many SI base quantities are there?",
+    "choices": ["Seven", "Five", "Three", "Ten"],
+    "answerIndex": 0,
+    "tip": "Count the fundamental quantities in SI.",
+    "explanation": "There are seven SI base quantities.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of length?",
+    "choices": ["Meter", "Kilogram", "Second", "Newton"],
+    "answerIndex": 0,
+    "tip": "Symbol: m.",
+    "explanation": "The SI base unit of length is the meter (m).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of mass?",
+    "choices": ["Kilogram", "Gram", "Newton", "Pound"],
+    "answerIndex": 0,
+    "tip": "Symbol: kg.",
+    "explanation": "The SI base unit of mass is the kilogram (kg).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of time?",
+    "choices": ["Second", "Minute", "Hour", "Day"],
+    "answerIndex": 0,
+    "tip": "Symbol: s.",
+    "explanation": "The SI base unit of time is the second (s).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of electric current?",
+    "choices": ["Ampere", "Volt", "Ohm", "Watt"],
+    "answerIndex": 0,
+    "tip": "Symbol: A.",
+    "explanation": "The SI base unit of electric current is the ampere (A).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of temperature?",
+    "choices": ["Kelvin", "Degree Celsius", "Joule", "Watt"],
+    "answerIndex": 0,
+    "tip": "Symbol: K.",
+    "explanation": "The SI base unit of thermodynamic temperature is the kelvin (K).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of amount of substance?",
+    "choices": ["Mole", "Kilogram", "Liter", "Newton"],
+    "answerIndex": 0,
+    "tip": "Symbol: mol.",
+    "explanation": "The SI base unit of amount of substance is the mole (mol).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the SI base unit of luminous intensity?",
+    "choices": ["Candela", "Lux", "Meter", "Watt"],
+    "answerIndex": 0,
+    "tip": "Symbol: cd.",
+    "explanation": "The SI base unit of luminous intensity is the candela (cd).",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "Which of the following is a base quantity?",
+    "choices": ["Mass", "Force", "Velocity", "Density"],
+    "answerIndex": 0,
+    "tip": "It does not depend on other physical quantities.",
+    "explanation": "Mass is one of the seven SI base quantities.",
+    "chapter": "Introduction to Physics",
+    "topic": "Base and Derived Quantities"
+  },
+  {
+    "question": "Which of the following is a derived quantity?",
+    "choices": ["Velocity", "Length", "Mass", "Time"],
+    "answerIndex": 0,
+    "tip": "It can be calculated from base quantities.",
+    "explanation": "Velocity is a derived quantity because it is calculated from displacement and time.",
+    "chapter": "Introduction to Physics",
+    "topic": "Base and Derived Quantities"
+  },
+  {
+    "question": "Which quantity is measured in meters per second?",
+    "choices": ["Speed", "Mass", "Force", "Temperature"],
+    "answerIndex": 0,
+    "tip": "Think distance divided by time.",
+    "explanation": "Speed is commonly measured in meters per second (m/s).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "What is the SI unit of area?",
+    "choices": ["Square meter", "Meter", "Cubic meter", "Kilogram"],
+    "answerIndex": 0,
+    "tip": "Area is length multiplied by length.",
+    "explanation": "The SI unit of area is square meter (m²).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "What is the SI unit of volume?",
+    "choices": ["Cubic meter", "Square meter", "Meter", "Liter per second"],
+    "answerIndex": 0,
+    "tip": "Volume uses three dimensions.",
+    "explanation": "The SI unit of volume is cubic meter (m³).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "What is the SI unit of force?",
+    "choices": ["Newton", "Joule", "Watt", "Pascal"],
+    "answerIndex": 0,
+    "tip": "Named after Isaac Newton.",
+    "explanation": "The SI unit of force is the newton (N).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "What is the SI unit of energy?",
+    "choices": ["Joule", "Newton", "Watt", "Pascal"],
+    "answerIndex": 0,
+    "tip": "Symbol: J.",
+    "explanation": "The SI unit of energy is the joule (J).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "What is the SI unit of power?",
+    "choices": ["Watt", "Joule", "Newton", "Ampere"],
+    "answerIndex": 0,
+    "tip": "Symbol: W.",
+    "explanation": "The SI unit of power is the watt (W).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "What is the SI unit of pressure?",
+    "choices": ["Pascal", "Newton", "Joule", "Watt"],
+    "answerIndex": 0,
+    "tip": "Symbol: Pa.",
+    "explanation": "The SI unit of pressure is the pascal (Pa).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which instrument is commonly used to measure length?",
+    "choices": ["Ruler", "Stopwatch", "Thermometer", "Ammeter"],
+    "answerIndex": 0,
+    "tip": "It has centimeter or millimeter markings.",
+    "explanation": "A ruler or meter rule is commonly used to measure length.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which instrument is used to measure time?",
+    "choices": ["Stopwatch", "Ruler", "Balance", "Thermometer"],
+    "answerIndex": 0,
+    "tip": "Used in races and experiments.",
+    "explanation": "A stopwatch is used to measure time intervals.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which instrument is used to measure temperature?",
+    "choices": ["Thermometer", "Ammeter", "Vernier caliper", "Balance"],
+    "answerIndex": 0,
+    "tip": "It is used for hot and cold objects.",
+    "explanation": "A thermometer is used to measure temperature.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which instrument is used to measure electric current?",
+    "choices": ["Ammeter", "Voltmeter", "Thermometer", "Ruler"],
+    "answerIndex": 0,
+    "tip": "Its name begins with ampere.",
+    "explanation": "An ammeter is used to measure electric current.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which instrument is commonly used to measure mass?",
+    "choices": ["Balance", "Stopwatch", "Thermometer", "Voltmeter"],
+    "answerIndex": 0,
+    "tip": "It compares masses or measures mass.",
+    "explanation": "A balance is used to measure mass.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "What is a scalar quantity?",
+    "choices": ["A quantity with magnitude only", "A quantity with direction only", "A quantity with no value", "A quantity with only a unit"],
+    "answerIndex": 0,
+    "tip": "Think magnitude only.",
+    "explanation": "A scalar quantity is completely described by its magnitude and unit.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "What is a vector quantity?",
+    "choices": ["A quantity with magnitude and direction", "A quantity with magnitude only", "A quantity with no unit", "A quantity that cannot be measured"],
+    "answerIndex": 0,
+    "tip": "Direction matters.",
+    "explanation": "A vector quantity has both magnitude and direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Which of the following is a scalar quantity?",
+    "choices": ["Mass", "Force", "Velocity", "Displacement"],
+    "answerIndex": 0,
+    "tip": "It has no direction.",
+    "explanation": "Mass is a scalar quantity because it has magnitude but no direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Which of the following is a vector quantity?",
+    "choices": ["Force", "Time", "Mass", "Temperature"],
+    "answerIndex": 0,
+    "tip": "A push or pull has a direction.",
+    "explanation": "Force is a vector quantity because it has both magnitude and direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Is distance a scalar or vector quantity?",
+    "choices": ["Scalar", "Vector", "Neither", "Both"],
+    "answerIndex": 0,
+    "tip": "Only the amount of path matters.",
+    "explanation": "Distance is a scalar quantity because it has magnitude only.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Is displacement a scalar or vector quantity?",
+    "choices": ["Vector", "Scalar", "Neither", "Both"],
+    "answerIndex": 0,
+    "tip": "The direction from start to finish matters.",
+    "explanation": "Displacement is a vector quantity because it includes magnitude and direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Is speed a scalar or vector quantity?",
+    "choices": ["Scalar", "Vector", "Neither", "Both"],
+    "answerIndex": 0,
+    "tip": "Speed does not specify direction.",
+    "explanation": "Speed is a scalar quantity because it has magnitude only.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Is velocity a scalar or vector quantity?",
+    "choices": ["Vector", "Scalar", "Neither", "Both"],
+    "answerIndex": 0,
+    "tip": "Velocity includes direction.",
+    "explanation": "Velocity is a vector quantity because it has both magnitude and direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "What is the difference between distance and displacement?",
+    "choices": ["Distance is scalar while displacement is vector", "Distance is vector while displacement is scalar", "They are always identical", "Neither can be measured"],
+    "answerIndex": 0,
+    "tip": "Think about direction.",
+    "explanation": "Distance is a scalar quantity, while displacement has both magnitude and direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "What does the magnitude of a vector describe?",
+    "choices": ["Its size or numerical value", "Its color", "Its shape only", "Its history"],
+    "answerIndex": 0,
+    "tip": "Magnitude means size.",
+    "explanation": "The magnitude of a vector describes its size or numerical value.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vectors"
+  },
+  {
+    "question": "How is the direction of a vector often shown in a diagram?",
+    "choices": ["By an arrowhead", "By a circle", "By a color only", "By a square"],
+    "answerIndex": 0,
+    "tip": "Look at the end of an arrow.",
+    "explanation": "The arrowhead shows the direction of a vector.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vectors"
+  },
+  {
+    "question": "What is the symbol for the prefix kilo?",
+    "choices": ["k", "m", "c", "M"],
+    "answerIndex": 0,
+    "tip": "Used in kilogram and kilometer.",
+    "explanation": "The SI prefix kilo has the symbol k.",
+    "chapter": "Introduction to Physics",
+    "topic": "Prefixes"
+  },
+  {
+    "question": "What does the prefix kilo mean?",
+    "choices": ["1000", "100", "10", "0.001"],
+    "answerIndex": 0,
+    "tip": "One kilometer equals one thousand meters.",
+    "explanation": "The prefix kilo means 1000 or 10³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Prefixes"
+  },
+  {
+    "question": "What does the prefix centi mean?",
+    "choices": ["One hundredth", "One thousand", "One tenth", "One million"],
+    "answerIndex": 0,
+    "tip": "There are 100 centimeters in one meter.",
+    "explanation": "The prefix centi means one hundredth, or 10⁻².",
+    "chapter": "Introduction to Physics",
+    "topic": "Prefixes"
+  },
+  {
+    "question": "What does the prefix milli mean?",
+    "choices": ["One thousandth", "One hundredth", "One thousand", "One million"],
+    "answerIndex": 0,
+    "tip": "There are 1000 millimeters in one meter.",
+    "explanation": "The prefix milli means one thousandth, or 10⁻³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Prefixes"
+  },
+  {
+    "question": "How many meters are in 1 kilometer?",
+    "choices": ["1000", "100", "10", "0.001"],
+    "answerIndex": 0,
+    "tip": "Kilo means thousand.",
+    "explanation": "One kilometer is equal to 1000 meters.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "How many centimeters are in 1 meter?",
+    "choices": ["100", "10", "1000", "0.01"],
+    "answerIndex": 0,
+    "tip": "Centi means one hundredth.",
+    "explanation": "One meter is equal to 100 centimeters.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "How many millimeters are in 1 meter?",
+    "choices": ["1000", "100", "10", "0.001"],
+    "answerIndex": 0,
+    "tip": "Milli means one thousandth.",
+    "explanation": "One meter is equal to 1000 millimeters.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "How many seconds are in 1 minute?",
+    "choices": ["60", "100", "360", "1000"],
+    "answerIndex": 0,
+    "tip": "A common time conversion.",
+    "explanation": "One minute contains 60 seconds.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "How many minutes are in 1 hour?",
+    "choices": ["60", "100", "24", "3600"],
+    "answerIndex": 0,
+    "tip": "Standard time conversion.",
+    "explanation": "One hour contains 60 minutes.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "How many seconds are in 1 hour?",
+    "choices": ["3600", "60", "600", "1000"],
+    "answerIndex": 0,
+    "tip": "Multiply 60 by 60.",
+    "explanation": "One hour contains 3600 seconds.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 2 km to meters.",
+    "choices": ["2000 m", "200 m", "20 m", "0.002 m"],
+    "answerIndex": 0,
+    "tip": "Multiply by 1000.",
+    "explanation": "Since 1 km equals 1000 m, 2 km equals 2000 m.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 300 cm to meters.",
+    "choices": ["3 m", "30 m", "0.3 m", "3000 m"],
+    "answerIndex": 0,
+    "tip": "100 cm equals 1 m.",
+    "explanation": "300 cm divided by 100 equals 3 m.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 5000 g to kilograms.",
+    "choices": ["5 kg", "50 kg", "0.5 kg", "500 kg"],
+    "answerIndex": 0,
+    "tip": "1000 g equals 1 kg.",
+    "explanation": "5000 g is equal to 5 kg.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "What is scientific notation mainly used for?",
+    "choices": ["Writing very large or very small numbers easily", "Writing only words", "Measuring temperature only", "Drawing vectors"],
+    "answerIndex": 0,
+    "tip": "It uses powers of ten.",
+    "explanation": "Scientific notation expresses very large or very small numbers using powers of ten.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Which is the correct scientific notation for 1000?",
+    "choices": ["1 × 10³", "10 × 10²", "100 × 10", "0.1 × 10⁴"],
+    "answerIndex": 0,
+    "tip": "The first number should be between 1 and 10.",
+    "explanation": "1000 can be written as 1 × 10³ in standard scientific notation.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Which is the correct scientific notation for 0.001?",
+    "choices": ["1 × 10⁻³", "1 × 10³", "10 × 10⁻²", "0.1 × 10⁻¹"],
+    "answerIndex": 0,
+    "tip": "A small number uses a negative exponent.",
+    "explanation": "0.001 is equal to 1 × 10⁻³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "What does an exponent of 10² mean?",
+    "choices": ["10 × 10", "10 + 10", "10 ÷ 10", "10 - 10"],
+    "answerIndex": 0,
+    "tip": "The exponent tells how many times 10 is multiplied.",
+    "explanation": "10² means 10 multiplied by itself two times, which equals 100.",
+    "chapter": "Introduction to Physics",
+    "topic": "Powers of Ten"
+  },
+  {
+    "question": "What does 10³ equal?",
+    "choices": ["1000", "100", "10", "0.001"],
+    "answerIndex": 0,
+    "tip": "Multiply 10 three times.",
+    "explanation": "10³ = 10 × 10 × 10 = 1000.",
+    "chapter": "Introduction to Physics",
+    "topic": "Powers of Ten"
+  },
+  {
+    "question": "What does 10⁻² equal?",
+    "choices": ["0.01", "100", "0.1", "1000"],
+    "answerIndex": 0,
+    "tip": "Negative powers represent fractions.",
+    "explanation": "10⁻² is equal to 1/100, which is 0.01.",
+    "chapter": "Introduction to Physics",
+    "topic": "Powers of Ten"
+  },
+  {
+    "question": "What are significant figures?",
+    "choices": ["Meaningful digits in a measurement", "Only digits after a decimal point", "Random numbers", "Only whole numbers"],
+    "answerIndex": 0,
+    "tip": "They show the precision of a measurement.",
+    "explanation": "Significant figures are the meaningful digits that indicate the precision of a measured value.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "How many significant figures are in 25?",
+    "choices": ["2", "1", "3", "0"],
+    "answerIndex": 0,
+    "tip": "Both digits are nonzero.",
+    "explanation": "The number 25 has two significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "How many significant figures are in 3.14?",
+    "choices": ["3", "2", "4", "1"],
+    "answerIndex": 0,
+    "tip": "All nonzero digits count.",
+    "explanation": "The number 3.14 has three significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "Which digit is always significant?",
+    "choices": ["A nonzero digit", "A leading zero", "Only the last zero", "No digit"],
+    "answerIndex": 0,
+    "tip": "Think about digits 1 through 9.",
+    "explanation": "All nonzero digits are significant.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "What is accuracy?",
+    "choices": ["How close a measurement is to the true value", "How many times a measurement is repeated", "The size of an object", "The unit used"],
+    "answerIndex": 0,
+    "tip": "Think closeness to the correct value.",
+    "explanation": "Accuracy describes how close a measured value is to the true or accepted value.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "What is precision?",
+    "choices": ["How close repeated measurements are to each other", "How close a measurement must be to zero", "The size of a unit", "The speed of measurement"],
+    "answerIndex": 0,
+    "tip": "Think consistency.",
+    "explanation": "Precision describes how close repeated measurements are to one another.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "Can measurements be precise but not accurate?",
+    "choices": ["Yes", "No", "Only in chemistry", "Never"],
+    "answerIndex": 0,
+    "tip": "Measurements can be consistent but far from the true value.",
+    "explanation": "Yes. Repeated measurements may be close to each other but still differ from the true value.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "What is an error in measurement?",
+    "choices": ["The difference between a measured value and the accepted value", "A type of SI unit", "A measuring instrument", "A physical law"],
+    "answerIndex": 0,
+    "tip": "Compare measured and true values.",
+    "explanation": "Measurement error is the difference between a measured value and the accepted or true value.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "Which of the following can cause measurement error?",
+    "choices": ["Incorrect reading of an instrument", "Using a standard unit carefully", "Repeating measurements carefully", "Calibrating an instrument"],
+    "answerIndex": 0,
+    "tip": "Human mistakes can affect measurements.",
+    "explanation": "Incorrectly reading an instrument can cause measurement error.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "What is dimensional analysis used for?",
+    "choices": ["Checking relationships between physical quantities", "Measuring color", "Writing stories", "Finding names of scientists"],
+    "answerIndex": 0,
+    "tip": "It uses dimensions such as M, L, and T.",
+    "explanation": "Dimensional analysis is used to check the consistency of physical equations and convert units.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimension symbol for length?",
+    "choices": ["L", "M", "T", "I"],
+    "answerIndex": 0,
+    "tip": "First letter of length.",
+    "explanation": "The dimension of length is represented by L.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimension symbol for mass?",
+    "choices": ["M", "L", "T", "K"],
+    "answerIndex": 0,
+    "tip": "First letter of mass.",
+    "explanation": "The dimension of mass is represented by M.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimension symbol for time?",
+    "choices": ["T", "L", "M", "A"],
+    "answerIndex": 0,
+    "tip": "First letter of time.",
+    "explanation": "The dimension of time is represented by T.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which physical quantity has the dimensions L/T?",
+    "choices": ["Velocity", "Force", "Mass", "Area"],
+    "answerIndex": 0,
+    "tip": "Length divided by time.",
+    "explanation": "Velocity has dimensions of length divided by time, written as LT⁻¹.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which physical quantity has the dimensions L²?",
+    "choices": ["Area", "Volume", "Speed", "Mass"],
+    "answerIndex": 0,
+    "tip": "Length multiplied by length.",
+    "explanation": "Area has dimensions L².",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which physical quantity has the dimensions L³?",
+    "choices": ["Volume", "Area", "Velocity", "Force"],
+    "answerIndex": 0,
+    "tip": "Three dimensions of length.",
+    "explanation": "Volume has dimensions L³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the SI unit of density?",
+    "choices": ["kg/m³", "kg/m", "m/s", "N/m²"],
+    "answerIndex": 0,
+    "tip": "Mass divided by volume.",
+    "explanation": "Density is mass per unit volume, so its SI unit is kg/m³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "What is the SI unit of acceleration?",
+    "choices": ["m/s²", "m/s", "kg/s", "N/m"],
+    "answerIndex": 0,
+    "tip": "Velocity changes every second.",
+    "explanation": "Acceleration is measured in meters per second squared (m/s²).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "What is the SI unit of frequency?",
+    "choices": ["Hertz", "Joule", "Newton", "Pascal"],
+    "answerIndex": 0,
+    "tip": "Symbol: Hz.",
+    "explanation": "The SI unit of frequency is the hertz (Hz).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "What is the SI unit of electric charge?",
+    "choices": ["Coulomb", "Ampere", "Volt", "Ohm"],
+    "answerIndex": 0,
+    "tip": "Symbol: C.",
+    "explanation": "The SI unit of electric charge is the coulomb (C).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "What is the SI unit of electric potential difference?",
+    "choices": ["Volt", "Ampere", "Ohm", "Coulomb"],
+    "answerIndex": 0,
+    "tip": "Symbol: V.",
+    "explanation": "The SI unit of electric potential difference is the volt (V).",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which of the following is a fundamental interaction studied in physics?",
+    "choices": ["Gravity", "Grammar", "Writing", "Reading"],
+    "answerIndex": 0,
+    "tip": "It attracts masses.",
+    "explanation": "Gravity is one of the fundamental interactions studied in physics.",
+    "chapter": "Introduction to Physics",
+    "topic": "Applications of Physics"
+  },
+  {
+    "question": "Why is physics important in engineering?",
+    "choices": ["It helps explain and apply natural laws", "It replaces mathematics completely", "It only studies history", "It is unrelated to technology"],
+    "answerIndex": 0,
+    "tip": "Engineering uses scientific principles.",
+    "explanation": "Engineering uses principles of physics to design and build technology and structures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Applications of Physics"
+  },
+  {
+    "question": "Which field uses physics to design machines?",
+    "choices": ["Engineering", "Literature", "Language studies", "History"],
+    "answerIndex": 0,
+    "tip": "Engineers apply science.",
+    "explanation": "Engineering applies principles of physics and mathematics to design machines and systems.",
+    "chapter": "Introduction to Physics",
+    "topic": "Applications of Physics"
+  },
+  {
+    "question": "Which statement best describes a scientific law?",
+    "choices": ["It describes a consistent relationship observed in nature", "It is an untested guess", "It is a measuring tool", "It is a personal opinion"],
+    "answerIndex": 0,
+    "tip": "Scientific laws are supported by repeated observations.",
+    "explanation": "A scientific law describes a consistent relationship or pattern observed in nature.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "Which statement best describes a scientific theory?",
+    "choices": ["A well-supported explanation of natural phenomena", "A random guess", "A unit of measurement", "An instrument"],
+    "answerIndex": 0,
+    "tip": "It explains why or how something happens.",
+    "explanation": "A scientific theory is a well-supported explanation based on evidence and repeated testing.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "Why are standard units important?",
+    "choices": ["They allow measurements to be compared consistently", "They make numbers disappear", "They remove the need for instruments", "They are only useful in schools"],
+    "answerIndex": 0,
+    "tip": "Scientists around the world need the same standard.",
+    "explanation": "Standard units make measurements consistent and understandable everywhere.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Units"
+  },
+  {
+    "question": "Which is written correctly as a measurement?",
+    "choices": ["5 m", "5 only", "meter 5", "m 5"],
+    "answerIndex": 0,
+    "tip": "Write the number followed by its unit.",
+    "explanation": "A physical measurement is usually written as a numerical value followed by its unit.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement"
+  },
+  {
+    "question": "A quantity of 10 m/s represents what?",
+    "choices": ["A speed or velocity value", "A mass", "A temperature", "An electric current"],
+    "answerIndex": 0,
+    "tip": "The unit is meters per second.",
+    "explanation": "Meters per second is a unit used for speed or velocity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "A quantity of 20 kg represents what?",
+    "choices": ["Mass", "Length", "Time", "Temperature"],
+    "answerIndex": 0,
+    "tip": "The unit kg is used for mass.",
+    "explanation": "Kilogram is the SI base unit used to measure mass.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "A quantity of 300 K represents what?",
+    "choices": ["Temperature", "Mass", "Length", "Electric current"],
+    "answerIndex": 0,
+    "tip": "K is the symbol for kelvin.",
+    "explanation": "Kelvin is the SI base unit of thermodynamic temperature.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physical Quantities"
+  },
+  {
+    "question": "Which quantity requires both magnitude and direction for complete description?",
+    "choices": ["Vector", "Scalar", "Unit", "Dimension"],
+    "answerIndex": 0,
+    "tip": "Direction is essential.",
+    "explanation": "A vector requires both magnitude and direction for complete description.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vectors"
+  },
+  {
+    "question": "Which quantity does NOT require direction?",
+    "choices": ["Scalar", "Vector", "Displacement", "Force"],
+    "answerIndex": 0,
+    "tip": "Magnitude alone is enough.",
+    "explanation": "A scalar quantity is fully described by magnitude without direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Which of the following is an example of a vector?",
+    "choices": ["5 N east", "5 kg", "10 s", "20°C"],
+    "answerIndex": 0,
+    "tip": "Look for both magnitude and direction.",
+    "explanation": "5 N east gives both the magnitude of the force and its direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vectors"
+  },
+  {
+    "question": "Which of the following is an example of a scalar?",
+    "choices": ["10 kg", "10 N north", "20 m east", "5 m/s west"],
+    "answerIndex": 0,
+    "tip": "Look for a quantity without direction.",
+    "explanation": "10 kg represents mass, which is a scalar quantity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "What is the main purpose of using measuring instruments?",
+    "choices": ["To obtain quantitative information", "To create scientific laws automatically", "To remove all errors completely", "To replace experiments"],
+    "answerIndex": 0,
+    "tip": "Measurements provide numbers.",
+    "explanation": "Measuring instruments help scientists obtain quantitative information about physical quantities.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement"
+  },
+  {
+    "question": "Which of the following is most closely related to physics?",
+    "choices": ["Understanding natural phenomena", "Memorizing novels", "Writing poetry only", "Studying grammar only"],
+    "answerIndex": 0,
+    "tip": "Physics explains the physical world.",
+    "explanation": "Physics helps us understand natural phenomena and the behavior of the physical world.",
+    "chapter": "Introduction to Physics",
+    "topic": "Importance of Physics"
+  },
+  {
+      "question": "What is kinematics?",
+      "choices": [
+        "The study of motion without considering its causes",
+        "The study of heat",
+        "The study of light",
+        "The study of electricity"
+      ],
+      "answerIndex": 0,
+      "tip": "It describes how objects move.",
+      "explanation": "Kinematics describes the motion of objects without considering the forces causing the motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Introduction to Kinematics"
+    },
+    {
+      "question": "What is dynamics?",
+      "choices": [
+        "The study of motion and its causes",
+        "The study of sound only",
+        "The study of temperature only",
+        "The study of light only"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about forces causing motion.",
+      "explanation": "Dynamics studies motion together with the forces that cause or change that motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Introduction to Dynamics"
+    },
+    {
+      "question": "Which quantity describes the location of an object?",
+      "choices": [
+        "Position",
+        "Force",
+        "Mass",
+        "Energy"
+      ],
+      "answerIndex": 0,
+      "tip": "It tells where an object is.",
+      "explanation": "Position describes the location of an object relative to a reference point.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Position"
+    },
+    {
+      "question": "What is motion?",
+      "choices": [
+        "A change in position with time",
+        "A change in mass",
+        "A change in color",
+        "A change in temperature only"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about an object changing where it is.",
+      "explanation": "Motion occurs when an object's position changes with time relative to a reference frame.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Motion"
+    },
+    {
+      "question": "What is distance?",
+      "choices": [
+        "The total length of the path traveled",
+        "The shortest path between two points",
+        "A force acting on an object",
+        "The rate of change of velocity"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about the whole path traveled.",
+      "explanation": "Distance is the total length of the actual path traveled by an object.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "What is displacement?",
+      "choices": [
+        "The change in position",
+        "The total distance traveled",
+        "The mass of an object",
+        "The time taken"
+      ],
+      "answerIndex": 0,
+      "tip": "It depends on the starting and ending positions.",
+      "explanation": "Displacement is the change in an object's position from its initial position to its final position.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "Which quantity is a scalar?",
+      "choices": [
+        "Distance",
+        "Displacement",
+        "Velocity",
+        "Acceleration"
+      ],
+      "answerIndex": 0,
+      "tip": "A scalar has magnitude only.",
+      "explanation": "Distance has magnitude only and is therefore a scalar quantity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "Which quantity is a vector?",
+      "choices": [
+        "Displacement",
+        "Distance",
+        "Speed",
+        "Time"
+      ],
+      "answerIndex": 0,
+      "tip": "A vector has magnitude and direction.",
+      "explanation": "Displacement has both magnitude and direction, so it is a vector.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "What is speed?",
+      "choices": [
+        "Distance traveled per unit time",
+        "Displacement per unit time with direction",
+        "Change in velocity",
+        "Force divided by mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Distance divided by time.",
+      "explanation": "Speed is the rate at which distance is traveled.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Speed and Velocity"
+    },
+    {
+      "question": "What is velocity?",
+      "choices": [
+        "Displacement per unit time",
+        "Distance per unit time only",
+        "Force per unit mass",
+        "Mass per unit volume"
+      ],
+      "answerIndex": 0,
+      "tip": "It includes direction.",
+      "explanation": "Velocity is the rate of change of displacement with time.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Speed and Velocity"
+    },
+    {
+      "question": "What is the SI unit of speed?",
+      "choices": [
+        "m/s",
+        "m/s²",
+        "N",
+        "kg"
+      ],
+      "answerIndex": 0,
+      "tip": "Distance divided by time.",
+      "explanation": "The SI unit of speed is meters per second, written as m/s.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Speed and Velocity"
+    },
+    {
+      "question": "What is acceleration?",
+      "choices": [
+        "The rate of change of velocity",
+        "The rate of change of distance",
+        "The total path traveled",
+        "The mass of an object"
+      ],
+      "answerIndex": 0,
+      "tip": "It involves a change in velocity.",
+      "explanation": "Acceleration measures how quickly velocity changes with time.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "What is the SI unit of acceleration?",
+      "choices": [
+        "m/s²",
+        "m/s",
+        "N",
+        "kg"
+      ],
+      "answerIndex": 0,
+      "tip": "Velocity changes every second.",
+      "explanation": "Acceleration is measured in meters per second squared.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "An object moving at constant velocity has what acceleration?",
+      "choices": [
+        "Zero",
+        "Positive",
+        "Negative",
+        "Infinite"
+      ],
+      "answerIndex": 0,
+      "tip": "Its velocity is not changing.",
+      "explanation": "If velocity remains constant, there is no change in velocity and acceleration is zero.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "What does negative acceleration commonly mean?",
+      "choices": [
+        "Velocity is decreasing in the chosen positive direction",
+        "The object has no mass",
+        "Time is decreasing",
+        "Distance is zero"
+      ],
+      "answerIndex": 0,
+      "tip": "It depends on the chosen direction.",
+      "explanation": "Negative acceleration means acceleration acts in the negative direction relative to the selected coordinate system.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "What is average speed?",
+      "choices": [
+        "Total distance divided by total time",
+        "Final speed divided by time",
+        "Distance multiplied by time",
+        "Velocity divided by mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Use total values.",
+      "explanation": "Average speed is calculated by dividing total distance traveled by total time taken.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Average Motion"
+    },
+    {
+      "question": "What is average velocity?",
+      "choices": [
+        "Total displacement divided by total time",
+        "Total distance divided by total time only",
+        "Final velocity divided by mass",
+        "Acceleration multiplied by time"
+      ],
+      "answerIndex": 0,
+      "tip": "Use displacement, not distance.",
+      "explanation": "Average velocity is total displacement divided by the total time interval.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Average Motion"
+    },
+    {
+      "question": "A person walks 10 m and returns to the starting point. What is the displacement?",
+      "choices": [
+        "0 m",
+        "10 m",
+        "20 m",
+        "5 m"
+      ],
+      "answerIndex": 0,
+      "tip": "Compare the initial and final positions.",
+      "explanation": "Because the final position is the same as the initial position, the displacement is zero.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "A person walks 10 m and returns to the starting point. What is the total distance traveled?",
+      "choices": [
+        "20 m",
+        "0 m",
+        "10 m",
+        "5 m"
+      ],
+      "answerIndex": 0,
+      "tip": "Add the whole path.",
+      "explanation": "The person travels 10 m away and 10 m back, giving a total distance of 20 m.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Distance and Displacement"
+    },
+    {
+      "question": "If an object travels 100 m in 20 s, what is its average speed?",
+      "choices": [
+        "5 m/s",
+        "20 m/s",
+        "120 m/s",
+        "80 m/s"
+      ],
+      "answerIndex": 0,
+      "tip": "Speed = distance divided by time.",
+      "explanation": "100 m divided by 20 s equals 5 m/s.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Average Motion"
+    },
+    {
+      "question": "What does uniform motion mean?",
+      "choices": [
+        "Motion with constant velocity",
+        "Motion with increasing acceleration",
+        "Motion with zero time",
+        "Motion without distance"
+      ],
+      "answerIndex": 0,
+      "tip": "Think constant motion.",
+      "explanation": "Uniform motion means an object moves with constant velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Motion"
+    },
+    {
+      "question": "Which equation defines acceleration?",
+      "choices": [
+        "a = change in velocity / time",
+        "a = distance × time",
+        "a = mass / force",
+        "a = velocity × distance"
+      ],
+      "answerIndex": 0,
+      "tip": "Acceleration measures velocity change over time.",
+      "explanation": "Acceleration is equal to the change in velocity divided by the time taken.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "What does constant acceleration mean?",
+      "choices": [
+        "Acceleration remains the same with time",
+        "Velocity remains zero",
+        "Distance remains zero",
+        "Mass changes constantly"
+      ],
+      "answerIndex": 0,
+      "tip": "The acceleration does not change.",
+      "explanation": "Constant acceleration means the acceleration has the same value throughout the motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "Which equation is used for final velocity under constant acceleration?",
+      "choices": [
+        "v = u + at",
+        "v = u / at",
+        "v = ut",
+        "v = a / t"
+      ],
+      "answerIndex": 0,
+      "tip": "Final velocity equals initial velocity plus velocity change.",
+      "explanation": "For constant acceleration, final velocity is v = u + at.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "In the equation v = u + at, what does u represent?",
+      "choices": [
+        "Initial velocity",
+        "Final velocity",
+        "Acceleration",
+        "Time"
+      ],
+      "answerIndex": 0,
+      "tip": "It is the starting velocity.",
+      "explanation": "The symbol u represents the initial velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "In the equation v = u + at, what does v represent?",
+      "choices": [
+        "Final velocity",
+        "Initial velocity",
+        "Distance",
+        "Force"
+      ],
+      "answerIndex": 0,
+      "tip": "It is the velocity after acceleration.",
+      "explanation": "The symbol v represents the final velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "In the equation v = u + at, what does a represent?",
+      "choices": [
+        "Acceleration",
+        "Area",
+        "Average speed",
+        "Amplitude"
+      ],
+      "answerIndex": 0,
+      "tip": "It measures the change in velocity.",
+      "explanation": "The symbol a represents acceleration.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "In the equation v = u + at, what does t represent?",
+      "choices": [
+        "Time",
+        "Temperature",
+        "Distance",
+        "Force"
+      ],
+      "answerIndex": 0,
+      "tip": "Acceleration acts for this duration.",
+      "explanation": "The symbol t represents the time interval.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "An object starts from rest. What is its initial velocity?",
+      "choices": [
+        "0 m/s",
+        "1 m/s",
+        "9.8 m/s",
+        "10 m/s"
+      ],
+      "answerIndex": 0,
+      "tip": "Rest means no initial motion.",
+      "explanation": "An object starting from rest has an initial velocity of zero.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "An object starts from rest and accelerates at 2 m/s² for 3 s. What is its final velocity?",
+      "choices": [
+        "6 m/s",
+        "5 m/s",
+        "1 m/s",
+        "9 m/s"
+      ],
+      "answerIndex": 0,
+      "tip": "Use v = u + at.",
+      "explanation": "Since u = 0, v = 0 + (2 × 3) = 6 m/s.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Constant Acceleration"
+    },
+    {
+      "question": "What does free fall mean?",
+      "choices": [
+        "Motion under the influence of gravity alone",
+        "Motion without any acceleration",
+        "Motion at constant speed only",
+        "Motion without mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about gravity.",
+      "explanation": "Free fall is motion in which gravity is the only significant force acting on the object.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Free Fall Motion"
+    },
+    {
+      "question": "Near Earth's surface, what is the approximate acceleration due to gravity?",
+      "choices": [
+        "9.8 m/s²",
+        "1 m/s²",
+        "98 m/s²",
+        "0 m/s²"
+      ],
+      "answerIndex": 0,
+      "tip": "It is commonly represented by g.",
+      "explanation": "The acceleration due to gravity near Earth's surface is approximately 9.8 m/s².",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Free Fall Motion"
+    },
+    {
+      "question": "In free fall near Earth, the acceleration is directed:",
+      "choices": [
+        "Downward",
+        "Upward",
+        "Eastward",
+        "Randomly"
+      ],
+      "answerIndex": 0,
+      "tip": "Think toward the center of Earth.",
+      "explanation": "Gravity accelerates falling objects downward toward the center of Earth.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Free Fall Motion"
+    },
+    {
+      "question": "If air resistance is neglected, objects of different masses fall with:",
+      "choices": [
+        "The same acceleration",
+        "Different accelerations based on mass",
+        "Zero acceleration",
+        "Constant upward acceleration"
+      ],
+      "answerIndex": 0,
+      "tip": "Gravity accelerates all freely falling objects equally.",
+      "explanation": "Ignoring air resistance, all objects near Earth fall with approximately the same acceleration g.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Free Fall Motion"
+    },
+    {
+      "question": "What is projectile motion?",
+      "choices": [
+        "Motion of an object moving through the air under gravity",
+        "Motion in a straight line only",
+        "Motion without acceleration",
+        "Motion without displacement"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about a thrown ball.",
+      "explanation": "Projectile motion is the motion of an object launched into the air while gravity affects its path.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Projectile Motion"
+    },
+    {
+      "question": "A thrown ball follows approximately what type of path?",
+      "choices": [
+        "Parabolic path",
+        "Square path",
+        "Triangular path",
+        "Straight vertical path in all cases"
+      ],
+      "answerIndex": 0,
+      "tip": "Projectile paths curve under gravity.",
+      "explanation": "Ignoring air resistance, a projectile follows a parabolic path.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Projectile Motion"
+    },
+    {
+      "question": "In ideal projectile motion, which component of velocity remains constant?",
+      "choices": [
+        "Horizontal component",
+        "Vertical component",
+        "Both components change equally",
+        "Neither component exists"
+      ],
+      "answerIndex": 0,
+      "tip": "Gravity acts vertically.",
+      "explanation": "Ignoring air resistance, gravity does not change the horizontal component of velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Projectile Motion"
+    },
+    {
+      "question": "In ideal projectile motion, which component of velocity changes because of gravity?",
+      "choices": [
+        "Vertical component",
+        "Horizontal component",
+        "Neither component",
+        "Both remain constant"
+      ],
+      "answerIndex": 0,
+      "tip": "Gravity acts vertically.",
+      "explanation": "Gravity changes the vertical component of a projectile's velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Projectile Motion"
+    },
+    {
+      "question": "What is force?",
+      "choices": [
+        "A push or pull that can affect motion",
+        "The amount of matter in an object",
+        "Distance traveled per time",
+        "The amount of space occupied"
+      ],
+      "answerIndex": 0,
+      "tip": "It is an interaction.",
+      "explanation": "A force is an interaction, commonly described as a push or pull, that can change an object's motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Force"
+    },
+    {
+      "question": "What is the SI unit of force?",
+      "choices": [
+        "Newton",
+        "Joule",
+        "Watt",
+        "Kilogram"
+      ],
+      "answerIndex": 0,
+      "tip": "Its symbol is N.",
+      "explanation": "The SI unit of force is the newton, abbreviated N.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Force"
+    },
+    {
+      "question": "Which of the following is a contact force?",
+      "choices": [
+        "Friction",
+        "Gravity",
+        "Magnetic force at a distance",
+        "Gravitational attraction"
+      ],
+      "answerIndex": 0,
+      "tip": "It usually occurs when surfaces touch.",
+      "explanation": "Friction is a contact force that acts between surfaces in contact.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Types of Forces"
+    },
+    {
+      "question": "Which force pulls objects toward Earth?",
+      "choices": [
+        "Gravitational force",
+        "Frictional force",
+        "Normal force",
+        "Tension only"
+      ],
+      "answerIndex": 0,
+      "tip": "It acts because Earth has mass.",
+      "explanation": "Gravity attracts objects toward the center of Earth.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Types of Forces"
+    },
+    {
+      "question": "What is friction?",
+      "choices": [
+        "A force that opposes relative motion between surfaces",
+        "A force that always increases speed",
+        "A type of energy",
+        "A unit of mass"
+      ],
+      "answerIndex": 0,
+      "tip": "It resists sliding.",
+      "explanation": "Friction opposes relative motion or attempted relative motion between surfaces in contact.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Friction"
+    },
+    {
+      "question": "What is the normal force?",
+      "choices": [
+        "A support force perpendicular to a surface",
+        "A force parallel to a surface",
+        "The gravitational force only",
+        "A force caused only by magnets"
+      ],
+      "answerIndex": 0,
+      "tip": "Think perpendicular to the supporting surface.",
+      "explanation": "The normal force is a contact force exerted by a surface perpendicular to that surface.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Types of Forces"
+    },
+    {
+      "question": "What is tension?",
+      "choices": [
+        "A pulling force transmitted through a rope or string",
+        "A pushing force from the ground",
+        "A type of mass",
+        "A type of speed"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about a stretched rope.",
+      "explanation": "Tension is the pulling force transmitted through a stretched rope, string, or cable.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Types of Forces"
+    },
+    {
+      "question": "Which force acts without direct physical contact?",
+      "choices": [
+        "Gravitational force",
+        "Friction",
+        "Normal force",
+        "Tension in a rope"
+      ],
+      "answerIndex": 0,
+      "tip": "It acts over a distance.",
+      "explanation": "Gravitational force can act between objects without direct contact.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Types of Forces"
+    },
+    {
+      "question": "Newton's first law is also called the law of:",
+      "choices": [
+        "Inertia",
+        "Acceleration",
+        "Gravitation",
+        "Energy"
+      ],
+      "answerIndex": 0,
+      "tip": "Objects resist changes in motion.",
+      "explanation": "Newton's first law is known as the law of inertia.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's First Law"
+    },
+    {
+      "question": "What is inertia?",
+      "choices": [
+        "Resistance to changes in motion",
+        "The ability to create energy",
+        "The rate of acceleration",
+        "The amount of force"
+      ],
+      "answerIndex": 0,
+      "tip": "Objects resist changing their state of motion.",
+      "explanation": "Inertia is the tendency of an object to resist changes in its state of rest or motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's First Law"
+    },
+    {
+      "question": "According to Newton's first law, an object at rest remains at rest unless:",
+      "choices": [
+        "A net external force acts on it",
+        "Time passes",
+        "Its mass disappears",
+        "Its temperature changes"
+      ],
+      "answerIndex": 0,
+      "tip": "A net force is needed to change motion.",
+      "explanation": "An object's state of motion changes only when a net external force acts on it.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's First Law"
+    },
+    {
+      "question": "Newton's second law is commonly written as:",
+      "choices": [
+        "F = ma",
+        "F = mv",
+        "E = mc²",
+        "P = mv"
+      ],
+      "answerIndex": 0,
+      "tip": "Force equals mass times acceleration.",
+      "explanation": "Newton's second law states that net force equals mass multiplied by acceleration.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "If the net force on an object is zero, its acceleration is:",
+      "choices": [
+        "Zero",
+        "Always positive",
+        "Always negative",
+        "Infinite"
+      ],
+      "answerIndex": 0,
+      "tip": "Use F = ma.",
+      "explanation": "If the net force is zero and the mass is nonzero, the acceleration is zero.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "A force of 10 N acts on a 2 kg object. What is its acceleration?",
+      "choices": [
+        "5 m/s²",
+        "20 m/s²",
+        "8 m/s²",
+        "12 m/s²"
+      ],
+      "answerIndex": 0,
+      "tip": "Use a = F/m.",
+      "explanation": "The acceleration is 10 N divided by 2 kg, which equals 5 m/s².",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "Newton's third law states that forces occur in:",
+      "choices": [
+        "Equal and opposite pairs",
+        "Only upward directions",
+        "Only horizontal directions",
+        "Groups of three"
+      ],
+      "answerIndex": 0,
+      "tip": "Every action has a reaction.",
+      "explanation": "Newton's third law states that for every action force there is an equal and opposite reaction force.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Third Law"
+    },
+    {
+      "question": "According to Newton's third law, action and reaction forces act on:",
+      "choices": [
+        "Different objects",
+        "The same object only",
+        "No objects",
+        "Only moving objects"
+      ],
+      "answerIndex": 0,
+      "tip": "Each force belongs to a different interacting object.",
+      "explanation": "Action and reaction forces are equal and opposite but act on two different objects.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Third Law"
+    },
+    {
+      "question": "What is mass?",
+      "choices": [
+        "A measure of the amount of matter in an object",
+        "A measure of gravitational force only",
+        "The speed of an object",
+        "The distance traveled"
+      ],
+      "answerIndex": 0,
+      "tip": "It is measured in kilograms.",
+      "explanation": "Mass measures the amount of matter in an object and is also related to inertia.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "What is weight?",
+      "choices": [
+        "The gravitational force acting on an object",
+        "The amount of matter in an object",
+        "The volume of an object",
+        "The speed of an object"
+      ],
+      "answerIndex": 0,
+      "tip": "It depends on gravity.",
+      "explanation": "Weight is the force exerted on an object by gravity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "Which formula gives weight?",
+      "choices": [
+        "W = mg",
+        "W = mv",
+        "W = ma",
+        "W = m/g"
+      ],
+      "answerIndex": 0,
+      "tip": "Mass multiplied by gravitational acceleration.",
+      "explanation": "Weight is calculated using W = mg.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "What is the SI unit of mass?",
+      "choices": [
+        "Kilogram",
+        "Newton",
+        "Joule",
+        "Meter"
+      ],
+      "answerIndex": 0,
+      "tip": "Its symbol is kg.",
+      "explanation": "The SI base unit of mass is the kilogram.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "What is the SI unit of weight?",
+      "choices": [
+        "Newton",
+        "Kilogram",
+        "Meter",
+        "Second"
+      ],
+      "answerIndex": 0,
+      "tip": "Weight is a force.",
+      "explanation": "Because weight is a force, it is measured in newtons.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "What is uniform circular motion?",
+      "choices": [
+        "Motion along a circular path at constant speed",
+        "Motion in a straight line",
+        "Motion with zero velocity",
+        "Motion without acceleration"
+      ],
+      "answerIndex": 0,
+      "tip": "The path is a circle.",
+      "explanation": "Uniform circular motion is motion around a circular path with constant speed.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "In circular motion, acceleration points toward:",
+      "choices": [
+        "The center of the circle",
+        "Away from the center",
+        "Always upward",
+        "The direction of gravity only"
+      ],
+      "answerIndex": 0,
+      "tip": "It is called centripetal acceleration.",
+      "explanation": "Centripetal acceleration points toward the center of the circular path.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "What does centripetal mean?",
+      "choices": [
+        "Center-seeking",
+        "Moving away from the center",
+        "Moving upward",
+        "Motionless"
+      ],
+      "answerIndex": 0,
+      "tip": "Think of a force directed toward the center.",
+      "explanation": "Centripetal means directed toward the center of a circular path.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "What keeps an object moving in a circular path?",
+      "choices": [
+        "A net force directed toward the center",
+        "No force at all",
+        "A force directed only upward",
+        "Constant mass only"
+      ],
+      "answerIndex": 0,
+      "tip": "Circular motion needs an inward force.",
+      "explanation": "A centripetal net force toward the center is required for circular motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "What is gravitation?",
+      "choices": [
+        "The attractive force between masses",
+        "The force between charged particles only",
+        "A type of friction",
+        "A type of sound"
+      ],
+      "answerIndex": 0,
+      "tip": "All objects with mass attract one another.",
+      "explanation": "Gravitation is the attractive interaction between objects that have mass.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Universal Gravitation"
+    },
+    {
+      "question": "Who formulated the law of universal gravitation?",
+      "choices": [
+        "Isaac Newton",
+        "Albert Einstein",
+        "Galileo Galilei",
+        "Michael Faraday"
+      ],
+      "answerIndex": 0,
+      "tip": "The same scientist developed the laws of motion.",
+      "explanation": "Isaac Newton formulated the law of universal gravitation.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Universal Gravitation"
+    },
+    {
+      "question": "The gravitational force between two objects depends on their:",
+      "choices": [
+        "Masses and separation distance",
+        "Colors only",
+        "Temperatures only",
+        "Shapes only"
+      ],
+      "answerIndex": 0,
+      "tip": "Newton's law includes mass and distance.",
+      "explanation": "The gravitational force depends on the masses of the objects and the distance between them.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Universal Gravitation"
+    },
+    {
+      "question": "What is a satellite?",
+      "choices": [
+        "An object that moves around another object in space",
+        "An object that cannot move",
+        "A type of force",
+        "A unit of energy"
+      ],
+      "answerIndex": 0,
+      "tip": "The Moon is a natural example.",
+      "explanation": "A satellite is an object that orbits another body because of gravitational attraction.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Satellite Motion"
+    },
+    {
+      "question": "The Moon is a natural satellite of:",
+      "choices": [
+        "Earth",
+        "The Sun",
+        "Mars",
+        "Jupiter"
+      ],
+      "answerIndex": 0,
+      "tip": "It orbits our planet.",
+      "explanation": "The Moon is Earth's natural satellite.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Satellite Motion"
+    },
+    {
+      "question": "What is work in physics?",
+      "choices": [
+        "Force acting through a displacement",
+        "Any activity done by a person",
+        "Mass multiplied by time",
+        "Distance divided by time"
+      ],
+      "answerIndex": 0,
+      "tip": "A force must cause displacement.",
+      "explanation": "In physics, work is done when a force produces displacement.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Work"
+    },
+    {
+      "question": "What is the SI unit of work?",
+      "choices": [
+        "Joule",
+        "Newton",
+        "Watt",
+        "Pascal"
+      ],
+      "answerIndex": 0,
+      "tip": "It has the symbol J.",
+      "explanation": "The SI unit of work is the joule.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Work"
+    },
+    {
+      "question": "What is energy?",
+      "choices": [
+        "The capacity to do work",
+        "The rate of doing work",
+        "Force per unit area",
+        "Mass per unit volume"
+      ],
+      "answerIndex": 0,
+      "tip": "It is related to the ability to perform work.",
+      "explanation": "Energy is commonly defined as the capacity to do work.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Energy"
+    },
+    {
+      "question": "What is the SI unit of energy?",
+      "choices": [
+        "Joule",
+        "Watt",
+        "Newton",
+        "Kilogram"
+      ],
+      "answerIndex": 0,
+      "tip": "It is the same SI unit as work.",
+      "explanation": "Energy is measured in joules.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Energy"
+    },
+    {
+      "question": "What is kinetic energy?",
+      "choices": [
+        "Energy due to motion",
+        "Energy due to position only",
+        "Energy due to temperature only",
+        "Energy without a source"
+      ],
+      "answerIndex": 0,
+      "tip": "Kinetic means related to motion.",
+      "explanation": "Kinetic energy is the energy an object possesses because of its motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Kinetic Energy"
+    },
+    {
+      "question": "What is gravitational potential energy?",
+      "choices": [
+        "Energy due to position in a gravitational field",
+        "Energy due to electric current only",
+        "Energy due to sound only",
+        "Energy due to friction only"
+      ],
+      "answerIndex": 0,
+      "tip": "Height can affect it.",
+      "explanation": "Gravitational potential energy is associated with an object's position in a gravitational field.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Potential Energy"
+    },
+    {
+      "question": "What is power?",
+      "choices": [
+        "The rate at which work is done",
+        "The total amount of mass",
+        "The change in position",
+        "The force per unit area"
+      ],
+      "answerIndex": 0,
+      "tip": "Think work per unit time.",
+      "explanation": "Power measures how quickly work is done or energy is transferred.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Power"
+    },
+    {
+      "question": "What is the SI unit of power?",
+      "choices": [
+        "Watt",
+        "Joule",
+        "Newton",
+        "Kilogram"
+      ],
+      "answerIndex": 0,
+      "tip": "Its symbol is W.",
+      "explanation": "The SI unit of power is the watt.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Power"
+    },
+    {
+      "question": "Which formula gives power?",
+      "choices": [
+        "P = W/t",
+        "P = F/a",
+        "P = mv",
+        "P = mg"
+      ],
+      "answerIndex": 0,
+      "tip": "Power is work divided by time.",
+      "explanation": "Power is calculated by dividing work done by the time taken.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Power"
+    },
+    {
+      "question": "What is momentum?",
+      "choices": [
+        "Mass multiplied by velocity",
+        "Force multiplied by distance",
+        "Mass divided by volume",
+        "Energy divided by time"
+      ],
+      "answerIndex": 0,
+      "tip": "Use p = mv.",
+      "explanation": "Linear momentum is the product of an object's mass and velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "Which formula represents linear momentum?",
+      "choices": [
+        "p = mv",
+        "p = ma",
+        "p = mg",
+        "p = W/t"
+      ],
+      "answerIndex": 0,
+      "tip": "Mass times velocity.",
+      "explanation": "Linear momentum is given by p = mv.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "Momentum is a:",
+      "choices": [
+        "Vector quantity",
+        "Scalar quantity",
+        "Dimensionless quantity",
+        "Unit only"
+      ],
+      "answerIndex": 0,
+      "tip": "Velocity has direction.",
+      "explanation": "Momentum is a vector because it depends on velocity, which has both magnitude and direction.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "What is the SI unit of momentum?",
+      "choices": [
+        "kg·m/s",
+        "N/m",
+        "J/s²",
+        "kg/m³"
+      ],
+      "answerIndex": 0,
+      "tip": "Mass multiplied by velocity.",
+      "explanation": "The SI unit of momentum is kilogram meter per second, kg·m/s.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "If the velocity of an object is zero, its momentum is:",
+      "choices": [
+        "Zero",
+        "Always maximum",
+        "Equal to its mass",
+        "Infinite"
+      ],
+      "answerIndex": 0,
+      "tip": "Use p = mv.",
+      "explanation": "If velocity is zero, momentum is zero regardless of the object's mass.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "Which quantity remains constant in an isolated system during a collision?",
+      "choices": [
+        "Total momentum",
+        "Always the speed of every object",
+        "Always the kinetic energy",
+        "Always the direction of every object"
+      ],
+      "answerIndex": 0,
+      "tip": "Think conservation law.",
+      "explanation": "For an isolated system with no net external force, total linear momentum is conserved.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Conservation of Momentum"
+    },
+    {
+      "question": "What is an elastic collision?",
+      "choices": [
+        "A collision in which kinetic energy is conserved",
+        "A collision where objects always stick together",
+        "A collision with no momentum",
+        "A collision with no forces"
+      ],
+      "answerIndex": 0,
+      "tip": "Both momentum and kinetic energy are conserved.",
+      "explanation": "In an ideal elastic collision, both total momentum and total kinetic energy are conserved.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Collisions"
+    },
+    {
+      "question": "In a perfectly inelastic collision, objects usually:",
+      "choices": [
+        "Stick together after collision",
+        "Pass through each other",
+        "Have no mass",
+        "Stop existing"
+      ],
+      "answerIndex": 0,
+      "tip": "They move together afterward.",
+      "explanation": "In a perfectly inelastic collision, the colliding objects stick together and move as one object.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Collisions"
+    },
+    {
+      "question": "What does conservation of energy mean?",
+      "choices": [
+        "Energy cannot be created or destroyed but can change form",
+        "Energy can be created from nothing",
+        "Energy always disappears",
+        "Only kinetic energy exists"
+      ],
+      "answerIndex": 0,
+      "tip": "Energy can transform.",
+      "explanation": "The conservation of energy principle states that energy cannot be created or destroyed, only transformed or transferred.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Conservation of Energy"
+    },
+    {
+      "question": "A moving car has which type of energy?",
+      "choices": [
+        "Kinetic energy",
+        "Only potential energy",
+        "No energy",
+        "Only chemical energy in every situation"
+      ],
+      "answerIndex": 0,
+      "tip": "It is moving.",
+      "explanation": "Because the car is moving, it has kinetic energy.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Kinetic Energy"
+    },
+    {
+      "question": "An object held above the ground has gravitational:",
+      "choices": [
+        "Potential energy",
+        "Zero mass",
+        "No energy",
+        "Only momentum"
+      ],
+      "answerIndex": 0,
+      "tip": "Its position matters.",
+      "explanation": "An elevated object has gravitational potential energy because of its position in Earth's gravitational field.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Potential Energy"
+    },
+    {
+      "question": "What is the formula for kinetic energy?",
+      "choices": [
+        "KE = 1/2 mv²",
+        "KE = mgh",
+        "KE = mg",
+        "KE = mv"
+      ],
+      "answerIndex": 0,
+      "tip": "It depends on mass and the square of velocity.",
+      "explanation": "The kinetic energy of an object is KE = 1/2 mv².",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Kinetic Energy"
+    },
+    {
+      "question": "What is the approximate formula for gravitational potential energy near Earth's surface?",
+      "choices": [
+        "PE = mgh",
+        "PE = 1/2 mv²",
+        "PE = mv",
+        "PE = F/t"
+      ],
+      "answerIndex": 0,
+      "tip": "Mass, gravity, and height.",
+      "explanation": "Near Earth's surface, gravitational potential energy is approximately PE = mgh.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Potential Energy"
+    },
+    {
+      "question": "A 2 kg object has a mass of:",
+      "choices": [
+        "2 kg everywhere",
+        "Different values depending on height",
+        "0 N on Earth",
+        "9.8 kg at sea level"
+      ],
+      "answerIndex": 0,
+      "tip": "Mass does not depend on location in ordinary situations.",
+      "explanation": "Mass is an intrinsic property of an object and remains approximately the same regardless of location.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "Why can weight change from one planet to another?",
+      "choices": [
+        "The gravitational acceleration can be different",
+        "The object's mass disappears",
+        "Time stops",
+        "Distance becomes mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Use W = mg.",
+      "explanation": "Weight depends on gravitational acceleration, which differs from one planet or location to another.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Mass and Weight"
+    },
+    {
+      "question": "What is a particle in mechanics?",
+      "choices": [
+        "An object whose size and shape can be neglected for a problem",
+        "An object with no mass",
+        "A type of force",
+        "A unit of distance"
+      ],
+      "answerIndex": 0,
+      "tip": "Its internal details are ignored.",
+      "explanation": "A particle is an idealized object whose size and internal structure are unimportant for the motion being studied.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Particles"
+    },
+    {
+      "question": "Which branch of mechanics describes motion without considering forces?",
+      "choices": [
+        "Kinematics",
+        "Dynamics",
+        "Thermodynamics",
+        "Optics"
+      ],
+      "answerIndex": 0,
+      "tip": "It focuses on describing motion.",
+      "explanation": "Kinematics describes motion without considering the forces causing it.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Introduction to Kinematics"
+    },
+    {
+      "question": "Which branch of mechanics studies forces and their effects on motion?",
+      "choices": [
+        "Dynamics",
+        "Optics",
+        "Acoustics",
+        "Kinematics only"
+      ],
+      "answerIndex": 0,
+      "tip": "It connects force and motion.",
+      "explanation": "Dynamics studies motion together with the forces responsible for changes in motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Introduction to Dynamics"
+    },
+    {
+      "question": "A car moves 60 m in 10 s. What is its average speed?",
+      "choices": [
+        "6 m/s",
+        "600 m/s",
+        "50 m/s",
+        "0.6 m/s"
+      ],
+      "answerIndex": 0,
+      "tip": "Divide distance by time.",
+      "explanation": "Average speed = 60 m / 10 s = 6 m/s.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Average Motion"
+    },
+    {
+      "question": "An object accelerates from 0 m/s to 20 m/s in 4 s. What is its acceleration?",
+      "choices": [
+        "5 m/s²",
+        "80 m/s²",
+        "20 m/s²",
+        "4 m/s²"
+      ],
+      "answerIndex": 0,
+      "tip": "Acceleration = change in velocity divided by time.",
+      "explanation": "Acceleration = (20 - 0) / 4 = 5 m/s².",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Acceleration"
+    },
+    {
+      "question": "A 5 kg object is acted on by a net force of 20 N. What is its acceleration?",
+      "choices": [
+        "4 m/s²",
+        "100 m/s²",
+        "25 m/s²",
+        "15 m/s²"
+      ],
+      "answerIndex": 0,
+      "tip": "Use a = F/m.",
+      "explanation": "Acceleration = 20 N / 5 kg = 4 m/s².",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "Which force is responsible for keeping planets in orbit around the Sun?",
+      "choices": [
+        "Gravitational force",
+        "Frictional force",
+        "Normal force",
+        "Tension"
+      ],
+      "answerIndex": 0,
+      "tip": "It acts between masses.",
+      "explanation": "The gravitational attraction between the Sun and planets provides the force required for orbital motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Universal Gravitation"
+    },
+    {
+      "question": "What happens to the direction of velocity in uniform circular motion?",
+      "choices": [
+        "It continuously changes",
+        "It never changes",
+        "It becomes zero",
+        "It always points toward the center"
+      ],
+      "answerIndex": 0,
+      "tip": "Velocity is a vector.",
+      "explanation": "Even when speed is constant, velocity changes because its direction continuously changes in circular motion.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "Can an object have constant speed but changing velocity?",
+      "choices": [
+        "Yes, for example in uniform circular motion",
+        "No, never",
+        "Only when it is at rest",
+        "Only in free fall"
+      ],
+      "answerIndex": 0,
+      "tip": "Velocity includes direction.",
+      "explanation": "An object moving in a circle at constant speed has changing velocity because its direction changes.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Uniform Circular Motion"
+    },
+    {
+      "question": "What is the main cause of acceleration?",
+      "choices": [
+        "A nonzero net force",
+        "Constant mass alone",
+        "Constant position",
+        "Zero time"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about Newton's second law.",
+      "explanation": "According to Newton's second law, a nonzero net force produces acceleration.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "If two forces of equal magnitude act in opposite directions on an object, the net force is:",
+      "choices": [
+        "Zero",
+        "Double one force",
+        "Equal to the larger force",
+        "Infinite"
+      ],
+      "answerIndex": 0,
+      "tip": "The forces cancel each other.",
+      "explanation": "Equal forces in opposite directions cancel, producing zero net force.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Net Force"
+    },
+    {
+      "question": "What does a net force of zero mean for an object already moving?",
+      "choices": [
+        "It can continue with constant velocity",
+        "It must immediately stop",
+        "It must accelerate upward",
+        "Its mass becomes zero"
+      ],
+      "answerIndex": 0,
+      "tip": "Use Newton's first law.",
+      "explanation": "With zero net force, a moving object continues with constant velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's First Law"
+    },
+    {
+      "question": "Which quantity depends on both mass and velocity?",
+      "choices": [
+        "Momentum",
+        "Time",
+        "Distance",
+        "Acceleration only"
+      ],
+      "answerIndex": 0,
+      "tip": "Use p = mv.",
+      "explanation": "Momentum is equal to mass multiplied by velocity.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Linear Momentum"
+    },
+    {
+      "question": "Which quantity measures how quickly work is done?",
+      "choices": [
+        "Power",
+        "Momentum",
+        "Acceleration",
+        "Mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Work divided by time.",
+      "explanation": "Power is the rate at which work is done.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Power"
+    },
+    {
+      "question": "If an object moves faster while its mass stays constant, its kinetic energy generally:",
+      "choices": [
+        "Increases",
+        "Decreases to zero",
+        "Always stays the same",
+        "Becomes negative automatically"
+      ],
+      "answerIndex": 0,
+      "tip": "Kinetic energy depends on v².",
+      "explanation": "Kinetic energy is proportional to the square of velocity, so it increases as speed increases.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Kinetic Energy"
+    },
+    {
+      "question": "Which statement is true about energy?",
+      "choices": [
+        "Energy can be transformed from one form to another",
+        "Energy cannot change form",
+        "Energy is measured in kilograms",
+        "Energy is always a force"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about conservation of energy.",
+      "explanation": "Energy can be transferred or transformed between different forms while total energy is conserved in an isolated system.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Conservation of Energy"
+    },
+    {
+      "question": "Which example shows potential energy changing into kinetic energy?",
+      "choices": [
+        "A falling object",
+        "A stationary object remaining at rest forever",
+        "A ruler measuring length",
+        "A clock showing time"
+      ],
+      "answerIndex": 0,
+      "tip": "Think about an object losing height and gaining speed.",
+      "explanation": "As an object falls, its gravitational potential energy can be converted into kinetic energy.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Conservation of Energy"
+    },
+    {
+      "question": "A person pushes a wall but the wall does not move. In the basic physics definition, the work done on the wall is:",
+      "choices": [
+        "Zero because there is no displacement",
+        "Always maximum",
+        "Equal to the person's mass",
+        "Infinite"
+      ],
+      "answerIndex": 0,
+      "tip": "Work requires displacement.",
+      "explanation": "Mechanical work requires displacement in the direction of a force component. With no displacement, the work on the wall is zero.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Work"
+    },
+    {
+      "question": "What is the relationship between force and acceleration for a constant mass?",
+      "choices": [
+        "Acceleration increases when net force increases",
+        "Acceleration always decreases when force increases",
+        "They are unrelated",
+        "Acceleration becomes mass"
+      ],
+      "answerIndex": 0,
+      "tip": "Use F = ma.",
+      "explanation": "For constant mass, acceleration is directly proportional to the net force.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Newton's Second Law"
+    },
+    {
+      "question": "Which of the following best describes weightlessness in orbit?",
+      "choices": [
+        "An apparent lack of support force during continuous free fall",
+        "The complete absence of gravity",
+        "The disappearance of mass",
+        "The disappearance of momentum"
+      ],
+      "answerIndex": 0,
+      "tip": "Orbiting objects are continuously falling.",
+      "explanation": "Astronauts in orbit experience apparent weightlessness because they and their spacecraft are in continuous free fall.",
+      "chapter": "Kinematics and Dynamics of Particles",
+      "topic": "Satellite Motion and Weightlessness"
+    }
+  ]

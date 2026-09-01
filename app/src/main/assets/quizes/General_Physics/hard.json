@@ -1,18 +1,929 @@
 [
   {
-    "question": "What is the physical significance of the 'First Law of Thermodynamics'?",
-    "choices": ["Energy cannot be created or destroyed, only transformed", "Heat flows from hot to cold", "Entropy always increases", "Absolute zero is unreachable"],
-    "tip": "Conservation principle.",
-    "explanation": "The first law is an application of the conservation of energy principle to thermal systems.",
-    "chapter": "Thermodynamics",
-    "topic": "First Law of Thermodynamics"
+    "question": "Which of the following correctly distinguishes a fundamental quantity from a derived quantity?",
+    "choices": ["A fundamental quantity is independent, while a derived quantity is expressed using fundamental quantities", "A derived quantity is always dimensionless", "A fundamental quantity has no unit", "Derived quantities cannot be measured"],
+    "answerIndex": 0,
+    "tip": "Think about how the quantity is defined.",
+    "explanation": "Fundamental quantities are independent base quantities, while derived quantities are obtained by combining fundamental quantities mathematically.",
+    "chapter": "Introduction to Physics",
+    "topic": "Fundamental and Derived Quantities"
   },
   {
-    "question": "In rotational motion, what is the rotational analogue of mass?",
-    "choices": ["Torque", "Angular Momentum", "Moment of Inertia", "Angular Velocity"],
-    "tip": "It relates to resistance to rotational acceleration.",
-    "explanation": "Moment of inertia measures an object's resistance to change in its rotation.",
-    "chapter": "Rotational Motion",
-    "topic": "Moment of Inertia"
+    "question": "Which of the following sets contains only SI base quantities?",
+    "choices": ["Mass, length, time", "Force, energy, power", "Velocity, acceleration, displacement", "Density, pressure, volume"],
+    "answerIndex": 0,
+    "tip": "SI base quantities are independent quantities.",
+    "explanation": "Mass, length, and time are all SI base quantities.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Base Quantities"
+  },
+  {
+    "question": "What is the dimensional formula of velocity?",
+    "choices": ["LT^-1", "LT^-2", "MLT^-1", "MLT^-2"],
+    "answerIndex": 0,
+    "tip": "Velocity is displacement divided by time.",
+    "explanation": "Velocity equals length divided by time, so its dimensional formula is LT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of acceleration?",
+    "choices": ["LT^-2", "LT^-1", "MLT^-2", "L^2T^-2"],
+    "answerIndex": 0,
+    "tip": "Acceleration is change in velocity per unit time.",
+    "explanation": "Acceleration has dimensions of length divided by time squared, LT^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of force?",
+    "choices": ["MLT^-2", "ML^2T^-2", "MLT^-1", "MT^-2"],
+    "answerIndex": 0,
+    "tip": "Use force = mass × acceleration.",
+    "explanation": "Force equals mass times acceleration, giving dimensions MLT^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of momentum?",
+    "choices": ["MLT^-1", "MLT^-2", "ML^2T^-2", "ML^-1T^-2"],
+    "answerIndex": 0,
+    "tip": "Momentum equals mass × velocity.",
+    "explanation": "Momentum has dimensions of mass times velocity, MLT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of energy?",
+    "choices": ["ML^2T^-2", "MLT^-2", "MLT^-1", "ML^-1T^-2"],
+    "answerIndex": 0,
+    "tip": "Energy can be calculated from force × distance.",
+    "explanation": "Energy equals force multiplied by displacement, so its dimensions are ML^2T^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of power?",
+    "choices": ["ML^2T^-3", "ML^2T^-2", "MLT^-2", "MLT^-1"],
+    "answerIndex": 0,
+    "tip": "Power is energy per unit time.",
+    "explanation": "Power equals energy divided by time, giving dimensions ML^2T^-3.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "What is the dimensional formula of pressure?",
+    "choices": ["ML^-1T^-2", "MLT^-2", "ML^2T^-2", "ML^-2T^-2"],
+    "answerIndex": 0,
+    "tip": "Pressure equals force divided by area.",
+    "explanation": "Pressure has dimensions of force divided by area, which is ML^-1T^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which quantity has the same dimensions as energy?",
+    "choices": ["Work", "Force", "Power", "Momentum"],
+    "answerIndex": 0,
+    "tip": "Both involve force acting through a distance.",
+    "explanation": "Work and energy have the same dimensions, ML^2T^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which quantity is dimensionless?",
+    "choices": ["Strain", "Force", "Velocity", "Density"],
+    "answerIndex": 0,
+    "tip": "It is a ratio of similar quantities.",
+    "explanation": "Strain is a ratio of two lengths, so the dimensions cancel.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensionless Quantities"
+  },
+  {
+    "question": "Which of the following cannot be checked using dimensional analysis alone?",
+    "choices": ["Numerical constants", "Dimensional consistency", "Units of derived quantities", "Possible form of an equation"],
+    "answerIndex": 0,
+    "tip": "Dimensions do not provide numerical values.",
+    "explanation": "Dimensional analysis cannot determine pure numerical constants such as 2, 1/2, or π.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "Which equation is dimensionally correct?",
+    "choices": ["v = u + at", "v = u + at^2", "v = u + a/t", "v = u + a"],
+    "answerIndex": 0,
+    "tip": "Every term added together must have the same dimensions.",
+    "explanation": "Velocity and acceleration multiplied by time both have dimensions LT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "Which equation is dimensionally incorrect?",
+    "choices": ["s = ut + at", "s = ut + 1/2at^2", "F = ma", "p = mv"],
+    "answerIndex": 0,
+    "tip": "Check the dimensions of every term.",
+    "explanation": "In s = ut + at, the first term has dimensions of length while the second has dimensions of velocity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "The dimensions of the gravitational constant G are:",
+    "choices": ["M^-1L^3T^-2", "ML^3T^-2", "ML^-3T^-2", "M^-1LT^-2"],
+    "answerIndex": 0,
+    "tip": "Use Newton's law of gravitation.",
+    "explanation": "From F = Gm1m2/r^2, the dimensions of G are M^-1L^3T^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "If Q has dimensions MLT^-2, Q represents:",
+    "choices": ["Force", "Energy", "Momentum", "Power"],
+    "answerIndex": 0,
+    "tip": "Compare with Newton's second law.",
+    "explanation": "MLT^-2 is the dimensional formula of force.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "If a physical quantity has dimensions ML^-1T^-2, it could represent:",
+    "choices": ["Pressure", "Momentum", "Energy", "Power"],
+    "answerIndex": 0,
+    "tip": "Think force divided by area.",
+    "explanation": "Pressure has dimensions ML^-1T^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "How many significant figures are in 0.004050?",
+    "choices": ["4", "3", "5", "2"],
+    "answerIndex": 0,
+    "tip": "Leading zeros do not count, but zeros between or after significant digits may count.",
+    "explanation": "The significant digits are 4, 0, 5, and the final 0, giving four significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "How many significant figures are in 700.0?",
+    "choices": ["4", "1", "2", "3"],
+    "answerIndex": 0,
+    "tip": "A decimal point can make trailing zeros significant.",
+    "explanation": "The number 700.0 has four significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "How many significant figures are in 0.02030?",
+    "choices": ["4", "2", "3", "5"],
+    "answerIndex": 0,
+    "tip": "Ignore leading zeros.",
+    "explanation": "The significant digits are 2, 0, 3, and the final 0, giving four significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "Express 0.00056 in scientific notation.",
+    "choices": ["5.6 × 10^-4", "5.6 × 10^-3", "56 × 10^-4", "0.56 × 10^-4"],
+    "answerIndex": 0,
+    "tip": "Move the decimal point four places to the right.",
+    "explanation": "0.00056 is written as 5.6 × 10^-4 in standard scientific notation.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Express 6.25 × 10^5 as an ordinary number.",
+    "choices": ["625000", "62500", "6250", "6250000"],
+    "answerIndex": 0,
+    "tip": "Move the decimal point five places to the right.",
+    "explanation": "6.25 × 10^5 equals 625000.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Which is the correct scientific notation for 45000000?",
+    "choices": ["4.5 × 10^7", "45 × 10^6", "0.45 × 10^8", "4.5 × 10^6"],
+    "answerIndex": 0,
+    "tip": "The coefficient should be between 1 and 10.",
+    "explanation": "45,000,000 is correctly written as 4.5 × 10^7.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Calculate (2 × 10^3)(3 × 10^4).",
+    "choices": ["6 × 10^7", "5 × 10^7", "6 × 10^12", "6 × 10^1"],
+    "answerIndex": 0,
+    "tip": "Multiply coefficients and add exponents.",
+    "explanation": "2 × 3 = 6 and 10^3 × 10^4 = 10^7.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Calculate (8 × 10^6)/(2 × 10^2).",
+    "choices": ["4 × 10^4", "16 × 10^8", "4 × 10^8", "6 × 10^4"],
+    "answerIndex": 0,
+    "tip": "Divide coefficients and subtract exponents.",
+    "explanation": "8/2 = 4 and 10^6/10^2 = 10^4.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "Which of the following is equal to 1 micrometer?",
+    "choices": ["10^-6 m", "10^-3 m", "10^-9 m", "10^6 m"],
+    "answerIndex": 0,
+    "tip": "Micro is smaller than milli.",
+    "explanation": "The prefix micro means 10^-6.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Prefixes"
+  },
+  {
+    "question": "Which prefix corresponds to 10^-9?",
+    "choices": ["Nano", "Micro", "Milli", "Pico"],
+    "answerIndex": 0,
+    "tip": "It is commonly used for very small lengths.",
+    "explanation": "Nano represents a factor of 10^-9.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Prefixes"
+  },
+  {
+    "question": "Which prefix corresponds to 10^6?",
+    "choices": ["Mega", "Kilo", "Giga", "Milli"],
+    "answerIndex": 0,
+    "tip": "It means one million.",
+    "explanation": "Mega represents 10^6.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Prefixes"
+  },
+  {
+    "question": "Convert 72 km/h to m/s.",
+    "choices": ["20 m/s", "25 m/s", "18 m/s", "36 m/s"],
+    "answerIndex": 0,
+    "tip": "Divide by 3.6.",
+    "explanation": "72 km/h divided by 3.6 equals 20 m/s.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 15 m/s to km/h.",
+    "choices": ["54 km/h", "45 km/h", "60 km/h", "30 km/h"],
+    "answerIndex": 0,
+    "tip": "Multiply by 3.6.",
+    "explanation": "15 m/s multiplied by 3.6 equals 54 km/h.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 2.5 m^2 to cm^2.",
+    "choices": ["25000 cm^2", "250 cm^2", "2500 cm^2", "250000 cm^2"],
+    "answerIndex": 0,
+    "tip": "Square the length conversion factor.",
+    "explanation": "Since 1 m = 100 cm, 1 m^2 = 10000 cm^2. Therefore 2.5 m^2 = 25000 cm^2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Convert 3 m^3 to cm^3.",
+    "choices": ["3000000 cm^3", "3000 cm^3", "30000 cm^3", "300000 cm^3"],
+    "answerIndex": 0,
+    "tip": "Cube the conversion factor.",
+    "explanation": "1 m^3 = (100 cm)^3 = 1,000,000 cm^3, so 3 m^3 = 3,000,000 cm^3.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "A measurement is close to the true value but repeated measurements vary widely. It is:",
+    "choices": ["Accurate but not precise", "Precise but not accurate", "Neither accurate nor precise", "Both accurate and precise"],
+    "answerIndex": 0,
+    "tip": "Accuracy concerns the true value.",
+    "explanation": "Measurements can be close to the true value on average but inconsistent with each other.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "Repeated measurements are very close to each other but far from the accepted value. They are:",
+    "choices": ["Precise but not accurate", "Accurate but not precise", "Both accurate and precise", "Neither"],
+    "answerIndex": 0,
+    "tip": "Think consistency versus correctness.",
+    "explanation": "Close repeated values show precision, but being far from the accepted value means poor accuracy.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "Which type of error can be reduced by repeating measurements many times and averaging?",
+    "choices": ["Random error", "Systematic error", "Instrument calibration error", "Zero error"],
+    "answerIndex": 0,
+    "tip": "It varies unpredictably.",
+    "explanation": "Random errors vary from measurement to measurement and can often be reduced by repeated measurements.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "Which error is most likely caused by a miscalibrated measuring instrument?",
+    "choices": ["Systematic error", "Random error", "Human reaction error only", "Calculation error only"],
+    "answerIndex": 0,
+    "tip": "It produces a consistent bias.",
+    "explanation": "A miscalibrated instrument usually introduces a systematic error.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "What is the absolute error if the measured value is 9.8 m and the accepted value is 10.0 m?",
+    "choices": ["0.2 m", "-0.2 m", "2%", "9.8 m"],
+    "answerIndex": 0,
+    "tip": "Use the magnitude of the difference.",
+    "explanation": "Absolute error is |9.8 - 10.0| = 0.2 m.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "What is the percentage error when a measured value is 9.8 m and the true value is 10.0 m?",
+    "choices": ["2%", "0.2%", "20%", "98%"],
+    "answerIndex": 0,
+    "tip": "Divide the absolute error by the true value and multiply by 100.",
+    "explanation": "Percentage error = (0.2/10.0) × 100 = 2%.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Errors"
+  },
+  {
+    "question": "Which instrument generally provides greater precision for measuring the diameter of a small wire?",
+    "choices": ["Micrometer screw gauge", "Meter rule", "Measuring tape", "Stopwatch"],
+    "answerIndex": 0,
+    "tip": "It is designed for very small dimensions.",
+    "explanation": "A micrometer screw gauge is suitable for measuring very small diameters with high precision.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which instrument is most suitable for measuring the internal diameter of a test tube?",
+    "choices": ["Vernier caliper", "Stopwatch", "Spring balance", "Thermometer"],
+    "answerIndex": 0,
+    "tip": "Think about inside jaws.",
+    "explanation": "A Vernier caliper can measure internal dimensions using its internal jaws.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measuring Instruments"
+  },
+  {
+    "question": "Which of the following is a vector quantity?",
+    "choices": ["Electric field", "Temperature", "Mass", "Energy"],
+    "answerIndex": 0,
+    "tip": "It has both magnitude and direction.",
+    "explanation": "An electric field is a vector quantity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "Which of the following is a scalar quantity?",
+    "choices": ["Electric charge", "Force", "Acceleration", "Momentum"],
+    "answerIndex": 0,
+    "tip": "It does not require direction.",
+    "explanation": "Electric charge is a scalar quantity.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "A person walks 3 km east and then 4 km north. What is the magnitude of the displacement?",
+    "choices": ["5 km", "7 km", "1 km", "12 km"],
+    "answerIndex": 0,
+    "tip": "Use the Pythagorean theorem.",
+    "explanation": "The displacement is sqrt(3^2 + 4^2) = 5 km.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "Two vectors of magnitudes 5 N and 12 N are perpendicular. What is their resultant magnitude?",
+    "choices": ["13 N", "17 N", "7 N", "60 N"],
+    "answerIndex": 0,
+    "tip": "Use a right triangle.",
+    "explanation": "The resultant is sqrt(5^2 + 12^2) = 13 N.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "Two equal vectors act in exactly opposite directions. Their resultant is:",
+    "choices": ["Zero", "Twice the magnitude of one vector", "Equal to one vector", "Always negative"],
+    "answerIndex": 0,
+    "tip": "They cancel each other.",
+    "explanation": "Equal vectors in opposite directions add to zero.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "Two vectors each have magnitude 10 N and act in the same direction. Their resultant is:",
+    "choices": ["20 N", "10 N", "0 N", "100 N"],
+    "answerIndex": 0,
+    "tip": "Add vectors in the same direction.",
+    "explanation": "Vectors acting in the same direction add directly, giving 20 N.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "A vector has components 6 m in the x-direction and 8 m in the y-direction. What is its magnitude?",
+    "choices": ["10 m", "14 m", "2 m", "48 m"],
+    "answerIndex": 0,
+    "tip": "Use sqrt(x^2 + y^2).",
+    "explanation": "The magnitude is sqrt(6^2 + 8^2) = 10 m.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "The horizontal component of a vector V making an angle θ with the positive x-axis is:",
+    "choices": ["V cos θ", "V sin θ", "V tan θ", "V/θ"],
+    "answerIndex": 0,
+    "tip": "Think adjacent side.",
+    "explanation": "The horizontal component is V cos θ.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "The vertical component of a vector V making an angle θ with the positive x-axis is:",
+    "choices": ["V sin θ", "V cos θ", "V tan θ", "V/θ"],
+    "answerIndex": 0,
+    "tip": "Think opposite side.",
+    "explanation": "The vertical component is V sin θ.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "A vector of magnitude 20 N makes an angle of 30° with the horizontal. What is its horizontal component?",
+    "choices": ["17.3 N", "10 N", "20 N", "34.6 N"],
+    "answerIndex": 0,
+    "tip": "Use V cos 30°.",
+    "explanation": "The horizontal component is 20 cos 30°, which is approximately 17.3 N.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "A vector of magnitude 20 N makes an angle of 30° with the horizontal. What is its vertical component?",
+    "choices": ["10 N", "17.3 N", "20 N", "5 N"],
+    "answerIndex": 0,
+    "tip": "Use V sin 30°.",
+    "explanation": "The vertical component is 20 sin 30° = 10 N.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "The maximum possible magnitude of the resultant of two vectors A and B is:",
+    "choices": ["A + B", "A - B", "AB", "A/B"],
+    "answerIndex": 0,
+    "tip": "This happens when they point in the same direction.",
+    "explanation": "The maximum resultant occurs when both vectors are in the same direction, giving A + B.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "The minimum possible magnitude of the resultant of two vectors A and B is:",
+    "choices": ["|A - B|", "A + B", "AB", "A/B"],
+    "answerIndex": 0,
+    "tip": "This happens when they act in opposite directions.",
+    "explanation": "The minimum magnitude of the resultant is the absolute difference |A - B|.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "Can two vectors of magnitudes 3 N and 4 N have a resultant of 10 N?",
+    "choices": ["No", "Yes", "Only if they are perpendicular", "Only in a vacuum"],
+    "answerIndex": 0,
+    "tip": "Check the maximum possible resultant.",
+    "explanation": "The maximum possible resultant is 3 + 4 = 7 N, so 10 N is impossible.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "Can two vectors of magnitudes 5 N and 12 N have a resultant of 13 N?",
+    "choices": ["Yes", "No", "Only if they are parallel", "Only if they are opposite"],
+    "answerIndex": 0,
+    "tip": "Think of a 5-12-13 triangle.",
+    "explanation": "Yes. A 13 N resultant is possible when the two vectors are perpendicular.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "If A = 3i + 4j, what is the magnitude of A?",
+    "choices": ["5", "7", "12", "1"],
+    "answerIndex": 0,
+    "tip": "Use sqrt(3^2 + 4^2).",
+    "explanation": "The magnitude is sqrt(3^2 + 4^2) = 5.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Vectors"
+  },
+  {
+    "question": "If A = 5i - 2j and B = 3i + 4j, what is A + B?",
+    "choices": ["8i + 2j", "2i - 6j", "15i - 8j", "8i - 6j"],
+    "answerIndex": 0,
+    "tip": "Add corresponding components.",
+    "explanation": "Adding x-components gives 8i and adding y-components gives 2j.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "If A = 5i + 3j and B = 2i - j, what is A - B?",
+    "choices": ["3i + 4j", "7i + 2j", "3i + 2j", "7i + 4j"],
+    "answerIndex": 0,
+    "tip": "Subtract corresponding components carefully.",
+    "explanation": "A - B = (5 - 2)i + [3 - (-1)]j = 3i + 4j.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Subtraction"
+  },
+  {
+    "question": "Which statement about scalars and vectors is correct?",
+    "choices": ["Vectors require magnitude and direction, while scalars require magnitude only", "Scalars always have negative values", "Vectors cannot be measured", "Scalars always have units but vectors do not"],
+    "answerIndex": 0,
+    "tip": "Focus on direction.",
+    "explanation": "Vectors require both magnitude and direction, while scalars are described by magnitude only.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scalars and Vectors"
+  },
+  {
+    "question": "What is the SI unit of angular displacement?",
+    "choices": ["Radian", "Meter", "Degree Celsius", "Newton"],
+    "answerIndex": 0,
+    "tip": "It is a dimensionless derived unit.",
+    "explanation": "The SI unit for angular displacement is the radian.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Units"
+  },
+  {
+    "question": "Which SI unit is equivalent to kg·m/s²?",
+    "choices": ["Newton", "Joule", "Watt", "Pascal"],
+    "answerIndex": 0,
+    "tip": "Use the SI definition of force.",
+    "explanation": "One newton is equal to one kilogram meter per second squared.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which SI unit is equivalent to kg·m²/s²?",
+    "choices": ["Joule", "Newton", "Watt", "Pascal"],
+    "answerIndex": 0,
+    "tip": "Think force × distance.",
+    "explanation": "A joule is equal to kg·m²/s².",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which SI unit is equivalent to kg·m²/s³?",
+    "choices": ["Watt", "Joule", "Newton", "Volt"],
+    "answerIndex": 0,
+    "tip": "Power is energy per second.",
+    "explanation": "A watt is equal to kg·m²/s³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which SI unit is equivalent to N/m²?",
+    "choices": ["Pascal", "Joule", "Watt", "Coulomb"],
+    "answerIndex": 0,
+    "tip": "Force per unit area.",
+    "explanation": "One pascal is equal to one newton per square meter.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "The dimensions of density are:",
+    "choices": ["ML^-3", "ML^3", "M^-1L^3", "ML^-2"],
+    "answerIndex": 0,
+    "tip": "Density is mass divided by volume.",
+    "explanation": "Density equals mass divided by volume, giving dimensions ML^-3.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "The dimensions of impulse are:",
+    "choices": ["MLT^-1", "MLT^-2", "ML^2T^-2", "ML^2T^-3"],
+    "answerIndex": 0,
+    "tip": "Impulse equals force × time.",
+    "explanation": "Impulse has dimensions MLT^-2 × T = MLT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "Which two quantities have the same dimensions?",
+    "choices": ["Impulse and momentum", "Force and energy", "Velocity and acceleration", "Power and pressure"],
+    "answerIndex": 0,
+    "tip": "Check their dimensional formulas.",
+    "explanation": "Both impulse and momentum have dimensions MLT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "The equation F = mv is dimensionally incorrect because:",
+    "choices": ["Force and momentum have different dimensions", "Mass and velocity cannot be multiplied", "Velocity has no dimensions", "Force has no unit"],
+    "answerIndex": 0,
+    "tip": "Compare MLT^-2 and MLT^-1.",
+    "explanation": "Force has dimensions MLT^-2 while mass times velocity has dimensions MLT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "If x = At^2 + Bt, what are the dimensions of A?",
+    "choices": ["LT^-2", "LT^-1", "L^2T^-2", "T^-2"],
+    "answerIndex": 0,
+    "tip": "Each term must have the dimensions of x.",
+    "explanation": "Since At² has dimensions of length, A must have dimensions LT^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "If x = At^2 + Bt, what are the dimensions of B?",
+    "choices": ["LT^-1", "LT^-2", "L^2T^-1", "T^-1"],
+    "answerIndex": 0,
+    "tip": "Bt must have dimensions of length.",
+    "explanation": "For Bt to have dimensions of length, B must have dimensions LT^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "If a quantity has dimensions T^-1, it could represent:",
+    "choices": ["Frequency", "Force", "Energy", "Momentum"],
+    "answerIndex": 0,
+    "tip": "Think events per second.",
+    "explanation": "Frequency is measured in cycles per second and has dimensions T^-1.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensions"
+  },
+  {
+    "question": "The dimensions of the coefficient of friction are:",
+    "choices": ["Dimensionless", "M", "L", "T"],
+    "answerIndex": 0,
+    "tip": "It is a ratio of two forces.",
+    "explanation": "The coefficient of friction is a ratio of frictional force to normal force, so the dimensions cancel.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensionless Quantities"
+  },
+  {
+    "question": "Which quantity has no dimensions but may have a unit?",
+    "choices": ["Plane angle", "Mass", "Force", "Velocity"],
+    "answerIndex": 0,
+    "tip": "Its SI unit is radian.",
+    "explanation": "Plane angle is dimensionless, but its SI unit is the radian.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensionless Quantities"
+  },
+  {
+    "question": "A student measures a length as 12.4 cm with an uncertainty of ±0.1 cm. What is the maximum possible value?",
+    "choices": ["12.5 cm", "12.3 cm", "12.4 cm", "12.6 cm"],
+    "answerIndex": 0,
+    "tip": "Add the uncertainty.",
+    "explanation": "The maximum possible value is 12.4 + 0.1 = 12.5 cm.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Uncertainty"
+  },
+  {
+    "question": "A student measures a mass as 50.0 g ± 0.2 g. What is the minimum possible mass?",
+    "choices": ["49.8 g", "50.2 g", "50.0 g", "49.0 g"],
+    "answerIndex": 0,
+    "tip": "Subtract the uncertainty.",
+    "explanation": "The minimum possible value is 50.0 - 0.2 = 49.8 g.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Uncertainty"
+  },
+  {
+    "question": "What is the average of the measurements 10.2 cm, 10.4 cm, and 10.6 cm?",
+    "choices": ["10.4 cm", "10.2 cm", "10.6 cm", "31.2 cm"],
+    "answerIndex": 0,
+    "tip": "Add the values and divide by 3.",
+    "explanation": "The average is (10.2 + 10.4 + 10.6)/3 = 10.4 cm.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement and Data"
+  },
+  {
+    "question": "A length is measured as 2.50 m. How many significant figures does it contain?",
+    "choices": ["3", "2", "1", "4"],
+    "answerIndex": 0,
+    "tip": "A trailing zero after a decimal point is significant.",
+    "explanation": "The digits 2, 5, and the final 0 are all significant.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "When multiplying 4.56 by 2.1, how many significant figures should the final answer have?",
+    "choices": ["2", "3", "4", "1"],
+    "answerIndex": 0,
+    "tip": "Use the number with the fewest significant figures.",
+    "explanation": "4.56 has three significant figures while 2.1 has two, so the result should have two significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "Calculate 4.56 × 2.1 using the correct number of significant figures.",
+    "choices": ["9.6", "9.576", "9.58", "10"],
+    "answerIndex": 0,
+    "tip": "Calculate first, then round to two significant figures.",
+    "explanation": "4.56 × 2.1 = 9.576, which rounds to 9.6 with two significant figures.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "When adding 12.11 and 3.2, how should the result be rounded?",
+    "choices": ["15.3", "15.31", "15.310", "15"],
+    "answerIndex": 0,
+    "tip": "For addition, use the least number of decimal places.",
+    "explanation": "12.11 + 3.2 = 15.31, rounded to one decimal place gives 15.3.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "Which measurement is the most precise?",
+    "choices": ["5.230 m", "5.23 m", "5.2 m", "5 m"],
+    "answerIndex": 0,
+    "tip": "More meaningful measured digits generally indicate greater precision.",
+    "explanation": "5.230 m gives the greatest level of reported precision among the choices.",
+    "chapter": "Introduction to Physics",
+    "topic": "Accuracy and Precision"
+  },
+  {
+    "question": "Which physical quantity has the SI unit kg·m^-1·s^-2?",
+    "choices": ["Pressure", "Energy", "Momentum", "Power"],
+    "answerIndex": 0,
+    "tip": "Rewrite the dimensions of pascal.",
+    "explanation": "Pressure is force per area and has SI base units kg·m^-1·s^-2.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which physical quantity has the SI unit kg·m^-3?",
+    "choices": ["Density", "Pressure", "Momentum", "Power"],
+    "answerIndex": 0,
+    "tip": "Mass per unit volume.",
+    "explanation": "Density is mass divided by volume, with SI unit kg/m³.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Units"
+  },
+  {
+    "question": "Which statement about scientific notation is correct?",
+    "choices": ["The coefficient is normally greater than or equal to 1 and less than 10", "The exponent must always be positive", "The coefficient must always be an integer", "Only large numbers can use scientific notation"],
+    "answerIndex": 0,
+    "tip": "Think about standard form.",
+    "explanation": "In normalized scientific notation, the coefficient is at least 1 and less than 10.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Notation"
+  },
+  {
+    "question": "A value changes from 200 cm to 2 m. What happened to the physical length?",
+    "choices": ["It remained the same", "It increased", "It decreased", "It became zero"],
+    "answerIndex": 0,
+    "tip": "Only the unit changed.",
+    "explanation": "200 cm and 2 m represent the same physical length.",
+    "chapter": "Introduction to Physics",
+    "topic": "Unit Conversion"
+  },
+  {
+    "question": "Why must equations in physics be dimensionally homogeneous?",
+    "choices": ["Only quantities with the same dimensions can be added or equated", "All quantities must use kilograms", "Every equation must contain time", "All quantities must be vectors"],
+    "answerIndex": 0,
+    "tip": "You cannot add unlike physical dimensions.",
+    "explanation": "A physically meaningful equation requires terms being added or equated to have compatible dimensions.",
+    "chapter": "Introduction to Physics",
+    "topic": "Dimensional Analysis"
+  },
+  {
+    "question": "Which of the following best describes the role of mathematics in physics?",
+    "choices": ["It provides a language for expressing physical relationships quantitatively", "It replaces experiments completely", "It is unrelated to physical laws", "It only describes shapes"],
+    "answerIndex": 0,
+    "tip": "Physics uses mathematical models.",
+    "explanation": "Mathematics allows physical relationships and laws to be expressed and analyzed quantitatively.",
+    "chapter": "Introduction to Physics",
+    "topic": "Physics and Mathematics"
+  },
+  {
+    "question": "What is the most appropriate first step when investigating an unfamiliar physical phenomenon?",
+    "choices": ["Careful observation", "Immediately accepting a theory", "Ignoring measurements", "Writing a final conclusion"],
+    "answerIndex": 0,
+    "tip": "Scientific investigation begins with information gathering.",
+    "explanation": "Careful observation is generally the starting point for scientific investigation.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "A hypothesis is most useful when it is:",
+    "choices": ["Testable and based on observations", "Impossible to test", "Based only on opinion", "Always accepted as true"],
+    "answerIndex": 0,
+    "tip": "Science requires evidence.",
+    "explanation": "A scientific hypothesis should be testable and related to observations or existing evidence.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "Which statement best describes the relationship between a scientific theory and a scientific law?",
+    "choices": ["A law describes a pattern while a theory explains observations", "A theory becomes a law when proven", "A law is always less tested than a hypothesis", "They have no relationship to evidence"],
+    "answerIndex": 0,
+    "tip": "Description and explanation are different roles.",
+    "explanation": "Scientific laws generally describe observed relationships, while theories provide well-supported explanations.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
+  },
+  {
+    "question": "Which practice improves the reliability of an experimental result?",
+    "choices": ["Repeating measurements", "Taking only one measurement", "Ignoring unusual results without reason", "Changing units randomly"],
+    "answerIndex": 0,
+    "tip": "More valid data can improve confidence.",
+    "explanation": "Repeating measurements helps reduce the effect of random errors and improves reliability.",
+    "chapter": "Introduction to Physics",
+    "topic": "Experimental Physics"
+  },
+  {
+    "question": "Which quantity is most likely measured directly rather than derived from other measurements?",
+    "choices": ["Time", "Density", "Velocity", "Force"],
+    "answerIndex": 0,
+    "tip": "Think of a stopwatch.",
+    "explanation": "Time is a base quantity that can be measured directly.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement"
+  },
+  {
+    "question": "Density is classified as a derived quantity because:",
+    "choices": ["It is calculated from mass and volume", "It has no unit", "It cannot be measured", "It is always a vector"],
+    "answerIndex": 0,
+    "tip": "Use density = mass/volume.",
+    "explanation": "Density is derived by dividing the base quantity mass by volume, which itself depends on length.",
+    "chapter": "Introduction to Physics",
+    "topic": "Derived Quantities"
+  },
+  {
+    "question": "A measurement of 5.0 m contains more information about precision than 5 m because:",
+    "choices": ["The trailing decimal digit is significant", "Meters are different units", "5 m is a vector", "5.0 m has a different physical dimension"],
+    "answerIndex": 0,
+    "tip": "Reported digits communicate precision.",
+    "explanation": "The value 5.0 m indicates that the measurement was reported to the nearest tenth of a meter.",
+    "chapter": "Introduction to Physics",
+    "topic": "Significant Figures"
+  },
+  {
+    "question": "Which one of the following is NOT an advantage of the SI system?",
+    "choices": ["It uses unrelated conversion factors for every unit", "It is internationally standardized", "It uses decimal prefixes", "It provides consistent units"],
+    "answerIndex": 0,
+    "tip": "SI is designed to simplify scientific communication.",
+    "explanation": "The SI system is advantageous because of standardization and decimal relationships, not unrelated conversion factors.",
+    "chapter": "Introduction to Physics",
+    "topic": "SI Units"
+  },
+  {
+    "question": "A student records a mass as 2.345 kg. If the instrument uncertainty is ±0.01 kg, which is the most reasonable reported form?",
+    "choices": ["2.35 kg", "2.34567 kg", "2 kg", "2.3 kg exactly"],
+    "answerIndex": 0,
+    "tip": "Do not report more precision than the uncertainty supports.",
+    "explanation": "An uncertainty of about 0.01 kg supports reporting the mass to approximately two decimal places.",
+    "chapter": "Introduction to Physics",
+    "topic": "Measurement Uncertainty"
+  },
+  {
+    "question": "If the resultant of two vectors is zero, what must be true?",
+    "choices": ["The vectors have equal magnitudes and opposite directions", "The vectors must both be zero", "The vectors must be perpendicular", "The vectors must point in the same direction"],
+    "answerIndex": 0,
+    "tip": "Think of vector cancellation.",
+    "explanation": "For two nonzero vectors to have zero resultant, they must be equal in magnitude and opposite in direction.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Addition"
+  },
+  {
+    "question": "A vector points entirely along the positive y-axis. What is its x-component?",
+    "choices": ["Zero", "Equal to its magnitude", "Negative", "Always one"],
+    "answerIndex": 0,
+    "tip": "There is no horizontal part.",
+    "explanation": "A vector entirely along the y-axis has no x-component.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "A vector has a magnitude of 10 m and an angle of 90° with the positive x-axis. What is its x-component?",
+    "choices": ["0 m", "10 m", "5 m", "-10 m"],
+    "answerIndex": 0,
+    "tip": "Use cos 90°.",
+    "explanation": "The x-component is 10 cos 90°, which equals zero.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "A vector has a magnitude of 10 m and an angle of 0° with the positive x-axis. What is its y-component?",
+    "choices": ["0 m", "10 m", "5 m", "-10 m"],
+    "answerIndex": 0,
+    "tip": "Use sin 0°.",
+    "explanation": "The y-component is 10 sin 0°, which equals zero.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "If the horizontal and vertical components of a vector are both positive, the vector lies in:",
+    "choices": ["The first quadrant", "The second quadrant", "The third quadrant", "The fourth quadrant"],
+    "answerIndex": 0,
+    "tip": "Positive x and positive y.",
+    "explanation": "A vector with positive x and positive y components lies in the first quadrant.",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "Which expression gives the magnitude of a vector with perpendicular components Ax and Ay?",
+    "choices": ["sqrt(Ax^2 + Ay^2)", "Ax + Ay always", "AxAy", "Ax - Ay always"],
+    "answerIndex": 0,
+    "tip": "Use the Pythagorean theorem.",
+    "explanation": "For perpendicular components, the vector magnitude is sqrt(Ax² + Ay²).",
+    "chapter": "Introduction to Physics",
+    "topic": "Vector Components"
+  },
+  {
+    "question": "Which statement is true about physical laws?",
+    "choices": ["They are based on repeated observations and experimental evidence", "They are personal opinions", "They never use mathematics", "They cannot be tested"],
+    "answerIndex": 0,
+    "tip": "Science depends on evidence.",
+    "explanation": "Scientific laws are supported by repeated observations and experimental evidence.",
+    "chapter": "Introduction to Physics",
+    "topic": "Scientific Method"
   }
 ]

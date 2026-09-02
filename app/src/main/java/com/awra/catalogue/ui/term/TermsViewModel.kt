@@ -31,18 +31,18 @@ class TermsViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val terms: StateFlow<List<Term>> = combine(
-        _searchQuery, 
+        _searchQuery.debounce(300), 
         _showBookmarkedOnly, 
         _selectedSubjectId
     ) { query, bookmarkedOnly, subjectId ->
         Triple(query, bookmarkedOnly, subjectId)
-    }.flatMapLatest { (query, bookmarkedOnly, subjectId) ->
+    }.distinctUntilChanged()
+    .flatMapLatest { (query, bookmarkedOnly, subjectId) ->
         if (bookmarkedOnly) {
             repository.getBookmarkedTerms()
         } else if (subjectId != null) {
             repository.searchTerms(subjectId, query)
         } else {
-            // New repository method needed or just search across all
             repository.searchAllTerms(query)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

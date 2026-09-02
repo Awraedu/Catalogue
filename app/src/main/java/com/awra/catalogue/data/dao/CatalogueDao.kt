@@ -10,6 +10,9 @@ interface CatalogueDao {
     @Query("SELECT * FROM subjects WHERE stream = :stream OR stream = 'COMMON'")
     fun getSubjectsByStream(stream: Stream): Flow<List<Subject>>
 
+    @Query("SELECT * FROM subjects WHERE id = :subjectId")
+    suspend fun getSubjectsById(subjectId: Long): Subject?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSubject(subject: Subject): Long
 
@@ -125,7 +128,69 @@ interface CatalogueDao {
     suspend fun insertQuizAttempt(attempt: QuizAttempt)
 
     @Insert
+    suspend fun insertFlashcardAttempt(attempt: FlashcardAttempt)
+
+    @Insert
     suspend fun insertStudySession(session: StudySession)
+
+    @Query("""
+        SELECT 
+            subjects.id as subjectId,
+            subjects.name as subjectName,
+            COALESCE(COUNT(DISTINCT quiz_attempts.id), 0) + COALESCE(COUNT(DISTINCT flashcard_attempts.id), 0) as totalAttempts,
+            COALESCE(SUM(CASE WHEN quiz_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) + 
+            COALESCE(SUM(CASE WHEN flashcard_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) as correctAttempts,
+            AVG(quiz_attempts.timeTakenMs) as avgQuizTimeMs
+        FROM subjects
+        LEFT JOIN chapters ON subjects.id = chapters.subjectId
+        LEFT JOIN topics ON chapters.id = topics.chapterId
+        LEFT JOIN quiz_questions ON topics.id = quiz_questions.topicId
+        LEFT JOIN quiz_attempts ON quiz_questions.id = quiz_attempts.quizQuestionId
+        LEFT JOIN flashcards ON topics.id = flashcards.topicId
+        LEFT JOIN flashcard_attempts ON flashcards.id = flashcard_attempts.flashcardId
+        GROUP BY subjects.id
+    """)
+    fun getSubjectMastery(): Flow<List<SubjectMastery>>
+
+    @Query("""
+        SELECT 
+            chapters.id as chapterId,
+            chapters.title as chapterTitle,
+            chapters.number as chapterNumber,
+            subjects.name as subjectName,
+            COALESCE(COUNT(DISTINCT quiz_attempts.id), 0) + COALESCE(COUNT(DISTINCT flashcard_attempts.id), 0) as totalAttempts,
+            COALESCE(SUM(CASE WHEN quiz_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) + 
+            COALESCE(SUM(CASE WHEN flashcard_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) as correctAttempts
+        FROM chapters
+        INNER JOIN subjects ON chapters.subjectId = subjects.id
+        LEFT JOIN topics ON chapters.id = topics.chapterId
+        LEFT JOIN quiz_questions ON topics.id = quiz_questions.topicId
+        LEFT JOIN quiz_attempts ON quiz_questions.id = quiz_attempts.quizQuestionId
+        LEFT JOIN flashcards ON topics.id = flashcards.topicId
+        LEFT JOIN flashcard_attempts ON flashcards.id = flashcard_attempts.flashcardId
+        GROUP BY chapters.id
+    """)
+    fun getAllChaptersPerformance(): Flow<List<ChapterPerformance>>
+
+    @Query("""
+        SELECT 
+            topics.id as topicId,
+            topics.title as topicTitle,
+            topics.chapterId as chapterId,
+            subjects.name as subjectName,
+            COALESCE(COUNT(DISTINCT quiz_attempts.id), 0) + COALESCE(COUNT(DISTINCT flashcard_attempts.id), 0) as totalAttempts,
+            COALESCE(SUM(CASE WHEN quiz_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) + 
+            COALESCE(SUM(CASE WHEN flashcard_attempts.isCorrect = 1 THEN 1 ELSE 0 END), 0) as correctAttempts
+        FROM topics
+        INNER JOIN chapters ON topics.chapterId = chapters.id
+        INNER JOIN subjects ON chapters.subjectId = subjects.id
+        LEFT JOIN quiz_questions ON topics.id = quiz_questions.topicId
+        LEFT JOIN quiz_attempts ON quiz_questions.id = quiz_attempts.quizQuestionId
+        LEFT JOIN flashcards ON topics.id = flashcards.topicId
+        LEFT JOIN flashcard_attempts ON flashcards.id = flashcard_attempts.flashcardId
+        GROUP BY topics.id
+    """)
+    fun getAllTopicsPerformance(): Flow<List<TopicPerformance>>
 
     @Query("""
         SELECT 
@@ -137,10 +202,84 @@ interface CatalogueDao {
         WHERE quiz_questions.topicId = :topicId
     """)
     fun getTopicQuizAnalytics(topicId: Long): Flow<TopicAnalytics>
+
+    @Query("""
+        SELECT 
+            COUNT(*) as totalAttempts,
+            SUM(CASE WHEN isCorrect = 1 THEN 1 ELSE 0 END) as correctAttempts,
+            AVG(timeTakenMs) as avgTimeTaken
+        FROM quiz_attempts
+    """)
+    fun getGlobalQuizAnalytics(): Flow<OverallAnalytics>
+
+    @Query("""
+        SELECT 
+            subjects.name as subjectName,
+            SUM(study_sessions.timeSpentMs) as totalTimeMs
+        FROM study_sessions
+        INNER JOIN topics ON study_sessions.topicId = topics.id
+        INNER JOIN chapters ON topics.chapterId = chapters.id
+        INNER JOIN subjects ON chapters.subjectId = subjects.id
+        GROUP BY subjects.id
+    """)
+    fun getTimePerSubject(): Flow<List<SubjectTime>>
+
+    @Query("""
+        SELECT 
+            (timestamp / (24 * 60 * 60 * 1000)) * (24 * 60 * 60 * 1000) as date,
+            SUM(timeSpentMs) as totalTimeMs
+        FROM study_sessions
+        WHERE timestamp > :since
+        GROUP BY date
+        ORDER BY date ASC
+    """)
+    fun getDailyStudyTime(since: Long): Flow<List<DailyTime>>
 }
+
+data class OverallAnalytics(
+    val totalAttempts: Int,
+    val correctAttempts: Int,
+    val avgTimeTaken: Double
+)
+
+data class SubjectTime(
+    val subjectName: String,
+    val totalTimeMs: Long
+)
+
+data class DailyTime(
+    val date: Long,
+    val totalTimeMs: Long
+)
 
 data class TopicAnalytics(
     val totalAttempts: Int,
     val correctAttempts: Int,
     val avgTimeTaken: Double
+)
+
+data class SubjectMastery(
+    val subjectId: Long,
+    val subjectName: String,
+    val totalAttempts: Int,
+    val correctAttempts: Int,
+    val avgQuizTimeMs: Double?
+)
+
+data class ChapterPerformance(
+    val chapterId: Long,
+    val chapterTitle: String,
+    val chapterNumber: Int,
+    val subjectName: String,
+    val totalAttempts: Int,
+    val correctAttempts: Int
+)
+
+data class TopicPerformance(
+    val topicId: Long,
+    val topicTitle: String,
+    val chapterId: Long,
+    val subjectName: String,
+    val totalAttempts: Int,
+    val correctAttempts: Int
 )

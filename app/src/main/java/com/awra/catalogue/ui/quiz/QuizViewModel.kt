@@ -13,6 +13,7 @@ class QuizViewModel(
     val config: QuizConfig? = null,
     val topicId: Long? = null
 ) : ViewModel() {
+    private var questionStartTime = System.currentTimeMillis()
 
     private val _questions = MutableStateFlow<List<QuizQuestion>>(emptyList())
     val questions: StateFlow<List<QuizQuestion>> = _questions.asStateFlow()
@@ -56,6 +57,8 @@ class QuizViewModel(
         val isCorrect = currentState.selectedOptionIndex == currentQuestion.correctOptionIndex
         val newScore = if (isCorrect) currentState.score + 1 else currentState.score
         
+        val timeTaken = System.currentTimeMillis() - questionStartTime
+
         _uiState.update {
             it.copy(
                 isAnswerSubmitted = true,
@@ -68,7 +71,7 @@ class QuizViewModel(
             repository.recordQuizAttempt(
                 quizQuestionId = currentQuestion.id,
                 isCorrect = isCorrect,
-                timeTakenMs = 0
+                timeTakenMs = timeTaken
             )
         }
     }
@@ -76,6 +79,7 @@ class QuizViewModel(
     fun nextQuestion() {
         val currentState = _uiState.value
         if (currentState.currentQuestionIndex + 1 < _questions.value.size) {
+            questionStartTime = System.currentTimeMillis()
             _uiState.update {
                 it.copy(
                     currentQuestionIndex = it.currentQuestionIndex + 1,

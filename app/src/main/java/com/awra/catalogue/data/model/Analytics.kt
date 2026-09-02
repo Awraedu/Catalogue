@@ -26,6 +26,25 @@ data class QuizAttempt(
 )
 
 @Entity(
+    tableName = "flashcard_attempts",
+    foreignKeys = [
+        ForeignKey(
+            entity = Flashcard::class,
+            parentColumns = ["id"],
+            childColumns = ["flashcardId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("flashcardId")]
+)
+data class FlashcardAttempt(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val flashcardId: Long,
+    val isCorrect: Boolean,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+@Entity(
     tableName = "study_sessions",
     foreignKeys = [
         ForeignKey(

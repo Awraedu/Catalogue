@@ -10,7 +10,7 @@ enum class Stream {
 }
 
 enum class MaterialType {
-    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY, TERM
+    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY, TERM, ANALYTICS
 }
 
 enum class Difficulty {

@@ -13,11 +13,14 @@ import com.awra.catalogue.data.database.AppDatabase
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.repository.CatalogueRepository
 import com.awra.catalogue.ui.handout.HandoutListScreen
+import com.awra.catalogue.ui.handout.HandoutDetailScreen
 import com.awra.catalogue.ui.handout.HandoutViewModel
 import com.awra.catalogue.ui.home.HomeScreen
 import com.awra.catalogue.ui.home.HomeViewModel
 import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.flashcard.*
+import com.awra.catalogue.ui.analytics.AnalyticsScreen
+import com.awra.catalogue.ui.analytics.AnalyticsViewModel
 import com.awra.catalogue.ui.term.TermsScreen
 import com.awra.catalogue.ui.term.TermsViewModel
 import com.awra.catalogue.ui.utility.*
@@ -45,6 +48,7 @@ class MainActivity : ComponentActivity() {
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
                 var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
                 var currentUtility by remember { mutableStateOf<Utility?>(null) }
+                var currentHandout by remember { mutableStateOf<Handout?>(null) }
                 var quizConfig by remember { mutableStateOf<QuizConfig?>(null) }
                 var showQuizCustomization by remember { mutableStateOf(false) }
 
@@ -52,11 +56,21 @@ class MainActivity : ComponentActivity() {
                 var showFlashcardCustomization by remember { mutableStateOf(false) }
                 
                 when {
+                    currentMaterialType == MaterialType.ANALYTICS -> {
+                        val analyticsViewModel = remember {
+                            AnalyticsViewModel(repository)
+                        }
+                        AnalyticsScreen(
+                            viewModel = analyticsViewModel,
+                            onBackClick = { currentMaterialType = null }
+                        )
+                    }
                     currentSubject == null && currentMaterialType != MaterialType.TERM -> {
                         HomeScreen(
                             viewModel = homeViewModel,
                             onSubjectClick = { currentSubject = it },
-                            onTermsClick = { currentMaterialType = MaterialType.TERM }
+                            onTermsClick = { currentMaterialType = MaterialType.TERM },
+                            onAnalyticsClick = { currentMaterialType = MaterialType.ANALYTICS }
                         )
                     }
                     currentMaterialType == null -> {
@@ -105,12 +119,22 @@ class MainActivity : ComponentActivity() {
                         val handoutViewModel = remember(currentSubject!!.id) {
                             HandoutViewModel(repository, currentSubject!!.id)
                         }
-                        HandoutListScreen(
-                            subject = currentSubject!!,
-                            viewModel = handoutViewModel,
-                            onBackClick = { currentMaterialType = null },
-                            onHandoutClick = { /* Handle opening handout */ }
-                        )
+                        if (currentHandout == null) {
+                            HandoutListScreen(
+                                subject = currentSubject!!,
+                                viewModel = handoutViewModel,
+                                onBackClick = { currentMaterialType = null },
+                                onHandoutClick = { currentHandout = it }
+                            )
+                        } else {
+                            HandoutDetailScreen(
+                                handout = currentHandout!!,
+                                onBackClick = { currentHandout = null },
+                                onFinish = { timeSpent ->
+                                    handoutViewModel.recordStudy(currentHandout!!.topicId, timeSpent)
+                                }
+                            )
+                        }
                     }
                     currentMaterialType == MaterialType.QUIZ -> {
                         val quizViewModel = remember(quizConfig, currentQuizTopic) {

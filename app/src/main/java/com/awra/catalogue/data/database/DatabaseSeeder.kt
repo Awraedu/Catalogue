@@ -3,6 +3,7 @@ package com.awra.catalogue.data.database
 import android.content.Context
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
+import com.awra.catalogue.data.seed.*
 import com.awra.catalogue.data.util.QuizLoader
 
 object DatabaseSeeder {
@@ -138,12 +139,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedInclusiveness(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Understanding Disabilities" to listOf("Models of Disability", "Types of Impairments", "Legal Frameworks"),
-            "Inclusive Education" to listOf("Principles and Benefits", "Classroom Strategies", "Assessment Adaptation"),
-            "Social Inclusion" to listOf("Barrier Identification", "Community Engagement", "Policy Advocacy")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Inclusiveness", units)
+        seedDetailedSubject(context, dao, subjectId, "Inclusiveness", InclusivenessData.units)
     }
 
     private suspend fun seedInclusivenessUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -154,12 +150,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedEntrepreneurship(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Mindset and Opportunities" to listOf("Entrepreneurial Characteristics", "Idea Generation", "Market Research"),
-            "Business Planning" to listOf("Business Model Canvas", "Financial Projections", "Operations Strategy"),
-            "Launch and Growth" to listOf("Funding Sources", "Marketing and Sales", "Scaling the Venture")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Entrepreneurship", units)
+        seedDetailedSubject(context, dao, subjectId, "Entrepreneurship", EntrepreneurshipData.units)
     }
 
     private suspend fun seedEntrepreneurshipUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -171,12 +162,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedEmergingTech(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Data Science and AI" to listOf("Machine Learning", "Big Data Analytics", "AI Ethics"),
-            "Internet of Things (IoT)" to listOf("Sensors and Connectivity", "Smart Cities", "Industrial IoT"),
-            "Future Frontiers" to listOf("Blockchain", "Augmented Reality", "Quantum Computing")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Emerging Technologies", units)
+        seedDetailedSubject(context, dao, subjectId, "Emerging Technologies", EmergingTechData.units)
     }
 
     private suspend fun seedEmergingTechUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -188,12 +174,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedFitness(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Foundations of Health" to listOf("Exercise Physiology", "Nutritional Basics", "Mental Well-being"),
-            "Training Methods" to listOf("Strength and Conditioning", "Cardiovascular Fitness", "Flexibility and Mobility"),
-            "Lifestyle Management" to listOf("Stress Reduction", "Sleep Hygiene", "Habit Formation")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Fitness", units)
+        seedDetailedSubject(context, dao, subjectId, "Fitness", FitnessData.units)
     }
 
     private suspend fun seedFitnessUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -204,12 +185,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedGlobalTrends(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Global Governance" to listOf("International Organizations", "Geopolitics", "Diplomatic Relations"),
-            "Economic Trends" to listOf("Globalization", "Sustainable Development", "Trade Policies"),
-            "Social and Tech Issues" to listOf("Human Rights", "Cybersecurity", "Climate Change")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Global Trends", units)
+        seedDetailedSubject(context, dao, subjectId, "Global Trends", GlobalTrendsData.units)
     }
 
     private suspend fun seedGlobalTrendsUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -220,12 +196,7 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedSocialMath(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Foundations of Math" to listOf("Basic Algebra", "Functions and Graphs", "Equation Solving"),
-            "Data and Statistics" to listOf("Descriptive Statistics", "Probability Basics", "Data Interpretation"),
-            "Business Math" to listOf("Interest and Annuities", "Linear Programming", "Decision Modeling")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Mathematics for Social Sciences", units)
+        seedDetailedSubject(context, dao, subjectId, "Mathematics for Social Sciences", MathData.socialMathUnits)
     }
 
     private suspend fun seedDetailedSubject(
@@ -348,26 +319,12 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedEnglishI(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Study Skills" to listOf("Nature of Lectures and Note-taking", "Introductions", "Reading for Study", "Modals for Advice", "Guessing Meaning"),
-            "Health and Fitness" to listOf("Healthy Lifestyles", "Reading: Fitness", "Speaking: Benefits of Exercise", "Conditionals", "Vocabulary: Health"),
-            "Cultural Values" to listOf("Cultural Tourism", "Cultural Diversity", "Group Discussion", "Verb Tenses", "Paragraph Writing"),
-            "Wildlife" to listOf("Endemic Animals", "Conservation Threats", "Passive Voice", "Comparisons", "Conservation Vocabulary"),
-            "Population" to listOf("Demographics", "Impact on Resources", "Reported Speech", "Subject-Verb Agreement", "Summarizing Data")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Communicative English I", units)
+        seedDetailedSubject(context, dao, subjectId, "Communicative English I", EnglishData.englishIUnits)
         seedEnglishUtilities(dao, subjectId)
     }
 
     private suspend fun seedEnglishII(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Life Skills" to listOf("Concept and Importance", "Active and Passive Voice", "Interpersonal Skills", "Paragraph Development"),
-            "Self-concept and Self-esteem" to listOf("Definitions", "Developing Self-esteem", "Expressing Strengths", "Modal Verbs", "Reflective Journaling"),
-            "Environmental Protection" to listOf("Global Warming", "Sustainable Management", "Environmental Advocacy", "Conditional Sentences", "Argumentative Essay"),
-            "Communication Skills" to listOf("Active Listening", "Assertive Communication", "Conflict Resolution", "Direct and Indirect Questions", "Business Correspondence"),
-            "Time Management" to listOf("Effective Principles", "Overcoming Procrastination", "Planning Tasks", "Time Adverbs", "Weekly Schedules")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Communicative English II", units)
+        seedDetailedSubject(context, dao, subjectId, "Communicative English II", EnglishData.englishIIUnits)
         seedEnglishUtilities(dao, subjectId)
     }
 
@@ -431,30 +388,11 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedPsychology(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Essence of Psychology" to listOf("Definition and Goals", "Historical Background", "Modern Perspectives", "Research Methods"),
-            "Sensation and Perception" to listOf("Sensation and Sensory Adaptation", "Vision and Hearing", "Perceptual Organization", "Perceptual Illusions"),
-            "Learning" to listOf("Classical Conditioning", "Operant Conditioning", "Observational Learning", "Social Learning Theory"),
-            "Memory and Forgetting" to listOf("Sensory and Short-term Memory", "Long-term Memory", "Forgetting Theories", "Improving Memory"),
-            "Motivation and Emotion" to listOf("Theories of Motivation", "Types of Motives", "Components of Emotion", "Theories of Emotion"),
-            "Personality" to listOf("Psychoanalytic Theory", "Trait Theories", "Humanistic Perspective", "Measuring Personality"),
-            "Psychological Disorders" to listOf("Anxiety Disorders", "Mood Disorders", "Personality Disorders", "Treatment and Therapy"),
-            "Life Skills" to listOf("Intra-personal Skills", "Interpersonal Skills", "Self-management", "Critical Thinking")
-        )
-        seedDetailedSubject(context, dao, subjectId, "General Psychology", units)
+        seedDetailedSubject(context, dao, subjectId, "General Psychology", PsychologyData.units)
     }
 
     private suspend fun seedAnthropology(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Introducing Anthropology" to listOf("Etymology and Scope", "Holism and Relativism", "History of the Field", "Major Misconceptions"),
-            "Sub-fields of Anthropology" to listOf("Socio-cultural Anthropology", "Biological Anthropology", "Archaeology", "Linguistic Anthropology", "Applied Anthropology"),
-            "Human Culture and Ties" to listOf("Conceptualizing Culture", "Components of Culture", "Marriage and Kinship", "Family Structures"),
-            "Marginalization and Inclusiveness" to listOf("Concepts of Exclusion", "Marginalized Groups in Ethiopia", "Gender and Occupational Castes", "Persons with Disabilities"),
-            "Identity and Ethnicity" to listOf("Race and Ethnicity", "Theories of Ethnicity", "Multiculturalism", "Unity in Diversity in Ethiopia"),
-            "Indigenous Knowledge and Governance" to listOf("Indigenous Knowledge Systems", "The Gadaa System", "Gurage Sera", "Customary Conflict Resolution"),
-            "Culture Areas in Ethiopia" to listOf("Plough Culture", "Enset Culture", "Pastoralism", "Inter-ethnic Relations")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Social Anthropology", units)
+        seedDetailedSubject(context, dao, subjectId, "Social Anthropology", AnthropologyData.units)
     }
 
     private suspend fun seedAnthropologyUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -472,25 +410,11 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedCriticalThinking(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Introducing Philosophy" to listOf("Meaning and Nature", "Core Fields of Philosophy", "Importance of Philosophy"),
-            "Basic Concepts of Logic" to listOf("Arguments and Premises", "Deduction and Induction", "Validity and Soundness", "Strength and Cogency"),
-            "Logic and Language" to listOf("Functions of Language", "Intension and Extension", "Definitions and Rules"),
-            "Informal Fallacies" to listOf("Fallacies of Relevance", "Fallacies of Weak Induction", "Fallacies of Presumption", "Fallacies of Ambiguity"),
-            "Categorical Propositions" to listOf("Components of Propositions", "Venn Diagrams", "Square of Opposition", "Logical Operations")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Critical Thinking", units)
+        seedDetailedSubject(context, dao, subjectId, "Critical Thinking", LogicData.units)
     }
 
     private suspend fun seedCivics(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Understanding Civics and Ethics" to listOf("Defining Civics and Ethics", "Moral vs Legal Rules", "Importance of Citizenship"),
-            "Approaches to Ethics" to listOf("Normative Ethics", "Teleological Theories", "Deontological Theories", "Virtue Ethics"),
-            "Ethical Decision Making" to listOf("Moral Judgments", "Principles of Fairness", "Responsibility and Accountability"),
-            "State, Government and Citizenship" to listOf("Theories of State", "Forms of Government", "Rights and Duties", "Rule of Law"),
-            "Constitution and Democracy" to listOf("Features of FDRE Constitution", "Human Rights", "Democratic Values", "Diversity Management")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Moral and Civic Education", units)
+        seedDetailedSubject(context, dao, subjectId, "Moral and Civic Education", CivicsData.units)
     }
 
     private suspend fun seedCivicsUtilities(dao: CatalogueDao, subjectId: Long) {
@@ -502,101 +426,35 @@ object DatabaseSeeder {
     }
 
     private suspend fun seedPhysics(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Vectors" to listOf("Vector Addition and Subtraction", "Vector Multiplication", "Coordinate Systems"),
-            "Kinematics" to listOf("Uniform Motion", "Uniformly Accelerated Motion", "Projectile Motion"),
-            "Dynamics" to listOf("Newton's Laws of Motion", "Friction", "Circular Motion"),
-            "Work, Energy and Power" to listOf("Work and Kinetic Energy", "Potential Energy", "Conservation of Energy", "Power"),
-            "Rotational Motion" to listOf("Angular Variables", "Moment of Inertia", "Torque and Angular Momentum"),
-            "Thermodynamics" to listOf("Temperature and Heat", "First Law of Thermodynamics", "Heat Engines")
-        )
-        seedDetailedSubject(context, dao, subjectId, "General Physics", units)
+        seedDetailedSubject(context, dao, subjectId, "General Physics", PhysicsData.units)
     }
 
     private suspend fun seedChemistry(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Atoms and Molecules" to listOf("Atomic Structure", "Electronic Configuration", "The Periodic Table"),
-            "Stoichiometry" to listOf("The Mole Concept", "Chemical Equations", "Limiting Reactants"),
-            "Chemical Bonding" to listOf("Ionic Bonding", "Covalent Bonding", "Metallic Bonding", "Molecular Geometry"),
-            "States of Matter" to listOf("Gases and Gas Laws", "Liquids and Solids", "Intermolecular Forces"),
-            "Chemical Equilibrium" to listOf("Equilibrium Constants", "Le Chatelier's Principle"),
-            "Acid-Base Chemistry" to listOf("pH Concept", "Theories of Acids and Bases", "Buffer Solutions")
-        )
-        seedDetailedSubject(context, dao, subjectId, "General Chemistry", units)
+        seedDetailedSubject(context, dao, subjectId, "General Chemistry", ChemistryData.units)
     }
 
     private suspend fun seedBiology(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Molecules of Life" to listOf("Water and Buffers", "Carbohydrates", "Lipids", "Proteins", "Nucleic Acids"),
-            "Cell Structure and Function" to listOf("Prokaryotic vs Eukaryotic Cells", "Organelles", "The Plasma Membrane"),
-            "Metabolism" to listOf("Enzymes", "Cellular Respiration", "Photosynthesis"),
-            "Genetics" to listOf("DNA Replication", "Transcription and Translation", "Mendelian Genetics"),
-            "Evolution" to listOf("Evidence for Evolution", "Natural Selection", "Human Evolution"),
-            "Taxonomy" to listOf("Classification Systems", "The Five Kingdoms", "Binary Nomenclature"),
-            "Ecology" to listOf("Ecosystems", "Energy Flow", "Population Ecology", "Conservation Biology")
-        )
-        seedDetailedSubject(context, dao, subjectId, "General Biology", units)
+        seedDetailedSubject(context, dao, subjectId, "General Biology", BiologyData.units)
     }
 
     private suspend fun seedNaturalMath(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Logic and Set Theory" to listOf("Propositional Logic", "Quantifiers", "Arguments", "Operations on Sets"),
-            "Number Systems" to listOf("Real Number System", "Complex Numbers", "Polar Form"),
-            "Functions" to listOf("Polynomial Functions", "Rational Functions", "Trigonometric Functions", "Exponential and Logarithmic"),
-            "Analytic Geometry" to listOf("Distance Formula", "Conic Sections: Circles", "Parabolas", "Ellipses and Hyperbolas")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Mathematics for Natural Sciences", units)
+        seedDetailedSubject(context, dao, subjectId, "Mathematics for Natural Sciences", MathData.naturalMathUnits)
     }
 
     private suspend fun seedGeography(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Scope and Location" to listOf("Themes of Geography", "Shape and Size of Earth", "Location of Ethiopia"),
-            "Geology and Geomorphology" to listOf("Geological History", "Internal and External Forces", "Rocks and Minerals"),
-            "Topography of Ethiopia" to listOf("Physiographic Divisions", "Highlands and Plateaus", "The Rift Valley"),
-            "Drainage Systems" to listOf("River Basins", "Lakes of Ethiopia", "Water Resource Potential"),
-            "Climate" to listOf("Factors affecting Climate", "Seasons in Ethiopia", "Climatic Regions"),
-            "Natural Resources" to listOf("Soil Types", "Natural Vegetation", "Wildlife Conservation"),
-            "Population" to listOf("Population Dynamics", "Distribution and Density", "Migration Patterns"),
-            "Economic Activities" to listOf("Agriculture", "Manufacturing", "Service Sectors")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Geography of Ethiopia and the Horn", units)
+        seedDetailedSubject(context, dao, subjectId, "Geography of Ethiopia and the Horn", GeographyData.units)
     }
 
     private suspend fun seedHistory(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Nature of History" to listOf("Defining History", "Sources of History", "Historiography"),
-            "Peoples and Cultures" to listOf("Human Origins", "Languages and Peoples", "Religions"),
-            "Ancient Polities" to listOf("Punt and Damat", "The Aksumite Empire", "The Zagwe Dynasty"),
-            "13th to 16th Century" to listOf("The Solomonic Dynasty", "Islamic Sultanates", "Inter-state Relations"),
-            "16th to 19th Century" to listOf("Oromo Population Movement", "Gondarine Period", "Zemene Mesafint"),
-            "1800 to 1941" to listOf("Formation of Modern Empire", "Italian Occupation", "Modernization Efforts"),
-            "1941 to Present" to listOf("Post-liberation Period", "The Derg Regime", "Post-1991 Developments")
-        )
-        seedDetailedSubject(context, dao, subjectId, "History of Ethiopia and the Horn", units)
+        seedDetailedSubject(context, dao, subjectId, "History of Ethiopia and the Horn", HistoryData.units)
     }
 
     private suspend fun seedEconomics(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Nature of Economics" to listOf("Scarcity and Choice", "Economic Systems", "Micro vs Macroeconomics"),
-            "Demand and Supply" to listOf("Law of Demand", "Law of Supply", "Market Equilibrium", "Elasticity"),
-            "Market Structures" to listOf("Perfect Competition", "Monopoly", "Monopolistic Competition", "Oligopoly"),
-            "Macroeconomics" to listOf("Measuring GDP", "Inflation and Unemployment", "Fiscal and Monetary Policy"),
-            "Growth and Development" to listOf("Economic Growth", "Development Indicators", "Ethiopian Economic Policies")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Introduction to Economics", units)
+        seedDetailedSubject(context, dao, subjectId, "Introduction to Economics", EconomicsData.units)
     }
 
     private suspend fun seedSociology(context: Context, dao: CatalogueDao, subjectId: Long) {
-        val units = listOf(
-            "Introduction to Sociology" to listOf("Development of Sociology", "Sociological Perspectives", "Research Methods"),
-            "Society and Culture" to listOf("Types of Societies", "Characteristics of Culture", "Cultural Diversity"),
-            "Socialization" to listOf("Agents of Socialization", "Stages of Socialization", "Nature vs Nurture"),
-            "Interaction and Organization" to listOf("Social Status and Roles", "Social Groups", "Bureaucracy"),
-            "Social Stratification" to listOf("Social Class", "Social Mobility", "Gender and Stratification"),
-            "Social Problems in Ethiopia" to listOf("Poverty", "Unemployment", "Crime and Deviance"),
-            "Social Action" to listOf("Community Development", "Social Policy", "Intervention Strategies")
-        )
-        seedDetailedSubject(context, dao, subjectId, "Introduction to Sociology", units)
+        seedDetailedSubject(context, dao, subjectId, "Introduction to Sociology", SociologyData.units)
     }
 
     private suspend fun seedGenericSubject(context: Context, dao: CatalogueDao, subjectId: Long, subjectName: String) {

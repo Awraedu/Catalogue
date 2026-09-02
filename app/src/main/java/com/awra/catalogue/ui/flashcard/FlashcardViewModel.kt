@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.model.Difficulty
 import com.awra.catalogue.data.model.Flashcard
+import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.repository.CatalogueRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,6 +20,8 @@ class FlashcardViewModel(
 
     private val _uiState = MutableStateFlow(FlashcardUiState())
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()
+
+    private var sessionStartTime = System.currentTimeMillis()
 
     init {
         loadFlashcards()
@@ -48,6 +51,19 @@ class FlashcardViewModel(
             }
         } else {
             _uiState.update { it.copy(isFinished = true) }
+            recordSession()
+        }
+    }
+
+    private fun recordSession() {
+        val timeSpent = System.currentTimeMillis() - sessionStartTime
+        val firstCard = _flashcards.value.firstOrNull() ?: return
+        viewModelScope.launch {
+            repository.recordStudySession(
+                topicId = firstCard.topicId,
+                materialType = MaterialType.FLASHCARD,
+                timeSpentMs = timeSpent
+            )
         }
     }
 
@@ -65,6 +81,14 @@ class FlashcardViewModel(
 
     fun flipCard() {
         _uiState.update { it.copy(isFlipped = !it.isFlipped) }
+    }
+
+    fun recordAttempt(isCorrect: Boolean) {
+        val currentCard = _flashcards.value.getOrNull(_uiState.value.currentIndex) ?: return
+        viewModelScope.launch {
+            repository.recordFlashcardAttempt(currentCard.id, isCorrect)
+        }
+        nextCard()
     }
 }
 

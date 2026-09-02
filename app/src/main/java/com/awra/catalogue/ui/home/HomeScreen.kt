@@ -38,7 +38,8 @@ import com.awra.catalogue.ui.theme.YourAppTheme
 fun HomeScreen(
     viewModel: HomeViewModel,
     onSubjectClick: (Subject) -> Unit,
-    onTermsClick: () -> Unit
+    onTermsClick: () -> Unit,
+    onAnalyticsClick: () -> Unit
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
@@ -48,7 +49,8 @@ fun HomeScreen(
         subjects = subjects,
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
-        onTermsClick = onTermsClick
+        onTermsClick = onTermsClick,
+        onAnalyticsClick = onAnalyticsClick
     )
 }
 
@@ -59,7 +61,8 @@ fun HomeScreenContent(
     subjects: List<Subject>,
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
-    onTermsClick: () -> Unit
+    onTermsClick: () -> Unit,
+    onAnalyticsClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -84,7 +87,9 @@ fun HomeScreenContent(
         ) {
             // Dashboard Section
             item(span = { GridItemSpan(2) }) {
-                StudyAnalyticsCard()
+                Surface(onClick = onAnalyticsClick) {
+                    StudyAnalyticsCard()
+                }
             }
 
             // Recently Opened Section
@@ -158,7 +163,8 @@ fun HomeScreenPreview() {
             ),
             onStreamSelected = {},
             onSubjectClick = {},
-            onTermsClick={}
+            onTermsClick = {},
+            onAnalyticsClick = {}
         )
     }
 }

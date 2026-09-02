@@ -8,10 +8,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,6 +35,7 @@ import com.awra.catalogue.data.model.Term
 import com.awra.catalogue.ui.home.components.HomeFAB
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -43,52 +50,49 @@ fun TermsScreen(
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
     val selectedSubjectId by viewModel.selectedSubjectId.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                TopAppBar(
-                    title = {
-                        // Pill-shaped search bar in top bar
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = viewModel::onSearchQueryChange,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .padding(vertical = 4.dp),
-                            placeholder = { Text("Search dictionary...", fontSize = 16.sp) },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(24.dp)) },
-                            shape = CircleShape,
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            ),
-                            singleLine = true,
-                            textStyle = MaterialTheme.typography.bodyLarge
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = onBackClick,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", modifier = Modifier.size(24.dp))
+    val textFieldState = rememberTextFieldState(searchQuery)
+    val searchBarState = rememberSearchBarState()
+    val scope = rememberCoroutineScope()
+
+    // Determine if we are in search mode to optimize rendering
+    val isSearchExpanded by remember { 
+        derivedStateOf { searchBarState.currentValue == SearchBarValue.Expanded } 
+    }
+
+    LaunchedEffect(textFieldState.text) {
+        viewModel.onSearchQueryChange(textFieldState.text.toString())
+    }
+
+    val inputField = remember(textFieldState, searchBarState, showBookmarkedOnly) {
+        @Composable {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = { Text("Search dictionary...") },
+                leadingIcon = {
+                    IconButton(onClick = {
+                        if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                            scope.launch { searchBarState.animateToCollapsed() }
+                        } else {
+                            onBackClick()
                         }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { viewModel.toggleBookmarkedOnly() },
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
+                    }) {
+                        Icon(
+                            imageVector = if (searchBarState.currentValue == SearchBarValue.Expanded)
+                                Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.Search,
+                            contentDescription = if (searchBarState.currentValue == SearchBarValue.Expanded) "Back" else "Search"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (textFieldState.text.isNotEmpty()) {
+                            IconButton(onClick = { textFieldState.clearText() }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            }
+                        }
+                        IconButton(onClick = { viewModel.toggleBookmarkedOnly() }) {
                             Icon(
                                 imageVector = if (showBookmarkedOnly) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                                 contentDescription = "Bookmarks",
@@ -96,97 +100,175 @@ fun TermsScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
-                    )
-                )
-                
-                // Subject Filter Chips
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    item {
-                        FilterChip(
-                            selected = selectedSubjectId == null,
-                            onClick = { viewModel.selectSubject(null) },
-                            label = { Text("All", modifier = Modifier.padding(horizontal = 4.dp)) },
-                            shape = CircleShape
-                        )
-                    }
-                    items(subjects) { sub ->
-                        val shortName = remember(sub.name) {
-                            when {
-                                sub.name.contains("English") -> if (sub.name.contains("I")) "Eng I" else "Eng II"
-                                sub.name.contains("Psychology") -> "Psy"
-                                sub.name.contains("Anthropology") -> "Ant"
-                                sub.name.contains("Critical Thinking") -> "Log"
-                                sub.name.contains("Moral and Civic") -> "Civ"
-                                sub.name.contains("Physics") -> "Phy"
-                                sub.name.contains("Chemistry") -> "Chem"
-                                sub.name.contains("Biology") -> "Bio"
-                                sub.name.contains("Mathematics") -> "Math"
-                                sub.name.contains("Geography") -> "Geo"
-                                sub.name.contains("History") -> "Hist"
-                                sub.name.contains("Economics") -> "Econ"
-                                sub.name.contains("Sociology") -> "Soc"
-                                else -> sub.name.take(3)
-                            }
-                        }
-                        FilterChip(
-                            selected = selectedSubjectId == sub.id,
-                            onClick = { viewModel.selectSubject(sub.id) },
-                            label = { Text(shortName, modifier = Modifier.padding(horizontal = 4.dp)) },
-                            shape = CircleShape
-                        )
                     }
                 }
-            }
-        },
+            )
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
-            HomeFAB(onTermsClick = { /* Already on Terms screen */ })
+            if (!isSearchExpanded) {
+                HomeFAB(onTermsClick = { /* Already on Terms screen */ })
+            }
         }
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 32.dp)
+                .fillMaxSize()
+                .semantics { isTraversalGroup = true }
         ) {
-            itemsIndexed(terms, key = { _, term -> term.id }) { index, term ->
-                TermListItem(
-                    term = term,
-                    index = index,
-                    count = terms.size,
-                    onBookmarkClick = { viewModel.toggleBookmark(term) }
-                )
-                
-                if (index < terms.size - 1) {
-                    Spacer(modifier = Modifier.height(16.dp)) // Increased breathing space
-                }
-            }
-            
-            if (terms.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize()
-                            .padding(bottom = 100.dp),
-                        contentAlignment = Alignment.Center
+            // Main Content
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Search Bar and Chips Container
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(bottom = 8.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(72.dp)) // Space for floating SearchBar
+
+                    // Subject Filter Chips
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = if (searchQuery.isEmpty()) "No terms found." else "No matches found for \"$searchQuery\"",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        item {
+                            FilterChip(
+                                selected = selectedSubjectId == null,
+                                onClick = { viewModel.selectSubject(null) },
+                                label = { Text("All", modifier = Modifier.padding(horizontal = 4.dp)) },
+                                shape = CircleShape
+                            )
+                        }
+                        items(subjects, key = { it.id }) { sub ->
+                            val shortName = remember(sub.name) {
+                                when {
+                                    sub.name.contains("English") -> if (sub.name.contains("I")) "Eng I" else "Eng II"
+                                    sub.name.contains("Psychology") -> "Psy"
+                                    sub.name.contains("Anthropology") -> "Ant"
+                                    sub.name.contains("Critical Thinking") -> "Log"
+                                    sub.name.contains("Moral and Civic") -> "Civ"
+                                    sub.name.contains("Physics") -> "Phy"
+                                    sub.name.contains("Chemistry") -> "Chem"
+                                    sub.name.contains("Biology") -> "Bio"
+                                    sub.name.contains("Mathematics") -> "Math"
+                                    sub.name.contains("Geography") -> "Geo"
+                                    sub.name.contains("History") -> "Hist"
+                                    sub.name.contains("Economics") -> "Econ"
+                                    sub.name.contains("Sociology") -> "Soc"
+                                    else -> sub.name.take(3)
+                                }
+                            }
+                            FilterChip(
+                                selected = selectedSubjectId == sub.id,
+                                onClick = { viewModel.selectSubject(sub.id) },
+                                label = { Text(shortName, modifier = Modifier.padding(horizontal = 4.dp)) },
+                                shape = CircleShape
+                            )
+                        }
+                    }
+                }
+
+                // Terms List (Visible when not searching or as background)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    itemsIndexed(terms, key = { _, term -> term.id }) { index, term ->
+                        TermListItem(
+                            term = term,
+                            index = index,
+                            count = terms.size,
+                            onBookmarkClick = { viewModel.toggleBookmark(term) }
                         )
+
+                        if (index < terms.size - 1) {
+                            Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
+                        }
+                    }
+
+                    if (terms.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillParentMaxSize()
+                                    .padding(bottom = 100.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (searchQuery.isEmpty()) "No terms found." else "No matches found for \"$searchQuery\"",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
                     }
                 }
             }
-            
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
+
+            // Floating Search Bar
+            SearchBar(
+                state = searchBarState,
+                inputField = inputField,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .semantics { traversalIndex = 0f },
+                colors = SearchBarDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                ),
+                shape = CircleShape
+            )
+
+            // Full Screen Search Overlay
+            ExpandedFullScreenSearchBar(
+                state = searchBarState,
+                inputField = inputField
+            ) {
+                // Only render results in overlay when searching to speed up expansion animation
+                val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
+                
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
+                        TermListItem(
+                            term = term,
+                            index = index,
+                            count = displayTerms.size,
+                            onBookmarkClick = { viewModel.toggleBookmark(term) }
+                        )
+
+                        if (index < displayTerms.size - 1) {
+                            Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
+                        }
+                    }
+
+                    if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No matches found for \"${textFieldState.text}\"",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

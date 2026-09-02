@@ -4,11 +4,20 @@ import android.content.Context
 import com.awra.catalogue.data.database.DatabaseSeeder
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
+import com.awra.catalogue.data.seed.CatalogueMetadata
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getSubjects(stream: Stream): Flow<List<Subject>> = catalogueDao.getSubjectsByStream(stream)
+
+    suspend fun getSubjectById(subjectId: Long): Subject? = catalogueDao.getSubjectsById(subjectId)
+    
+    fun getChaptersFromMetadata(subjectName: String): List<Pair<String, List<String>>> = 
+        CatalogueMetadata.getUnitsForSubject(subjectName)
 
     suspend fun getSubjectCount(): Int = catalogueDao.getSubjectCount()
 
@@ -60,6 +69,15 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         )
     }
 
+    suspend fun recordFlashcardAttempt(flashcardId: Long, isCorrect: Boolean) {
+        catalogueDao.insertFlashcardAttempt(
+            FlashcardAttempt(
+                flashcardId = flashcardId,
+                isCorrect = isCorrect
+            )
+        )
+    }
+
     suspend fun recordStudySession(topicId: Long, materialType: MaterialType, timeSpentMs: Long) {
         catalogueDao.insertStudySession(
             StudySession(
@@ -71,4 +89,16 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     }
 
     fun getTopicAnalytics(topicId: Long) = catalogueDao.getTopicQuizAnalytics(topicId)
+
+    fun getGlobalQuizAnalytics() = catalogueDao.getGlobalQuizAnalytics()
+
+    fun getSubjectMastery() = catalogueDao.getSubjectMastery()
+
+    fun getAllChaptersPerformance() = catalogueDao.getAllChaptersPerformance()
+
+    fun getAllTopicsPerformance() = catalogueDao.getAllTopicsPerformance()
+
+    fun getTimePerSubject() = catalogueDao.getTimePerSubject()
+
+    fun getDailyStudyTime(since: Long) = catalogueDao.getDailyStudyTime(since)
 }

@@ -183,39 +183,61 @@ fun FlashcardScreen(
                     }
                 }
 
-                // Navigation Controls
+                // Navigation & Action Controls
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = { viewModel.previousCard() },
                         enabled = uiState.currentIndex > 0,
                         modifier = Modifier
-                            .size(64.dp)
+                            .size(56.dp)
                             .clip(CircleShape)
                             .background(if (uiState.currentIndex > 0) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceDim)
                     ) {
                         Icon(Icons.Default.ChevronLeft, contentDescription = "Previous")
                     }
 
+                    // "Missed" Button
                     Button(
-                        onClick = { viewModel.nextCard() },
+                        onClick = { viewModel.recordAttempt(false) },
                         modifier = Modifier
-                            .height(64.dp)
-                            .weight(1f)
-                            .padding(horizontal = 24.dp),
-                        shape = ContinuousRoundedRectangle(24.dp),
+                            .height(56.dp)
+                            .weight(1f),
+                        shape = ContinuousRoundedRectangle(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = subjectColors.content,
-                            contentColor = subjectColors.container
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
                         )
                     ) {
-                        val label = if (uiState.currentIndex == flashcards.size - 1) "Finish" else "Next Card"
-                        Text(label, fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Default.ChevronRight, contentDescription = null)
+                        Text("Missed", fontWeight = FontWeight.Bold)
+                    }
+
+                    // "Got it" Button
+                    Button(
+                        onClick = { viewModel.recordAttempt(true) },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .weight(1f),
+                        shape = ContinuousRoundedRectangle(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF4CAF50), // Standard green for "Correct"
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Got it", fontWeight = FontWeight.Bold)
+                    }
+
+                    IconButton(
+                        onClick = { viewModel.nextCard() },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    ) {
+                        Icon(Icons.Default.ChevronRight, contentDescription = "Skip")
                     }
                 }
             }

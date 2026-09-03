@@ -13,19 +13,27 @@ import androidx.core.view.WindowCompat
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun YourAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    darkMode: String = "SYSTEM",
+    selectedTheme: String = "DEFAULT",
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val isDark = when (darkMode) {
+        "LIGHT" -> false
+        "DARK" -> true
+        else -> isSystemInDarkTheme()
+    }
     
     // Using Material 3 Expressive Color Schemes
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            // dynamicLightColorScheme/dynamicDarkColorScheme are updated for Expressive in 1.5.0-alpha27
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        selectedTheme != "DEFAULT" && CustomColorSchemes.Schemes.containsKey(selectedTheme) -> {
+            CustomColorSchemes.Schemes[selectedTheme]!!
         }
-        darkTheme -> darkColorScheme() // Fallback dark mode
+        // dynamicColor is disabled when a custom theme is selected, or we can logic it out
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        isDark -> darkColorScheme() // Fallback dark mode
         else -> expressiveLightColorScheme() // Expressive light mode
     }
 
@@ -39,8 +47,8 @@ fun YourAppTheme(
             window.navigationBarColor = android.graphics.Color.TRANSPARENT
             
             val insetsController = WindowCompat.getInsetsController(window, view)
-            insetsController.isAppearanceLightStatusBars = !darkTheme
-            insetsController.isAppearanceLightNavigationBars = !darkTheme
+            insetsController.isAppearanceLightStatusBars = !isDark
+            insetsController.isAppearanceLightNavigationBars = !isDark
         }
     }
 

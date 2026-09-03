@@ -29,6 +29,7 @@ fun AnalyticsScreen(
     val worstSubject by viewModel.worstSubject.collectAsState()
     val subjectMastery by viewModel.subjectMastery.collectAsState()
     val topicPerformance by viewModel.topicPerformance.collectAsState()
+    val streak by viewModel.studyStreak.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -58,28 +59,24 @@ fun AnalyticsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // ... (summary stats and chart)
                 item {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         PerformanceSummaryCard(
                             label = "Overall Accuracy",
                             value = globalQuiz?.let { if (it.totalAttempts > 0) "${(it.correctAttempts.toFloat() / it.totalAttempts * 100).toInt()}%" else "0%" } ?: "0%",
-                            trend = "4.7",
-                            isUp = true,
                             icon = Icons.Default.QueryStats,
                             modifier = Modifier.weight(1f)
                         )
                         PerformanceSummaryCard(
                             label = "Study Streak",
-                            value = "12 Days",
-                            trend = "1.2",
-                            isUp = true,
+                            value = "$streak Days",
                             icon = Icons.Default.Timeline,
                             modifier = Modifier.weight(1f)
                         )
@@ -87,14 +84,16 @@ fun AnalyticsScreen(
                 }
 
                 item {
-                    MainPerformanceChart()
+                    MainPerformanceChart(dailyStudyTime = dailyTime)
                 }
 
                 item {
-                    MasteryComparisonCard(
-                        bestSubject = bestSubject,
-                        worstSubject = worstSubject
-                    )
+                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        MasteryComparisonCard(
+                            bestSubject = bestSubject,
+                            worstSubject = worstSubject
+                        )
+                    }
                 }
 
                 item {
@@ -102,15 +101,17 @@ fun AnalyticsScreen(
                         text = "Detailed Mastery",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Black,
-                        modifier = Modifier.padding(top = 12.dp)
+                        modifier = Modifier.padding(top = 12.dp, start = 16.dp, end = 16.dp)
                     )
                 }
 
                 item {
-                    MasteryOverview(
-                        subjects = subjectMastery,
-                        allTopics = topicPerformance
-                    )
+                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        MasteryOverview(
+                            subjects = subjectMastery,
+                            allTopics = topicPerformance
+                        )
+                    }
                 }
 
                 item { Spacer(Modifier.height(100.dp)) }
@@ -124,7 +125,7 @@ fun AnalyticsScreen(
 fun AnalyticsScreenPreview() {
     YourAppTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            MainPerformanceChart()
+            MainPerformanceChart(dailyStudyTime = emptyList())
         }
     }
 }

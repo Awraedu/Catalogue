@@ -39,7 +39,8 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onSubjectClick: (Subject) -> Unit,
     onTermsClick: () -> Unit,
-    onAnalyticsClick: () -> Unit
+    onAnalyticsClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
@@ -50,7 +51,8 @@ fun HomeScreen(
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
         onTermsClick = onTermsClick,
-        onAnalyticsClick = onAnalyticsClick
+        onAnalyticsClick = onAnalyticsClick,
+        onSettingsClick = onSettingsClick
     )
 }
 
@@ -62,7 +64,8 @@ fun HomeScreenContent(
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
     onTermsClick: () -> Unit,
-    onAnalyticsClick: () -> Unit
+    onAnalyticsClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -71,7 +74,11 @@ fun HomeScreenContent(
             HomeTopBar()
         },
         floatingActionButton = {
-            HomeFAB(onTermsClick = onTermsClick)
+            HomeFAB(
+                onTermsClick = onTermsClick,
+                onAnalyticsClick = onAnalyticsClick,
+                onSettingsClick = onSettingsClick
+            )
         },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = { }
@@ -87,9 +94,7 @@ fun HomeScreenContent(
         ) {
             // Dashboard Section
             item(span = { GridItemSpan(2) }) {
-                Surface(onClick = onAnalyticsClick) {
-                    StudyAnalyticsCard()
-                }
+                StudyAnalyticsCard()
             }
 
             // Recently Opened Section
@@ -164,7 +169,8 @@ fun HomeScreenPreview() {
             onStreamSelected = {},
             onSubjectClick = {},
             onTermsClick = {},
-            onAnalyticsClick = {}
+            onAnalyticsClick = {},
+            onSettingsClick = {}
         )
     }
 }

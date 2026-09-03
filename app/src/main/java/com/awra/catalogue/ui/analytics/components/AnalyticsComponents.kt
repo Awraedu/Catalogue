@@ -2,6 +2,7 @@ package com.awra.catalogue.ui.analytics.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -50,8 +51,8 @@ private fun abbreviateSubject(name: String): String {
 fun PerformanceSummaryCard(
     label: String,
     value: String,
-    trend: String,
-    isUp: Boolean,
+    trend: String = "",
+    isUp: Boolean = true,
     icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
@@ -80,21 +81,26 @@ fun PerformanceSummaryCard(
             }
             Spacer(Modifier.height(12.dp))
             Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, color = colorScheme.onSurface)
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val trendColor = if (isUp) colorScheme.primary else colorScheme.error
-                Text(
-                    text = if (isUp) "+$trend%" else "-$trend%",
-                    color = trendColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Icon(
-                    imageVector = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(12.dp),
-                    tint = trendColor
-                )
+            
+            if (trend.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val trendColor = if (isUp) colorScheme.primary else colorScheme.error
+                    Text(
+                        text = if (trend.any { it.isDigit() }) (if (isUp) "+$trend%" else "-$trend%") else trend,
+                        color = trendColor,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (trend.any { it.isDigit() }) {
+                        Icon(
+                            imageVector = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = trendColor
+                        )
+                    }
+                }
             }
         }
     }
@@ -102,20 +108,61 @@ fun PerformanceSummaryCard(
 
 @Composable
 fun MainPerformanceChart(
+    dailyStudyTime: List<com.awra.catalogue.data.dao.DailyTime>,
     modifier: Modifier = Modifier
 ) {
-    var selectedTab by remember { mutableIntStateOf(1) }
-    val tabs = listOf("Monthly", "Weekly", "Today")
     val colorScheme = MaterialTheme.colorScheme
+    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    
+    // Process real data: Map each day of the week to its total hours
+    val calendar = java.util.Calendar.getInstance()
+    val timeStudied = remember(dailyStudyTime) {
+        val hoursPerDay = MutableList(7) { 0f }
+        dailyStudyTime.forEach { daily ->
+            calendar.timeInMillis = daily.date
+            val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+            // Calendar.MONDAY is 2, SUNDAY is 1. Convert to index 0..6 (Mon..Sun)
+            val index = when (dayOfWeek) {
+                java.util.Calendar.MONDAY -> 0
+                java.util.Calendar.TUESDAY -> 1
+                java.util.Calendar.WEDNESDAY -> 2
+                java.util.Calendar.THURSDAY -> 3
+                java.util.Calendar.FRIDAY -> 4
+                java.util.Calendar.SATURDAY -> 5
+                java.util.Calendar.SUNDAY -> 6
+                else -> 0
+            }
+            hoursPerDay[index] = daily.totalTimeMs.toFloat() / (1000 * 60 * 60)
+        }
+        hoursPerDay
+    }
+
+    val maxTime = 24f
+    val timeLabels = listOf("24h", "18h", "12h", "6h", "0h")
+
+    // Determine today's index
+    calendar.timeInMillis = System.currentTimeMillis()
+    val todayIdx = when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
+        java.util.Calendar.MONDAY -> 0
+        java.util.Calendar.TUESDAY -> 1
+        java.util.Calendar.WEDNESDAY -> 2
+        java.util.Calendar.THURSDAY -> 3
+        java.util.Calendar.FRIDAY -> 4
+        java.util.Calendar.SATURDAY -> 5
+        java.util.Calendar.SUNDAY -> 6
+        else -> 6
+    }
+
+    val weekNumber = calendar.get(java.util.Calendar.WEEK_OF_YEAR)
 
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(32.dp)
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(vertical = 24.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -123,74 +170,114 @@ fun MainPerformanceChart(
                     Text("Performance", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text("Time spent in hours", style = MaterialTheme.typography.labelSmall, color = colorScheme.onSurfaceVariant)
                 }
-
-                Row(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(colorScheme.surfaceVariant.copy(alpha = 0.2f))
-                        .padding(4.dp)
+                
+                Surface(
+                    color = colorScheme.primaryContainer.copy(alpha = 0.4f),
+                    shape = CircleShape
                 ) {
-                    tabs.forEachIndexed { index, label ->
-                        val isSelected = selectedTab == index
-                        val bgColor by animateColorAsState(if (isSelected) colorScheme.onSurface else Color.Transparent, label = "tabBg")
-                        val textColor by animateColorAsState(if (isSelected) colorScheme.surface else colorScheme.onSurfaceVariant, label = "tabText")
-                        
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(bgColor)
-                                .clickable { selectedTab = index }
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = textColor, fontSize = 11.sp)
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(48.dp))
-
-            Row(modifier = Modifier.fillMaxWidth().height(220.dp)) {
-                Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.End) {
-                    Text("20h", style = MaterialTheme.typography.labelSmall, color = colorScheme.onSurfaceVariant)
-                    Text("10h", style = MaterialTheme.typography.labelSmall, color = colorScheme.onSurfaceVariant)
-                    Text("0", style = MaterialTheme.typography.labelSmall, color = colorScheme.onSurfaceVariant)
-                }
-
-                Spacer(Modifier.width(16.dp))
-
-                Row(modifier = Modifier.weight(1f).fillMaxHeight(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                    when (selectedTab) {
-                        0 -> { // Monthly
-                            PerformanceBarGroup(label = "July", heights = listOf(0.3f, 0.8f, 0.5f))
-                            PerformanceBarGroup(label = "Aug", heights = listOf(0.4f, 0.9f, 0.6f))
-                            PerformanceBarGroup(label = "Sept", heights = listOf(0.2f, 0.7f, 0.4f))
-                        }
-                        1 -> { // Weekly
-                            PerformanceBarGroup(label = "W32", heights = listOf(0.35f, 0.75f, 0.45f))
-                            PerformanceBarGroup(label = "W33", heights = listOf(0.45f, 0.95f, 0.55f))
-                            PerformanceBarGroup(label = "W34", heights = listOf(0.25f, 0.65f, 0.35f))
-                            PerformanceBarGroup(label = "W35", heights = listOf(0.3f, 0.85f, 0.5f))
-                        }
-                        2 -> { // Today
-                            PerformanceBarGroup(label = "Today", heights = listOf(0.5f, 0.9f, 0.7f))
-                        }
-                    }
+                    Text(
+                        text = "Week $weekNumber",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Black,
+                        color = colorScheme.primary
+                    )
                 }
             }
 
             Spacer(Modifier.height(32.dp))
 
-            // Legend
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .padding(horizontal = 16.dp)
             ) {
-                LegendItem("Handout", colorScheme.onSurface)
-                LegendItem("Quiz", colorScheme.surfaceVariant)
-                LegendItem("Cards", Color(0xFFC5CAE9))
+                // Y-Axis Labels
+                Column(
+                    modifier = Modifier
+                        .width(32.dp)
+                        .fillMaxHeight()
+                        .padding(bottom = 4.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.End
+                ) {
+                    timeLabels.forEach { label ->
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(Modifier.width(12.dp))
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+                    // 1. Grid Pattern
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val gridLines = 4
+                        val sectionHeight = size.height / gridLines
+                        for (i in 0..gridLines) {
+                            val y = size.height - (i * sectionHeight)
+                            drawLine(
+                                color = colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                start = androidx.compose.ui.geometry.Offset(0f, y),
+                                end = androidx.compose.ui.geometry.Offset(size.width, y),
+                                strokeWidth = 1.dp.toPx()
+                            )
+                        }
+                    }
+
+                    // 2. Bar Graph with wider Pill Shaped Bars
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        timeStudied.forEachIndexed { index, time ->
+                            val isToday = index == todayIdx
+                            val barHeightFactor = (time / maxTime).coerceIn(0.02f, 1f)
+                            Box(
+                                modifier = Modifier
+                                    .width(32.dp)
+                                    .fillMaxHeight(barHeightFactor)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isToday) colorScheme.primary 
+                                        else colorScheme.primaryContainer // Lower shade instead of opacity
+                                    )
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // 3. Days Labels
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 60.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                days.forEachIndexed { index, day ->
+                    val isToday = index == todayIdx
+                    Box(modifier = Modifier.width(32.dp), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = day,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isToday) colorScheme.primary else colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }
@@ -293,6 +380,7 @@ fun MasteryOverview(
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableStateOf(MasteryTab.Strong) }
+    var expandedSubjectId by remember { mutableStateOf<Long?>(null) }
     
     val filteredSubjects = remember(subjects, selectedTab) {
         if (selectedTab == MasteryTab.Strong) {
@@ -335,7 +423,11 @@ fun MasteryOverview(
                     subject = subject,
                     topics = allTopics.filter { it.subjectName == subject.subjectName },
                     index = index,
-                    count = filteredSubjects.size
+                    count = filteredSubjects.size,
+                    isExpanded = expandedSubjectId == subject.subjectId,
+                    onExpandChange = { expanded ->
+                        expandedSubjectId = if (expanded) subject.subjectId else null
+                    }
                 )
             }
         }
@@ -348,9 +440,10 @@ private fun ExpandableSubjectCard(
     subject: SubjectMastery,
     topics: List<TopicPerformance>,
     index: Int,
-    count: Int
+    count: Int,
+    isExpanded: Boolean,
+    onExpandChange: (Boolean) -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
     val colorScheme = MaterialTheme.colorScheme
     val mastery = (subject.correctAttempts.toFloat() / subject.totalAttempts.coerceAtLeast(1) * 100).toInt()
     
@@ -366,7 +459,7 @@ private fun ExpandableSubjectCard(
     }
 
     Card(
-        onClick = { isExpanded = !isExpanded },
+        onClick = { onExpandChange(!isExpanded) },
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize(),

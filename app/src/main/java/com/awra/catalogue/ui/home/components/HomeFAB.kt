@@ -8,7 +8,9 @@ import androidx.compose.runtime.*
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeFAB(
-    onTermsClick: () -> Unit
+    onTermsClick: () -> Unit,
+    onAnalyticsClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     
@@ -32,13 +34,19 @@ fun HomeFAB(
         }
     ) {
         FloatingActionButtonMenuItem(
-            onClick = { expanded = false },
-            icon = { Icon(Icons.Default.Person, contentDescription = null, tint = inverseOnSurface) },
-            text = { Text("Profile", color = inverseOnSurface) },
+            onClick = { 
+                expanded = false
+                onSettingsClick()
+            },
+            icon = { Icon(Icons.Default.Settings, contentDescription = null, tint = inverseOnSurface) },
+            text = { Text("Settings", color = inverseOnSurface) },
             containerColor = inverseSurface
         )
         FloatingActionButtonMenuItem(
-            onClick = { expanded = false },
+            onClick = { 
+                expanded = false
+                onAnalyticsClick()
+            },
             icon = { Icon(Icons.Default.BarChart, contentDescription = null, tint = inverseOnSurface) },
             text = { Text("Analytics", color = inverseOnSurface) },
             containerColor = inverseSurface

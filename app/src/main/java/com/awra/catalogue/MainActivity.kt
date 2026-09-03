@@ -2,6 +2,7 @@ package com.awra.catalogue
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Button
@@ -21,12 +22,15 @@ import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.flashcard.*
 import com.awra.catalogue.ui.analytics.AnalyticsScreen
 import com.awra.catalogue.ui.analytics.AnalyticsViewModel
+import com.awra.catalogue.ui.settings.SettingsScreen
+import com.awra.catalogue.ui.settings.SettingsViewModel
 import com.awra.catalogue.ui.term.TermsScreen
 import com.awra.catalogue.ui.term.TermsViewModel
 import com.awra.catalogue.ui.utility.*
 import com.awra.catalogue.ui.subject.SubjectDetailScreen
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.data.model.Topic
+import com.awra.catalogue.data.util.PreferenceManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +38,7 @@ class MainActivity : ComponentActivity() {
         
         val database = AppDatabase.getDatabase(this)
         val repository = CatalogueRepository(database.catalogueDao())
+        val preferenceManager = PreferenceManager(this)
         
         val homeViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -41,9 +46,17 @@ class MainActivity : ComponentActivity() {
             }
         })[HomeViewModel::class.java]
 
+        val settingsViewModel = SettingsViewModel(preferenceManager)
+
         enableEdgeToEdge()
         setContent {
-            YourAppTheme {
+            val darkMode by settingsViewModel.darkMode.collectAsState()
+            val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
+
+            YourAppTheme(
+                darkMode = darkMode,
+                selectedTheme = selectedTheme
+            ) {
                 var currentSubject by remember { mutableStateOf<Subject?>(null) }
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
                 var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
@@ -54,8 +67,36 @@ class MainActivity : ComponentActivity() {
 
                 var flashcardConfig by remember { mutableStateOf<FlashcardConfig?>(null) }
                 var showFlashcardCustomization by remember { mutableStateOf(false) }
+
+                BackHandler(
+                    enabled = currentSubject != null || currentMaterialType != null || showQuizCustomization || showFlashcardCustomization
+                ) {
+                    when {
+                        showQuizCustomization -> showQuizCustomization = false
+                        showFlashcardCustomization -> showFlashcardCustomization = false
+                        currentHandout != null -> currentHandout = null
+                        currentUtility != null -> currentUtility = null
+                        currentMaterialType == MaterialType.QUIZ -> {
+                            currentMaterialType = null
+                            quizConfig = null
+                            currentQuizTopic = null
+                        }
+                        currentMaterialType == MaterialType.FLASHCARD -> {
+                            currentMaterialType = null
+                            flashcardConfig = null
+                        }
+                        currentMaterialType != null -> currentMaterialType = null
+                        currentSubject != null -> currentSubject = null
+                    }
+                }
                 
                 when {
+                    currentMaterialType == MaterialType.SETTINGS -> {
+                        SettingsScreen(
+                            viewModel = settingsViewModel,
+                            onBackClick = { currentMaterialType = null }
+                        )
+                    }
                     currentMaterialType == MaterialType.ANALYTICS -> {
                         val analyticsViewModel = remember {
                             AnalyticsViewModel(repository)
@@ -70,7 +111,8 @@ class MainActivity : ComponentActivity() {
                             viewModel = homeViewModel,
                             onSubjectClick = { currentSubject = it },
                             onTermsClick = { currentMaterialType = MaterialType.TERM },
-                            onAnalyticsClick = { currentMaterialType = MaterialType.ANALYTICS }
+                            onAnalyticsClick = { currentMaterialType = MaterialType.ANALYTICS },
+                            onSettingsClick = { currentMaterialType = MaterialType.SETTINGS }
                         )
                     }
                     currentMaterialType == null -> {
@@ -179,6 +221,12 @@ class MainActivity : ComponentActivity() {
                             viewModel = termsViewModel,
                             onBackClick = { 
                                 currentMaterialType = null
+                            },
+                            onAnalyticsClick = {
+                                currentMaterialType = MaterialType.ANALYTICS
+                            },
+                            onSettingsClick = {
+                                currentMaterialType = MaterialType.SETTINGS
                             }
                         )
                     }

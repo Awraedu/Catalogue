@@ -42,7 +42,9 @@ import kotlinx.coroutines.launch
 fun TermsScreen(
     subject: Subject?,
     viewModel: TermsViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAnalyticsClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val terms by viewModel.terms.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -111,7 +113,11 @@ fun TermsScreen(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             if (!isSearchExpanded) {
-                HomeFAB(onTermsClick = { /* Already on Terms screen */ })
+                HomeFAB(
+                    onTermsClick = { /* Already on Terms screen */ },
+                    onAnalyticsClick = onAnalyticsClick,
+                    onSettingsClick = onSettingsClick
+                )
             }
         }
     ) { innerPadding ->

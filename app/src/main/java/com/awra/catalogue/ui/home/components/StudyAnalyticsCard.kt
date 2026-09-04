@@ -1,6 +1,5 @@
 package com.awra.catalogue.ui.home.components
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,29 +31,18 @@ fun StudyAnalyticsCard() {
         // Circular Progress Section
         Box(
             modifier = Modifier
-                .size(140.dp)
+                .size(160.dp)
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
-            val progressColor = MaterialTheme.colorScheme.primary
-            val backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh
-            
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawArc(
-                    color = backgroundColor,
-                    startAngle = 0f,
-                    sweepAngle = 360f,
-                    useCenter = false,
-                    style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
-                )
-                drawArc(
-                    color = progressColor,
-                    startAngle = -90f,
-                    sweepAngle = 220f,
-                    useCenter = false,
-                    style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
-                )
-            }
+            CircularProgressIndicator(
+                progress = { 0.62f },
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                strokeWidth = 20.dp,
+                strokeCap = StrokeCap.Round
+            )
             
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -65,7 +52,7 @@ fun StudyAnalyticsCard() {
                 )
                 Text(
                     text = "62%",
-                    style = MaterialTheme.typography.headlineLarge,
+                    style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -111,16 +98,16 @@ private fun StatItem(
     containerColor: Color,
     contentColor: Color
 ) {
-    val shape = ContinuousRoundedRectangle(16.dp)
+    val shape = ContinuousRoundedRectangle(12.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(54.dp)
             .clip(shape)
             .background(containerColor)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Icon(
             icon, 

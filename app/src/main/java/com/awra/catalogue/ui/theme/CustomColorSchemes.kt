@@ -47,128 +47,46 @@ object CustomColorSchemes {
         scrim = Color(0xFF000000)
     )
 
-    val NordicBlue = darkColorScheme(
-        primary = Color(0xFF88C0D0),
-        onPrimary = Color(0xFF2E3440),
-        primaryContainer = Color(0xFF434C5E),
-        onPrimaryContainer = Color(0xFFD8DEE9),
-        inversePrimary = Color(0xFF5E81AC),
-        secondary = Color(0xFF81A1C1),
-        onSecondary = Color(0xFF2E3440),
-        secondaryContainer = Color(0xFF3B4252),
-        onSecondaryContainer = Color(0xFFECEFF4),
-        tertiary = Color(0xFFB48EAD),
-        onTertiary = Color(0xFF2E3440),
-        tertiaryContainer = Color(0xFF4C566A),
-        onTertiaryContainer = Color(0xFFD8DEE9),
-        surface = Color(0xFF2E3440),
-        surfaceDim = Color(0xFF232831),
-        surfaceBright = Color(0xFF434C5E),
-        surfaceContainerLowest = Color(0xFF191C21),
-        surfaceContainerLow = Color(0xFF242933),
-        surfaceContainer = Color(0xFF2E3440),
-        surfaceContainerHigh = Color(0xFF3B4252),
-        surfaceContainerHighest = Color(0xFF434C5E),
-        surfaceVariant = Color(0xFF4C566A),
-        onSurface = Color(0xFFECEFF4),
-        onSurfaceVariant = Color(0xFFD8DEE9),
-        surfaceTint = Color(0xFF88C0D0),
-        background = Color(0xFF2E3440),
-        onBackground = Color(0xFFECEFF4),
-        error = VibrantRed,
-        onError = Color(0xFFFFFFFF),
-        errorContainer = VibrantRedContainer,
-        onErrorContainer = OnVibrantRedContainer,
-        outline = Color(0xFF4C566A),
-        outlineVariant = Color(0xFF3B4252),
-        inverseSurface = Color(0xFFECEFF4),
-        inverseOnSurface = Color(0xFF2E3440),
-        scrim = Color(0xFF000000)
-    )
-
-    val ForestMoss = darkColorScheme(
-        primary = Color(0xFFA3BE8C),
-        onPrimary = Color(0xFF2E3440),
-        primaryContainer = Color(0xFF3B4252),
-        onPrimaryContainer = Color(0xFFD8DEE9),
-        inversePrimary = Color(0xFF81A1C1),
-        secondary = Color(0xFF8FBCBB),
-        onSecondary = Color(0xFF2E3440),
-        secondaryContainer = Color(0xFF434C5E),
-        onSecondaryContainer = Color(0xFFECEFF4),
-        tertiary = Color(0xFFEBCB8B),
-        onTertiary = Color(0xFF2E3440),
-        tertiaryContainer = Color(0xFF4C566A),
-        onTertiaryContainer = Color(0xFFD8DEE9),
-        surface = Color(0xFF1A1C1E),
-        surfaceDim = Color(0xFF121416),
-        surfaceBright = Color(0xFF2C2F33),
-        surfaceContainerLowest = Color(0xFF0C0E0F),
-        surfaceContainerLow = Color(0xFF151719),
-        surfaceContainer = Color(0xFF1A1C1E),
-        surfaceContainerHigh = Color(0xFF232529),
-        surfaceContainerHighest = Color(0xFF2D3035),
-        surfaceVariant = Color(0xFF44474E),
-        onSurface = Color(0xFFE2E2E6),
-        onSurfaceVariant = Color(0xFFC4C6D0),
-        surfaceTint = Color(0xFFA3BE8C),
-        background = Color(0xFF1A1C1E),
-        onBackground = Color(0xFFE2E2E6),
-        error = VibrantRed,
-        onError = Color(0xFFFFFFFF),
-        errorContainer = VibrantRedContainer,
-        onErrorContainer = OnVibrantRedContainer,
-        outline = Color(0xFF8A9296),
-        outlineVariant = Color(0xFF44474E),
-        inverseSurface = Color(0xFFE2E2E6),
-        inverseOnSurface = Color(0xFF1A1C1E),
-        scrim = Color(0xFF000000)
-    )
-
-    val CrimsonVelvet = darkColorScheme(
-        primary = VibrantRed,
+    val AppleIOS = darkColorScheme(
+        primary = Color(0xFF0A84FF), // iOS System Blue
         onPrimary = Color(0xFFFFFFFF),
-        primaryContainer = VibrantRedContainer,
-        onPrimaryContainer = OnVibrantRedContainer,
-        inversePrimary = Color(0xFFBA1A1A),
-        secondary = Color(0xFFFFB4AB),
-        onSecondary = Color(0xFF690005),
-        secondaryContainer = Color(0xFF93000A),
-        onSecondaryContainer = Color(0xFFFFDAD6),
-        tertiary = Color(0xFFFFB4AB),
-        onTertiary = Color(0xFF690005),
-        tertiaryContainer = Color(0xFF93000A),
-        onTertiaryContainer = Color(0xFFFFDAD6),
+        primaryContainer = Color(0xFF003266),
+        onPrimaryContainer = Color(0xFFD1E4FF),
+        secondary = Color(0xFF30D158), // iOS System Green
+        onSecondary = Color(0xFF000000),
+        tertiary = Color(0xFFFF375F), // iOS System Pink
+        onTertiary = Color(0xFFFFFFFF),
+        surface = Color(0xFF1C1C1E),
+        surfaceVariant = Color(0xFF3A3A3C),
+        background = Color(0xFF000000),
+        onSurface = Color(0xFFFFFFFF),
+        onSurfaceVariant = Color(0xFFEBEBF5),
+        onBackground = Color(0xFFFFFFFF),
+        error = Color(0xFFFF453A), // iOS System Red
+        outline = Color(0xFF8E8E93)
+    )
+
+    val NothingOS = darkColorScheme(
+        primary = Color(0xFFFFFFFF),
+        onPrimary = Color(0xFF000000),
+        primaryContainer = Color(0xFF333333),
+        onPrimaryContainer = Color(0xFFFFFFFF),
+        secondary = Color(0xFFFF0000), // Nothing Red
+        onSecondary = Color(0xFFFFFFFF),
         surface = Color(0xFF121212),
-        surfaceDim = Color(0xFF0A0A0A),
-        surfaceBright = Color(0xFF2B2B2B),
-        surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF1A1A1A),
-        surfaceContainer = Color(0xFF1E1E1E),
-        surfaceContainerHigh = Color(0xFF252525),
-        surfaceContainerHighest = Color(0xFF2C2C2C),
-        surfaceVariant = Color(0xFF262626),
-        onSurface = Color(0xFFE5E5E5),
-        onSurfaceVariant = Color(0xFFABABAB),
-        surfaceTint = VibrantRed,
-        background = Color(0xFF121212),
-        onBackground = Color(0xFFE5E5E5),
-        error = VibrantRed,
-        onError = Color(0xFFFFFFFF),
-        errorContainer = VibrantRedContainer,
-        onErrorContainer = OnVibrantRedContainer,
-        outline = Color(0xFF757575),
-        outlineVariant = Color(0xFF484848),
-        inverseSurface = Color(0xFFF9F9F9),
-        inverseOnSurface = Color(0xFF323232),
-        scrim = Color(0xFF000000)
+        surfaceVariant = Color(0xFF1E1E1E),
+        background = Color(0xFF000000),
+        onSurface = Color(0xFFFFFFFF),
+        onSurfaceVariant = Color(0xFFB3B3B3),
+        onBackground = Color(0xFFFFFFFF),
+        error = Color(0xFFFF0000),
+        outline = Color(0xFF4D4D4D)
     )
 
     val Schemes = mapOf(
         "DEFAULT" to null,
         "MIDNIGHT_MONO" to MidnightMono,
-        "NORDIC_BLUE" to NordicBlue,
-        "FOREST_MOSS" to ForestMoss,
-        "CRIMSON_VELVET" to CrimsonVelvet
+        "APPLE_IOS" to AppleIOS,
+        "NOTHING_OS" to NothingOS
     )
 }

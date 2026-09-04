@@ -103,11 +103,10 @@ fun SettingsScreen(
             text = {
                 Column {
                     listOf(
-                        "DEFAULT" to "Adaptive (System)", 
+                        "DEFAULT" to "Adaptive (System)",
                         "MIDNIGHT_MONO" to "Midnight Mono",
-                        "NORDIC_BLUE" to "Nordic Blue",
-                        "FOREST_MOSS" to "Forest Moss",
-                        "CRIMSON_VELVET" to "Crimson Velvet"
+                        "APPLE_IOS" to "Apple iOS",
+                        "NOTHING_OS" to "Nothing OS"
                     ).forEach { (id, name) ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -185,13 +184,13 @@ fun SettingsScreen(
                             // Pill-shaped stack of 3 colors representing current selection
                             val colors = listOf(
                                 MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.surfaceContainer,
-                                MaterialTheme.colorScheme.secondary
+                                MaterialTheme.colorScheme.secondary,
+                                MaterialTheme.colorScheme.tertiary
                             )
                             Column(
                                 modifier = Modifier
-                                    .width(28.dp)
-                                    .height(56.dp)
+                                    .width(24.dp)
+                                    .height(48.dp)
                                     .clip(CircleShape)
                             ) {
                                 Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[0]))
@@ -202,9 +201,16 @@ fun SettingsScreen(
                     ) {
                         Column {
                             Text("Color palette", fontWeight = FontWeight.Bold)
+                            val themeName = when(selectedTheme) {
+                                "DEFAULT" -> "Adaptive (System)"
+                                "MIDNIGHT_MONO" -> "Midnight Mono"
+                                "APPLE_IOS" -> "Apple iOS"
+                                "NOTHING_OS" -> "Nothing OS"
+                                else -> selectedTheme
+                            }
                             Text(
                                 if (selectedTheme == "DEFAULT") "Choose a palette based on colors from your wallpaper."
-                                else "Current: ${selectedTheme.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() }}",
+                                else "Current: $themeName",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -337,7 +343,12 @@ private fun SettingsToggleItem(
         shapes = ListItemDefaults.shapes(shape = itemShape),
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         leadingContent = {
-            Icon(icon, null, modifier = Modifier.size(24.dp))
+            Icon(
+                icon, 
+                null, 
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
         },
         trailingContent = {
             Switch(checked = checked, onCheckedChange = onCheckedChange)
@@ -376,7 +387,12 @@ private fun SettingsClickableItem(
         shapes = ListItemDefaults.shapes(shape = itemShape),
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         leadingContent = {
-            Icon(icon, null, modifier = Modifier.size(24.dp))
+            Icon(
+                icon, 
+                null, 
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
         },
         trailingContent = {
             Icon(Icons.Default.ChevronRight, null)

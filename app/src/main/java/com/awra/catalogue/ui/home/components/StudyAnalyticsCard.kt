@@ -40,7 +40,7 @@ fun StudyAnalyticsCard() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                strokeWidth = 20.dp,
+                strokeWidth = 26.dp,
                 strokeCap = StrokeCap.Round
             )
             

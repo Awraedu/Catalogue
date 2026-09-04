@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val darkMode by settingsViewModel.darkMode.collectAsState()
             val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
+            val userName by settingsViewModel.userName.collectAsState()
 
             YourAppTheme(
                 darkMode = darkMode,
@@ -109,6 +110,7 @@ class MainActivity : ComponentActivity() {
                     currentSubject == null && currentMaterialType != MaterialType.TERM -> {
                         HomeScreen(
                             viewModel = homeViewModel,
+                            userName = userName,
                             onSubjectClick = { currentSubject = it },
                             onTermsClick = { currentMaterialType = MaterialType.TERM },
                             onAnalyticsClick = { currentMaterialType = MaterialType.ANALYTICS },

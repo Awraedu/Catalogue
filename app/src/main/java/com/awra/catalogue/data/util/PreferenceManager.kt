@@ -20,6 +20,9 @@ class PreferenceManager(context: Context) {
     private val _selectedTheme = MutableStateFlow(prefs.getString("selected_theme", "DEFAULT") ?: "DEFAULT")
     val selectedTheme: StateFlow<String> = _selectedTheme
 
+    private val _userName = MutableStateFlow(prefs.getString("user_name", "User") ?: "User")
+    val userName: StateFlow<String> = _userName
+
     fun setDarkMode(mode: String) {
         prefs.edit().putString("dark_mode", mode).apply()
         _darkMode.value = mode
@@ -38,5 +41,10 @@ class PreferenceManager(context: Context) {
     fun setSelectedTheme(theme: String) {
         prefs.edit().putString("selected_theme", theme).apply()
         _selectedTheme.value = theme
+    }
+
+    fun setUserName(name: String) {
+        prefs.edit().putString("user_name", name).apply()
+        _userName.value = name
     }
 }

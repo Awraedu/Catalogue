@@ -5,45 +5,46 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.kyant.capsule.ContinuousRoundedRectangle
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar() {
-    // Replaced custom Row with Material 3 Expressive TopAppBar for better adaptive behavior
-    // and automatic status bar inset handling.
-    TopAppBar(
+fun HomeTopBar(
+    userName: String,
+    onSettingsClick: () -> Unit = {}
+) {
+    val greeting = remember {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        when (hour) {
+            in 0..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+    }
+
+    CenterAlignedTopAppBar(
         title = {
-            // Search Bar inside the title slot
-            val searchShape = ContinuousRoundedRectangle(24.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .clip(searchShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search, 
-                    contentDescription = null, 
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$greeting, ",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Search in Cata",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    text = userName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
@@ -65,7 +66,7 @@ fun HomeTopBar() {
         },
         actions = {
             IconButton(
-                onClick = { },
+                onClick = onSettingsClick,
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .size(48.dp)
@@ -80,13 +81,12 @@ fun HomeTopBar() {
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent, // Let the Scaffold background flow through correctly
+            containerColor = Color.Transparent,
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
             actionIconContentColor = MaterialTheme.colorScheme.onSurface
         ),
-        // windowInsets handles the status bar padding automatically and adaptively
         windowInsets = TopAppBarDefaults.windowInsets
     )
 }

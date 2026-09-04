@@ -8,11 +8,13 @@ class SettingsViewModel(private val preferenceManager: PreferenceManager) : View
     val studyReminders = preferenceManager.studyReminders
     val notificationTime = preferenceManager.notificationTime
     val selectedTheme = preferenceManager.selectedTheme
+    val userName = preferenceManager.userName
 
     fun setDarkMode(mode: String) = preferenceManager.setDarkMode(mode)
     fun setStudyReminders(enabled: Boolean) = preferenceManager.setStudyReminders(enabled)
     fun setNotificationTime(time: String) = preferenceManager.setNotificationTime(time)
     fun setSelectedTheme(theme: String) = preferenceManager.setSelectedTheme(theme)
+    fun setUserName(name: String) = preferenceManager.setUserName(name)
 
     fun clearCache() {
         // Mock clear cache logic

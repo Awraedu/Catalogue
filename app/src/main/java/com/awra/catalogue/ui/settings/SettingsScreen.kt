@@ -30,10 +30,39 @@ fun SettingsScreen(
     val studyReminders by viewModel.studyReminders.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
     val selectedTheme by viewModel.selectedTheme.collectAsState()
+    val userName by viewModel.userName.collectAsState()
     
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showCustomThemeDialog by remember { mutableStateOf(false) }
+    var showNameDialog by remember { mutableStateOf(false) }
+
+    if (showNameDialog) {
+        var nameText by remember { mutableStateOf(userName) }
+        AlertDialog(
+            onDismissRequest = { showNameDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setUserName(nameText)
+                    showNameDialog = false
+                }) { Text("Save") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNameDialog = false }) { Text("Cancel") }
+            },
+            title = { Text("What should we call you?") },
+            text = {
+                OutlinedTextField(
+                    value = nameText,
+                    onValueChange = { nameText = it },
+                    label = { Text("User Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            shape = ContinuousRoundedRectangle(28.dp)
+        )
+    }
 
     if (showThemeDialog) {
         AlertDialog(
@@ -158,6 +187,20 @@ fun SettingsScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // Account Section
+            item {
+                SettingsSection(title = "Account") {
+                    SettingsClickableItem(
+                        title = "User Name",
+                        subtitle = userName,
+                        icon = Icons.Default.Person,
+                        onClick = { showNameDialog = true },
+                        index = 0,
+                        count = 1
+                    )
+                }
+            }
+
             // Appearance Section
             item {
                 SettingsSection(title = "Appearance") {

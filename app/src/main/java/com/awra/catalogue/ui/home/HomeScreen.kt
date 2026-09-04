@@ -37,6 +37,7 @@ import com.awra.catalogue.ui.theme.YourAppTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    userName: String,
     onSubjectClick: (Subject) -> Unit,
     onTermsClick: () -> Unit,
     onAnalyticsClick: () -> Unit,
@@ -46,6 +47,7 @@ fun HomeScreen(
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
 
     HomeScreenContent(
+        userName = userName,
         selectedStream = selectedStream,
         subjects = subjects,
         onStreamSelected = { viewModel.selectStream(it) },
@@ -59,6 +61,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreenContent(
+    userName: String,
     selectedStream: Stream,
     subjects: List<Subject>,
     onStreamSelected: (Stream) -> Unit,
@@ -71,7 +74,10 @@ fun HomeScreenContent(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            HomeTopBar()
+            HomeTopBar(
+                userName = userName,
+                onSettingsClick = onSettingsClick
+            )
         },
         floatingActionButton = {
             HomeFAB(
@@ -161,6 +167,7 @@ fun HomeScreenContent(
 fun HomeScreenPreview() {
     YourAppTheme {
         HomeScreenContent(
+            userName = "Dagi",
             selectedStream = Stream.NATURAL,
             subjects = listOf(
                 Subject(1, "English", "Desc", Stream.COMMON, ExpressiveShape.CIRCLE),

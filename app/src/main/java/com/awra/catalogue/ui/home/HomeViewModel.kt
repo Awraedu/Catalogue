@@ -3,6 +3,7 @@ package com.awra.catalogue.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.awra.catalogue.data.model.RecentlyOpenedDisplayItem
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.data.repository.CatalogueRepository
@@ -19,6 +20,8 @@ class HomeViewModel(application: Application, private val repository: CatalogueR
     val subjects: Flow<List<Subject>> = _selectedStream.flatMapLatest { stream ->
         repository.getSubjects(stream)
     }
+
+    val recentlyOpened: Flow<List<RecentlyOpenedDisplayItem>> = repository.getRecentlyOpened()
 
     init {
         viewModelScope.launch {

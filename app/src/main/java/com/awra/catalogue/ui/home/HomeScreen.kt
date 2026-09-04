@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Science
@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,13 +22,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.Subject
-import com.awra.catalogue.ui.home.components.HomeFAB
 import com.awra.catalogue.ui.home.components.HomeTopBar
 import com.awra.catalogue.ui.home.components.SubjectCard
 import com.awra.catalogue.ui.home.components.StreamSelector
 import com.awra.catalogue.ui.home.components.StudyAnalyticsCard
+import com.awra.catalogue.ui.home.components.RecentlyOpenedSection
+import com.awra.catalogue.ui.components.FloatingNavigationBar
+import com.awra.catalogue.ui.components.NavDestination
 import com.kyant.capsule.ContinuousRoundedRectangle
-
+import java.util.Calendar
 import androidx.compose.ui.tooling.preview.Preview
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.Stream
@@ -39,21 +42,21 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     userName: String,
     onSubjectClick: (Subject) -> Unit,
-    onTermsClick: () -> Unit,
-    onAnalyticsClick: () -> Unit,
+    onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
     onSettingsClick: () -> Unit
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
+    val recentlyOpened by viewModel.recentlyOpened.collectAsState(initial = emptyList())
 
     HomeScreenContent(
         userName = userName,
         selectedStream = selectedStream,
         subjects = subjects,
+        recentlyOpened = recentlyOpened,
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
-        onTermsClick = onTermsClick,
-        onAnalyticsClick = onAnalyticsClick,
+        onRecentItemClick = onRecentItemClick,
         onSettingsClick = onSettingsClick
     )
 }
@@ -64,10 +67,10 @@ fun HomeScreenContent(
     userName: String,
     selectedStream: Stream,
     subjects: List<Subject>,
+    recentlyOpened: List<com.awra.catalogue.data.model.RecentlyOpenedDisplayItem>,
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
-    onTermsClick: () -> Unit,
-    onAnalyticsClick: () -> Unit,
+    onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
     onSettingsClick: () -> Unit
 ) {
     Scaffold(
@@ -75,64 +78,63 @@ fun HomeScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HomeTopBar(
-                userName = userName,
                 onSettingsClick = onSettingsClick
             )
         },
-        floatingActionButton = {
-            HomeFAB(
-                onTermsClick = onTermsClick,
-                onAnalyticsClick = onAnalyticsClick,
-                onSettingsClick = onSettingsClick
-            )
-        },
-        floatingActionButtonPosition = FabPosition.End,
         bottomBar = { }
     ) { innerPadding ->
+        val greeting = remember {
+            val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+            when (hour) {
+                in 0..11 -> "Good Morning"
+                in 12..16 -> "Good Afternoon"
+                else -> "Good Evening"
+            }
+        }
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Dashboard Section
             item(span = { GridItemSpan(2) }) {
-                StudyAnalyticsCard()
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "$greeting, ",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = userName,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    StudyAnalyticsCard()
+                }
             }
 
             // Recently Opened Section
             item(span = { GridItemSpan(2) }) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        text = "Recently Opened",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        RecentlyOpenedItem(
-                            name = "English", 
-                            type = "Handout", 
-                            color = Color(0xFF795548),
-                            icon = Icons.AutoMirrored.Filled.MenuBook
-                        )
-                        RecentlyOpenedItem(
-                            name = "Physics", 
-                            type = "Handout", 
-                            color = Color(0xFF3E2723),
-                            icon = Icons.Default.Science
-                        )
-                    }
-                }
+                RecentlyOpenedSection(
+                    items = recentlyOpened,
+                    onItemClick = onRecentItemClick
+                )
             }
 
             // Freshman Subjects Title
             item(span = { GridItemSpan(2) }) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
                         text = "Freshman Subjects",
                         style = MaterialTheme.typography.headlineMedium,
@@ -148,15 +150,22 @@ fun HomeScreenContent(
             }
 
             // The Subjects Grid
-            items(subjects, key = { it.id }) { subject ->
-                SubjectCard(
-                    subject = subject,
-                    onClick = { onSubjectClick(subject) }
-                )
+            itemsIndexed(subjects, key = { _, it -> it.id }) { index, subject ->
+                Box(
+                    modifier = Modifier.padding(
+                        start = if (index % 2 == 0) 16.dp else 0.dp,
+                        end = if (index % 2 != 0) 16.dp else 0.dp
+                    )
+                ) {
+                    SubjectCard(
+                        subject = subject,
+                        onClick = { onSubjectClick(subject) }
+                    )
+                }
             }
             
             item(span = { GridItemSpan(2) }) {
-                Spacer(modifier = Modifier.height(100.dp))
+                Spacer(modifier = Modifier.height(120.dp))
             }
         }
     }
@@ -173,51 +182,11 @@ fun HomeScreenPreview() {
                 Subject(1, "English", "Desc", Stream.COMMON, ExpressiveShape.CIRCLE),
                 Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4)
             ),
+            recentlyOpened = emptyList(),
             onStreamSelected = {},
             onSubjectClick = {},
-            onTermsClick = {},
-            onAnalyticsClick = {},
+            onRecentItemClick = {},
             onSettingsClick = {}
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun RecentlyOpenedItem(
-    name: String, 
-    type: String, 
-    color: Color,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    val shape = ContinuousRoundedRectangle(20.dp)
-    Row(
-        modifier = Modifier
-            .width(160.dp)
-            .height(64.dp)
-            .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(ContinuousRoundedRectangle(12.dp))
-                .background(color),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        Column {
-            Text(name, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-            Text(type, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
     }
 }

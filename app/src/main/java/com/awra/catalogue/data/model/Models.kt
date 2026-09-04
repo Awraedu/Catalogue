@@ -10,7 +10,7 @@ enum class Stream {
 }
 
 enum class MaterialType {
-    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY, TERM, ANALYTICS, SETTINGS
+    HANDOUT, QUIZ, FLASHCARD, INFOGRAPHIC, UTILITY, TERM, ANALYTICS, SETTINGS, SCHEDULE
 }
 
 enum class Difficulty {
@@ -187,3 +187,27 @@ data class Utility(
     val type: String, // e.g., "CALCULATOR", "PERIODIC_TABLE"
     val icon: String // Icon identifier
 )
+
+@Entity(tableName = "recent_items")
+data class RecentItem(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val targetId: Long,
+    val type: MaterialType,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "class_schedules")
+data class ClassSchedule(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val subjectId: Long? = null,
+    val subjectName: String,
+    val dayOfWeek: Int, // 1=Mon, ..., 7=Sun
+    val startTime: String, // HH:mm
+    val endTime: String? = null, // HH:mm
+    val room: String = "",
+    val color: Int = 0xFF2196F3.toInt(),
+    val isTest: Boolean = false,
+    val testType: String? = null, // e.g., "Midterm", "Final"
+    val date: Long? = null // For tests
+)
+

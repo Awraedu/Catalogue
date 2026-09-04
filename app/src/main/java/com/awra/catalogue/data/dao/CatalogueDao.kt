@@ -10,6 +10,9 @@ interface CatalogueDao {
     @Query("SELECT * FROM subjects WHERE stream = :stream OR stream = 'COMMON'")
     fun getSubjectsByStream(stream: Stream): Flow<List<Subject>>
 
+    @Query("SELECT * FROM subjects")
+    fun getAllSubjects(): Flow<List<Subject>>
+
     @Query("SELECT * FROM subjects WHERE id = :subjectId")
     suspend fun getSubjectsById(subjectId: Long): Subject?
 
@@ -34,8 +37,15 @@ interface CatalogueDao {
     @Query("SELECT * FROM chapters WHERE subjectId = :subjectId ORDER BY number ASC")
     fun getChaptersWithQuizzesBySubject(subjectId: Long): Flow<List<ChapterWithQuizTopics>>
 
+    @Transaction
+    @Query("SELECT * FROM chapters WHERE subjectId = :subjectId ORDER BY number ASC")
+    fun getChaptersWithInfographicsBySubject(subjectId: Long): Flow<List<ChapterWithInfographicTopics>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChapter(chapter: Chapter): Long
+
+    @Query("SELECT * FROM chapters WHERE id = :id")
+    suspend fun getChapterById(id: Long): Chapter?
 
     // Topics
     @Query("SELECT * FROM topics WHERE chapterId = :chapterId")
@@ -51,12 +61,24 @@ interface CatalogueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHandout(handout: Handout): Long
 
+    @Query("SELECT * FROM handouts WHERE id = :id")
+    suspend fun getHandoutById(id: Long): Handout?
+
+    @Query("SELECT * FROM topics WHERE id = :id")
+    suspend fun getTopicById(id: Long): Topic?
+
+    @Query("SELECT * FROM infographics WHERE id = :id")
+    suspend fun getInfographicById(id: Long): Infographic?
+
+    @Query("SELECT * FROM utilities WHERE id = :id")
+    suspend fun getUtilityById(id: Long): Utility?
+
     // Flashcards
     @Query("SELECT * FROM flashcards WHERE topicId = :topicId")
     fun getFlashcardsByTopic(topicId: Long): Flow<List<Flashcard>>
 
     @Query("""
-        SELECT * FROM flashcards 
+        SELECT flashcards.* FROM flashcards 
         INNER JOIN topics ON flashcards.topicId = topics.id
         WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
         ORDER BY RANDOM()
@@ -75,7 +97,7 @@ interface CatalogueDao {
     fun getQuizQuestionsByTopic(topicId: Long): Flow<List<QuizQuestion>>
 
     @Query("""
-        SELECT * FROM quiz_questions 
+        SELECT quiz_questions.* FROM quiz_questions 
         INNER JOIN topics ON quiz_questions.topicId = topics.id
         WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
         ORDER BY RANDOM()
@@ -110,7 +132,7 @@ interface CatalogueDao {
 
     // Search Terms across subject
     @Query("""
-        SELECT * FROM terms 
+        SELECT terms.* FROM terms
         INNER JOIN topics ON terms.topicId = topics.id 
         INNER JOIN chapters ON topics.chapterId = chapters.id 
         WHERE chapters.subjectId = :subjectId AND (word LIKE '%' || :query || '%' OR definition LIKE '%' || :query || '%')
@@ -234,7 +256,26 @@ interface CatalogueDao {
         ORDER BY date ASC
     """)
     fun getDailyStudyTime(since: Long): Flow<List<DailyTime>>
+
+    // Recent Items
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRecentItem(item: RecentItem)
+
+    @Query("SELECT * FROM recent_items ORDER BY timestamp DESC LIMIT 10")
+    fun getRecentItems(): Flow<List<RecentItem>>
+
+    // Schedules
+    @Query("SELECT * FROM class_schedules ORDER BY dayOfWeek, startTime")
+    fun getAllSchedules(): Flow<List<ClassSchedule>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSchedule(schedule: ClassSchedule)
+
+    @Delete
+    suspend fun deleteSchedule(schedule: ClassSchedule)
 }
+
+
 
 data class OverallAnalytics(
     val totalAttempts: Int,

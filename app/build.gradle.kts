@@ -56,6 +56,9 @@ dependencies {
     // Capsule (Bottom Sheet / Dynamic Island like UI)
     implementation(libs.capsule)
 
+    // Coil (Image Loading)
+    implementation(libs.coil.compose)
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     testImplementation(libs.junit)

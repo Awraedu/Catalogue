@@ -20,4 +20,11 @@ class HandoutViewModel(
             repository.recordStudySession(topicId, MaterialType.HANDOUT, timeSpentMs)
         }
     }
+
+    fun markRecentlyOpened(handoutId: Long) {
+        viewModelScope.launch {
+            repository.markAsRecentlyOpened(handoutId, MaterialType.HANDOUT)
+        }
+    }
 }
+

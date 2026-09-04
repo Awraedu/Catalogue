@@ -25,9 +25,11 @@ import kotlinx.coroutines.launch
         QuizAttempt::class,
         FlashcardAttempt::class,
         StudySession::class,
-        Utility::class
+        Utility::class,
+        RecentItem::class,
+        ClassSchedule::class
     ],
-    version = 38,
+    version = 43,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

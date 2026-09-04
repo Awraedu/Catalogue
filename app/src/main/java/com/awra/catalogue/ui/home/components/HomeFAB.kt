@@ -10,7 +10,7 @@ import androidx.compose.runtime.*
 fun HomeFAB(
     onTermsClick: () -> Unit,
     onAnalyticsClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onScheduleClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     
@@ -36,10 +36,10 @@ fun HomeFAB(
         FloatingActionButtonMenuItem(
             onClick = { 
                 expanded = false
-                onSettingsClick()
+                onScheduleClick()
             },
-            icon = { Icon(Icons.Default.Settings, contentDescription = null, tint = inverseOnSurface) },
-            text = { Text("Settings", color = inverseOnSurface) },
+            icon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = inverseOnSurface) },
+            text = { Text("Schedule", color = inverseOnSurface) },
             containerColor = inverseSurface
         )
         FloatingActionButtonMenuItem(

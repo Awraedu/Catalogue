@@ -5,14 +5,15 @@ import com.awra.catalogue.data.database.DatabaseSeeder
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.seed.CatalogueMetadata
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getSubjects(stream: Stream): Flow<List<Subject>> = catalogueDao.getSubjectsByStream(stream)
+
+    fun getAllSubjects(): Flow<List<Subject>> = catalogueDao.getAllSubjects()
 
     suspend fun getSubjectById(subjectId: Long): Subject? = catalogueDao.getSubjectsById(subjectId)
     
@@ -29,9 +30,15 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getChaptersWithQuizzes(subjectId: Long): Flow<List<ChapterWithQuizTopics>> = catalogueDao.getChaptersWithQuizzesBySubject(subjectId)
 
+    fun getChaptersWithInfographics(subjectId: Long): Flow<List<ChapterWithInfographicTopics>> = catalogueDao.getChaptersWithInfographicsBySubject(subjectId)
+
     fun getTopics(chapterId: Long): Flow<List<Topic>> = catalogueDao.getTopicsByChapter(chapterId)
 
     fun getHandouts(topicId: Long): Flow<List<Handout>> = catalogueDao.getHandoutsByTopic(topicId)
+
+    suspend fun getHandoutById(id: Long): Handout? = catalogueDao.getHandoutById(id)
+
+    suspend fun getInfographicById(id: Long): Infographic? = catalogueDao.getInfographicById(id)
 
     fun getFlashcards(topicId: Long): Flow<List<Flashcard>> = catalogueDao.getFlashcardsByTopic(topicId)
 
@@ -46,6 +53,8 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     fun getTerms(topicId: Long): Flow<List<Term>> = catalogueDao.getTermsByTopic(topicId)
 
     fun getUtilities(subjectId: Long): Flow<List<Utility>> = catalogueDao.getUtilitiesBySubject(subjectId)
+
+    suspend fun getUtilityById(id: Long): Utility? = catalogueDao.getUtilityById(id)
 
     fun getBookmarkedTerms(): Flow<List<Term>> = catalogueDao.getBookmarkedTerms()
 
@@ -101,4 +110,73 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     fun getTimePerSubject() = catalogueDao.getTimePerSubject()
 
     fun getDailyStudyTime(since: Long) = catalogueDao.getDailyStudyTime(since)
+
+    fun getRecentlyOpened(): Flow<List<RecentlyOpenedDisplayItem>> = catalogueDao.getRecentItems().transform { recents ->
+        val resolved = recents.mapNotNull { recent ->
+            when (recent.type) {
+                MaterialType.HANDOUT -> {
+                    val handout = catalogueDao.getHandoutById(recent.targetId)
+                    val topic = handout?.let { catalogueDao.getTopicById(it.topicId) }
+                    val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
+                    topic?.let {
+                        RecentlyOpenedDisplayItem(
+                            id = recent.id,
+                            targetId = recent.targetId,
+                            subjectId = chapter?.subjectId ?: 0,
+                            name = it.title,
+                            type = MaterialType.HANDOUT,
+                            icon = "MenuBook",
+                            color = Color(0xFF795548),
+                            timestamp = recent.timestamp
+                        )
+                    }
+                }
+                MaterialType.INFOGRAPHIC -> {
+                    val infographic = catalogueDao.getInfographicById(recent.targetId)
+                    val topic = infographic?.let { catalogueDao.getTopicById(it.topicId) }
+                    val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
+                    topic?.let {
+                        RecentlyOpenedDisplayItem(
+                            id = recent.id,
+                            targetId = recent.targetId,
+                            subjectId = chapter?.subjectId ?: 0,
+                            name = it.title,
+                            type = MaterialType.INFOGRAPHIC,
+                            icon = "BarChart",
+                            color = Color(0xFF3F51B5),
+                            timestamp = recent.timestamp
+                        )
+                    }
+                }
+                MaterialType.UTILITY -> {
+                    val utility = catalogueDao.getUtilityById(recent.targetId)
+                    utility?.let {
+                        RecentlyOpenedDisplayItem(
+                            id = recent.id,
+                            targetId = recent.targetId,
+                            subjectId = it.subjectId,
+                            name = it.name,
+                            type = MaterialType.UTILITY,
+                            icon = it.icon,
+                            color = Color(0xFF009688),
+                            timestamp = recent.timestamp
+                        )
+                    }
+                }
+                else -> null
+            }
+        }
+        emit(resolved)
+    }
+
+    suspend fun markAsRecentlyOpened(targetId: Long, type: MaterialType) {
+        catalogueDao.insertRecentItem(RecentItem(targetId = targetId, type = type))
+    }
+
+    // Schedules
+    fun getAllSchedules() = catalogueDao.getAllSchedules()
+    suspend fun addSchedule(schedule: ClassSchedule) = catalogueDao.insertSchedule(schedule)
+    suspend fun removeSchedule(schedule: ClassSchedule) = catalogueDao.deleteSchedule(schedule)
 }
+
+

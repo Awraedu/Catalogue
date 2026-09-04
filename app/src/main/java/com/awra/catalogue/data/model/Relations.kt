@@ -40,3 +40,22 @@ data class ChapterWithQuizTopics(
     )
     val topics: List<TopicWithQuiz>
 )
+
+data class TopicWithInfographic(
+    @Embedded val topic: Topic,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "topicId"
+    )
+    val infographic: Infographic?
+)
+
+data class ChapterWithInfographicTopics(
+    @Embedded val chapter: Chapter,
+    @Relation(
+        entity = Topic::class,
+        parentColumn = "id",
+        entityColumn = "chapterId"
+    )
+    val topics: List<TopicWithInfographic>
+)

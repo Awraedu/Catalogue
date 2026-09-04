@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.data.model.Term
-import com.awra.catalogue.ui.home.components.HomeFAB
+import com.awra.catalogue.ui.components.FloatingNavigationBar
+import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ fun TermsScreen(
     viewModel: TermsViewModel,
     onBackClick: () -> Unit,
     onAnalyticsClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onScheduleClick: () -> Unit
 ) {
     val terms by viewModel.terms.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -111,15 +112,6 @@ fun TermsScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            if (!isSearchExpanded) {
-                HomeFAB(
-                    onTermsClick = { /* Already on Terms screen */ },
-                    onAnalyticsClick = onAnalyticsClick,
-                    onSettingsClick = onSettingsClick
-                )
-            }
-        }
     ) { innerPadding ->
         Box(
             modifier = Modifier

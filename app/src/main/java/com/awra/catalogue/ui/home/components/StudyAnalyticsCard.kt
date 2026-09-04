@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
@@ -25,19 +26,19 @@ fun StudyAnalyticsCard() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Circular Progress Section
         Box(
             modifier = Modifier
-                .size(160.dp)
+                .size(140.dp)
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
-            val progressColor = MaterialTheme.colorScheme.primaryContainer
-            val backgroundColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+            val progressColor = MaterialTheme.colorScheme.primary
+            val backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh
             
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawArc(
@@ -45,14 +46,14 @@ fun StudyAnalyticsCard() {
                     startAngle = 0f,
                     sweepAngle = 360f,
                     useCenter = false,
-                    style = Stroke(width = 24.dp.toPx(), cap = StrokeCap.Round)
+                    style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
                 )
                 drawArc(
                     color = progressColor,
                     startAngle = -90f,
                     sweepAngle = 220f,
                     useCenter = false,
-                    style = Stroke(width = 24.dp.toPx(), cap = StrokeCap.Round)
+                    style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
                 )
             }
             
@@ -60,18 +61,13 @@ fun StudyAnalyticsCard() {
                 Text(
                     text = "Total Study",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "62%",
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = "of 100%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -81,31 +77,70 @@ fun StudyAnalyticsCard() {
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatItem(icon = Icons.Default.Description, label = "Handouts", count = "12/20")
-            StatItem(icon = Icons.Default.Quiz, label = "Quizzes", count = "5/8")
-            StatItem(icon = Icons.Default.Style, label = "Flashcards", count = "45/100")
+            StatItem(
+                icon = Icons.Default.Description, 
+                label = "Handouts", 
+                count = "12/20",
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            StatItem(
+                icon = Icons.Default.Quiz, 
+                label = "Quizzes", 
+                count = "5/8",
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            StatItem(
+                icon = Icons.Default.Style, 
+                label = "Flashcards", 
+                count = "45/100",
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun StatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, count: String) {
-    val shape = ContinuousRoundedRectangle(12.dp)
+private fun StatItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector, 
+    label: String, 
+    count: String,
+    containerColor: Color,
+    contentColor: Color
+) {
+    val shape = ContinuousRoundedRectangle(16.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(54.dp)
+            .height(56.dp)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(containerColor)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        Icon(
+            icon, 
+            contentDescription = null, 
+            tint = contentColor, 
+            modifier = Modifier.size(20.dp)
+        )
         Column {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f), fontSize = 10.sp)
-            Text(count, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
+            Text(
+                label, 
+                style = MaterialTheme.typography.labelSmall, 
+                color = contentColor.copy(alpha = 0.7f), 
+                fontSize = 10.sp
+            )
+            Text(
+                count, 
+                style = MaterialTheme.typography.titleSmall, 
+                color = contentColor,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

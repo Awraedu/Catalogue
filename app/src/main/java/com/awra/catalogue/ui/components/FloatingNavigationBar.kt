@@ -7,7 +7,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.BarChart
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kyant.capsule.ContinuousRoundedRectangle
 
 enum class NavDestination {
     HOME, SCHEDULE, ANALYTICS, TERMS
@@ -47,7 +47,7 @@ fun FloatingNavigationBar(
             modifier = Modifier
                 .height(64.dp)
                 .wrapContentWidth(),
-            shape = CircleShape,
+            shape = ContinuousRoundedRectangle(32.dp),
             color = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 4.dp
         ) {
@@ -134,7 +134,7 @@ private fun NavTab(
     Box(
         modifier = Modifier
             .fillMaxHeight()
-            .clip(CircleShape)
+            .clip(ContinuousRoundedRectangle(32.dp))
             .background(backgroundColor)
             .clickable(onClick = onClick)
             .animateContentSize(

@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -47,8 +48,8 @@ fun FloatingNavigationBar(
                 .height(64.dp)
                 .wrapContentWidth(),
             shape = CircleShape,
-            color = Color(0xFF1C1C1C), // Deep dark background like the image
-            tonalElevation = 0.dp
+            color = MaterialTheme.colorScheme.onSurface,
+            tonalElevation = 4.dp
         ) {
             Row(
                 modifier = Modifier
@@ -86,6 +87,32 @@ fun FloatingNavigationBar(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun FloatingNavigationBarPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+            FloatingNavigationBar(
+                currentDestination = NavDestination.HOME,
+                onNavigate = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun FloatingNavigationBarDarkPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+            FloatingNavigationBar(
+                currentDestination = NavDestination.HOME,
+                onNavigate = {}
+            )
+        }
+    }
+}
+
 @Composable
 private fun NavTab(
     selected: Boolean,
@@ -94,12 +121,12 @@ private fun NavTab(
     onClick: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) Color.White else Color.Transparent,
+        targetValue = if (selected) MaterialTheme.colorScheme.surface else Color.Transparent,
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "background"
     )
     val contentColor by animateColorAsState(
-        targetValue = if (selected) Color.Black else Color.White.copy(alpha = 0.6f),
+        targetValue = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "content"
     )

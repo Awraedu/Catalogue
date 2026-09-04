@@ -79,11 +79,14 @@ fun InfographicDetailScreen(
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(if (imageResId != 0) imageResId else R.drawable.bio) // Fallback to bio if not found
-                        .crossfade(true)
-                        .build(),
+                val painter = if (imageResId != 0) {
+                    painterResource(id = imageResId)
+                } else {
+                    painterResource(id = R.drawable.bio)
+                }
+
+                Image(
+                    painter = painter,
                     contentDescription = "Infographic: ${infographic.imageUrl}",
                     modifier = Modifier
                         .fillMaxWidth()

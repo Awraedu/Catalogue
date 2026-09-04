@@ -70,6 +70,12 @@ interface CatalogueDao {
     @Query("SELECT * FROM infographics WHERE id = :id")
     suspend fun getInfographicById(id: Long): Infographic?
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInfographic(infographic: Infographic): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInfographics(infographics: List<Infographic>): List<Long>
+
     @Query("SELECT * FROM utilities WHERE id = :id")
     suspend fun getUtilityById(id: Long): Utility?
 

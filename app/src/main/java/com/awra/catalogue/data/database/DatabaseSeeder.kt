@@ -314,6 +314,11 @@ object DatabaseSeeder {
                         definition = termDef
                     )
                 ))
+
+                // Seed Infographics
+                if (subjectName == "General Biology" && topicTitle == "Introduction to Biology") {
+                    dao.insertInfographic(Infographic(topicId = topicId, imageUrl = "bio.png"))
+                }
             }
         }
     }

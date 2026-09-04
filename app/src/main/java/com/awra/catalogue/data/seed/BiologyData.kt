@@ -2,7 +2,7 @@ package com.awra.catalogue.data.seed
 
 object BiologyData {
     val units = listOf(
-        "Molecules of Life" to listOf("Water and Buffers", "Carbohydrates", "Lipids", "Proteins", "Nucleic Acids"),
+        "Molecules of Life" to listOf("Introduction to Biology", "Water and Buffers", "Carbohydrates", "Lipids", "Proteins", "Nucleic Acids"),
         "Cell Structure and Function" to listOf("Prokaryotic vs Eukaryotic Cells", "Organelles", "The Plasma Membrane"),
         "Metabolism" to listOf("Enzymes", "Cellular Respiration", "Photosynthesis"),
         "Genetics" to listOf("DNA Replication", "Transcription and Translation", "Mendelian Genetics"),

@@ -27,7 +27,7 @@ fun YourAppTheme(
     // Using Material 3 Expressive Color Schemes
     val colorScheme = when {
         selectedTheme != "DEFAULT" && CustomColorSchemes.Schemes.containsKey(selectedTheme) -> {
-            CustomColorSchemes.Schemes[selectedTheme]!!
+            CustomColorSchemes.getScheme(selectedTheme, isDark)!!
         }
         // dynamicColor is disabled when a custom theme is selected, or we can logic it out
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

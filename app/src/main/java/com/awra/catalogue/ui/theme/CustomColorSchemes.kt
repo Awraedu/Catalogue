@@ -1,11 +1,14 @@
 package com.awra.catalogue.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 object CustomColorSchemes {
 
-    val MidnightMono = darkColorScheme(
+    // --- MIDNIGHT MONO ---
+    val MidnightMonoDark = darkColorScheme(
         primary = Color(0xFFF9F9F9),
         onPrimary = Color(0xFF5F5F5F),
         primaryContainer = Color(0xFFA0A0A0),
@@ -44,128 +47,123 @@ object CustomColorSchemes {
         scrim = Color(0xFF000000)
     )
 
-    val ForestSage = darkColorScheme(
+    val MidnightMonoLight = lightColorScheme(
+        primary = Color(0xFF000000),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFE0E0E0),
+        onPrimaryContainer = Color(0xFF000000),
+        secondary = Color(0xFF424242),
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFEEEEEE),
+        onSecondaryContainer = Color(0xFF212121),
+        tertiary = Color(0xFF616161),
+        onTertiary = Color(0xFFFFFFFF),
+        surface = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF1A1A1A),
+        onSurfaceVariant = Color(0xFF474747),
+        background = Color(0xFFFFFFFF),
+        onBackground = Color(0xFF1A1A1A),
+        outline = Color(0xFF797979),
+        outlineVariant = Color(0xFFC4C4C4)
+    )
+
+    // --- FOREST SAGE ---
+    val ForestSageDark = darkColorScheme(
         primary = Color(0xFFE8F5E9),
         onPrimary = Color(0xFF2E3B2E),
         primaryContainer = Color(0xFF7A8F7A),
         onPrimaryContainer = Color(0xFF0E130E),
-        inversePrimary = Color(0xFF2E3B2E),
         secondary = Color(0xFFC8D6C8),
         onSecondary = Color(0xFF3A453A),
-        secondaryContainer = Color(0xFF333D33),
-        onSecondaryContainer = Color(0xFFBDCDBD),
-        tertiary = Color(0xFFE8F5E9),
-        onTertiary = Color(0xFF2E3B2E),
-        tertiaryContainer = Color(0xFFDDE7DD),
-        onTertiaryContainer = Color(0xFF3B443B),
         surface = Color(0xFF0A0D0A),
-        surfaceDim = Color(0xFF0A0D0A),
-        surfaceBright = Color(0xFF242C24),
-        surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF111611),
-        surfaceContainer = Color(0xFF181D18),
-        surfaceContainerHigh = Color(0xFF1F241F),
-        surfaceContainerHighest = Color(0xFF262B26),
-        surfaceVariant = Color(0xFF262B26),
+        background = Color(0xFF0A0D0A),
         onSurface = Color(0xFFE1E8E1),
         onSurfaceVariant = Color(0xFFAAB2AA),
-        surfaceTint = Color(0xFFE8F5E9),
-        background = Color(0xFF0A0D0A),
-        onBackground = Color(0xFFE1E8E1),
-        error = Color(0xFFF2B8B5),
-        onError = Color(0xFF601410),
-        errorContainer = Color(0xFF8C1D18),
-        onErrorContainer = Color(0xFFF9DEDC),
-        outline = Color(0xFF6F776F),
-        outlineVariant = Color(0xFF434A43),
-        inverseSurface = Color(0xFFE8F5E9),
-        inverseOnSurface = Color(0xFF2A312A),
-        scrim = Color(0xFF000000)
+        outline = Color(0xFF6F776F)
     )
 
-    val EarthBrown = darkColorScheme(
+    val ForestSageLight = lightColorScheme(
+        primary = Color(0xFF386B41),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFB9F0BC),
+        onPrimaryContainer = Color(0xFF002106),
+        secondary = Color(0xFF52634F),
+        onSecondary = Color(0xFFFFFFFF),
+        surface = Color(0xFFF8FAF7),
+        onSurface = Color(0xFF191C19),
+        onSurfaceVariant = Color(0xFF424940),
+        background = Color(0xFFF8FAF7),
+        outline = Color(0xFF72796F)
+    )
+
+    // --- EARTH BROWN ---
+    val EarthBrownDark = darkColorScheme(
         primary = Color(0xFFF5F0EB),
         onPrimary = Color(0xFF3D352E),
         primaryContainer = Color(0xFF8A7B6D),
         onPrimaryContainer = Color(0xFF1A1613),
-        inversePrimary = Color(0xFF3D352E),
         secondary = Color(0xFFD6CEC8),
         onSecondary = Color(0xFF453D37),
-        secondaryContainer = Color(0xFF3D3732),
-        onSecondaryContainer = Color(0xFFCDC6BF),
-        tertiary = Color(0xFFF5F0EB),
-        onTertiary = Color(0xFF3D352E),
-        tertiaryContainer = Color(0xFFE7E0D9),
-        onTertiaryContainer = Color(0xFF443D37),
         surface = Color(0xFF0D0C0B),
-        surfaceDim = Color(0xFF0D0C0B),
-        surfaceBright = Color(0xFF2C2825),
-        surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF161412),
-        surfaceContainer = Color(0xFF1C1A18),
-        surfaceContainerHigh = Color(0xFF22201E),
-        surfaceContainerHighest = Color(0xFF282624),
-        surfaceVariant = Color(0xFF282624),
+        background = Color(0xFF0D0C0B),
         onSurface = Color(0xFFE8E2DD),
         onSurfaceVariant = Color(0xFFB2ABA5),
-        surfaceTint = Color(0xFFF5F0EB),
-        background = Color(0xFF0D0C0B),
-        onBackground = Color(0xFFE8E2DD),
-        error = Color(0xFFF2B8B5),
-        onError = Color(0xFF601410),
-        errorContainer = Color(0xFF8C1D18),
-        onErrorContainer = Color(0xFFF9DEDC),
-        outline = Color(0xFF777069),
-        outlineVariant = Color(0xFF4A443F),
-        inverseSurface = Color(0xFFF5F0EB),
-        inverseOnSurface = Color(0xFF312D2A),
-        scrim = Color(0xFF000000)
+        outline = Color(0xFF777069)
     )
 
-    val TwilightLavender = darkColorScheme(
+    val EarthBrownLight = lightColorScheme(
+        primary = Color(0xFF7A5900),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFFFDF9E),
+        onPrimaryContainer = Color(0xFF261A00),
+        secondary = Color(0xFF6B5D3F),
+        onSecondary = Color(0xFFFFFFFF),
+        surface = Color(0xFFFFFBFF),
+        onSurface = Color(0xFF1E1B16),
+        onSurfaceVariant = Color(0xFF4D4639),
+        background = Color(0xFFFFFBFF),
+        outline = Color(0xFF7E7667)
+    )
+
+    // --- TWILIGHT LAVENDER ---
+    val TwilightLavenderDark = darkColorScheme(
         primary = Color(0xFFF3E5F5),
         onPrimary = Color(0xFF3B2E3D),
         primaryContainer = Color(0xFF7B6D8A),
         onPrimaryContainer = Color(0xFF16131A),
-        inversePrimary = Color(0xFF3B2E3D),
         secondary = Color(0xFFD2C8D6),
         onSecondary = Color(0xFF403745),
-        secondaryContainer = Color(0xFF38323D),
-        onSecondaryContainer = Color(0xFFC9BFCD),
-        tertiary = Color(0xFFF3E5F5),
-        onTertiary = Color(0xFF3B2E3D),
-        tertiaryContainer = Color(0xFFE5D9E7),
-        onTertiaryContainer = Color(0xFF403744),
         surface = Color(0xFF0D0A0D),
-        surfaceDim = Color(0xFF0D0A0D),
-        surfaceBright = Color(0xFF2B252C),
-        surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF161216),
-        surfaceContainer = Color(0xFF1C181C),
-        surfaceContainerHigh = Color(0xFF221E22),
-        surfaceContainerHighest = Color(0xFF282428),
-        surfaceVariant = Color(0xFF282428),
+        background = Color(0xFF0D0A0D),
         onSurface = Color(0xFFE7E1E8),
         onSurfaceVariant = Color(0xFFB2AAB2),
-        surfaceTint = Color(0xFFF3E5F5),
-        background = Color(0xFF0D0A0D),
-        onBackground = Color(0xFFE7E1E8),
-        error = Color(0xFFF2B8B5),
-        onError = Color(0xFF601410),
-        errorContainer = Color(0xFF8C1D18),
-        onErrorContainer = Color(0xFFF9DEDC),
-        outline = Color(0xFF776F77),
-        outlineVariant = Color(0xFF4A434A),
-        inverseSurface = Color(0xFFF3E5F5),
-        inverseOnSurface = Color(0xFF312A31),
-        scrim = Color(0xFF000000)
+        outline = Color(0xFF776F77)
+    )
+
+    val TwilightLavenderLight = lightColorScheme(
+        primary = Color(0xFF6F4DA0),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFECDCFF),
+        onPrimaryContainer = Color(0xFF280056),
+        secondary = Color(0xFF645A70),
+        onSecondary = Color(0xFFFFFFFF),
+        surface = Color(0xFFFFF7FF),
+        onSurface = Color(0xFF1D1A20),
+        onSurfaceVariant = Color(0xFF4A454E),
+        background = Color(0xFFFFF7FF),
+        outline = Color(0xFF7B757F)
     )
 
     val Schemes = mapOf(
         "DEFAULT" to null,
-        "MIDNIGHT_MONO" to MidnightMono,
-        "FOREST_SAGE" to ForestSage,
-        "EARTH_BROWN" to EarthBrown,
-        "TWILIGHT_LAVENDER" to TwilightLavender
+        "MIDNIGHT_MONO" to (MidnightMonoLight to MidnightMonoDark),
+        "FOREST_SAGE" to (ForestSageLight to ForestSageDark),
+        "EARTH_BROWN" to (EarthBrownLight to EarthBrownDark),
+        "TWILIGHT_LAVENDER" to (TwilightLavenderLight to TwilightLavenderDark)
     )
+
+    fun getScheme(id: String, isDark: Boolean): ColorScheme? {
+        val pair = Schemes[id] ?: return null
+        return if (isDark) pair.second else pair.first
+    }
 }

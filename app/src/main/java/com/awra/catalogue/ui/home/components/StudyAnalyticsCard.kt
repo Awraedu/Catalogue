@@ -31,7 +31,7 @@ fun StudyAnalyticsCard() {
         // Circular Progress Section
         Box(
             modifier = Modifier
-                .size(160.dp)
+                .size(178.dp)
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {

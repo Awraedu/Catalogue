@@ -105,8 +105,9 @@ fun SettingsScreen(
                     listOf(
                         "DEFAULT" to "Adaptive (System)",
                         "MIDNIGHT_MONO" to "Midnight Mono",
-                        "APPLE_IOS" to "Apple iOS",
-                        "NOTHING_OS" to "Nothing OS"
+                        "FOREST_SAGE" to "Forest Sage",
+                        "EARTH_BROWN" to "Earth Brown",
+                        "TWILIGHT_LAVENDER" to "Twilight Lavender"
                     ).forEach { (id, name) ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -204,8 +205,9 @@ fun SettingsScreen(
                             val themeName = when(selectedTheme) {
                                 "DEFAULT" -> "Adaptive (System)"
                                 "MIDNIGHT_MONO" -> "Midnight Mono"
-                                "APPLE_IOS" -> "Apple iOS"
-                                "NOTHING_OS" -> "Nothing OS"
+                                "FOREST_SAGE" -> "Forest Sage"
+                                "EARTH_BROWN" -> "Earth Brown"
+                                "TWILIGHT_LAVENDER" -> "Twilight Lavender"
                                 else -> selectedTheme
                             }
                             Text(

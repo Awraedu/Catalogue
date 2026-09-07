@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
                             flashcardConfig = null
                         }
                         currentMaterialType == MaterialType.PAYWALL -> {
-                            currentMaterialType = MaterialType.SETTINGS
+                            currentMaterialType = null
                         }
                         currentMaterialType != null -> currentMaterialType = null
                         currentSubject != null -> currentSubject = null
@@ -152,13 +152,12 @@ class MainActivity : ComponentActivity() {
                                     state.materialType == MaterialType.SETTINGS -> {
                                         SettingsScreen(
                                             viewModel = settingsViewModel,
-                                            onBackClick = { currentMaterialType = null },
-                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL }
+                                            onBackClick = { currentMaterialType = null }
                                         )
                                     }
                                     state.materialType == MaterialType.PAYWALL -> {
                                         PaywallScreen(
-                                            onBackClick = { currentMaterialType = MaterialType.SETTINGS },
+                                            onBackClick = { currentMaterialType = null },
                                             onPlanSelected = { plan ->
                                                 // Handle purchase logic
                                                 currentMaterialType = null
@@ -207,7 +206,8 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
                                             },
-                                            onSettingsClick = { currentMaterialType = MaterialType.SETTINGS }
+                                            onSettingsClick = { currentMaterialType = MaterialType.SETTINGS },
+                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL }
                                         )
                                     }
                                     state.materialType == null -> {

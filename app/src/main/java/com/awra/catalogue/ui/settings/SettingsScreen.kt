@@ -24,8 +24,7 @@ import com.kyant.capsule.ContinuousRoundedRectangle
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
-    onBackClick: () -> Unit,
-    onGoPremiumClick: () -> Unit
+    onBackClick: () -> Unit
 ) {
     val darkMode by viewModel.darkMode.collectAsState()
     val studyReminders by viewModel.studyReminders.collectAsState()
@@ -188,11 +187,6 @@ fun SettingsScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Premium Card
-            item {
-                PremiumPromoCard(onClick = onGoPremiumClick)
-            }
-
             // Account Section
             item {
                 SettingsSection(title = "Account") {
@@ -346,43 +340,6 @@ fun SettingsScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun PremiumPromoCard(onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = ContinuousRoundedRectangle(32.dp),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-    ) {
-        Row(
-            modifier = Modifier.padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Default.AutoAwesome,
-                    null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Go Premium", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
-                Text("Unlock all quizzes and offline features.", style = MaterialTheme.typography.bodySmall)
-            }
-            Icon(Icons.Default.ChevronRight, null)
         }
     }
 }

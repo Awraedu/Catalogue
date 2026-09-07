@@ -7,8 +7,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -43,7 +46,8 @@ fun HomeScreen(
     userName: String,
     onSubjectClick: (Subject) -> Unit,
     onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onGoPremiumClick: () -> Unit
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
@@ -57,7 +61,8 @@ fun HomeScreen(
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
         onRecentItemClick = onRecentItemClick,
-        onSettingsClick = onSettingsClick
+        onSettingsClick = onSettingsClick,
+        onGoPremiumClick = onGoPremiumClick
     )
 }
 
@@ -71,7 +76,8 @@ fun HomeScreenContent(
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
     onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onGoPremiumClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -118,6 +124,42 @@ fun HomeScreenContent(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     StudyAnalyticsCard()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Get Premium Banner
+                    Surface(
+                        onClick = onGoPremiumClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = ContinuousRoundedRectangle(24.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.AutoAwesome,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Get Premium", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
+                                Text("Unlock full access to all features.", style = MaterialTheme.typography.bodySmall)
+                            }
+                            Icon(Icons.Default.ChevronRight, null)
+                        }
+                    }
                 }
             }
 
@@ -186,7 +228,8 @@ fun HomeScreenPreview() {
             onStreamSelected = {},
             onSubjectClick = {},
             onRecentItemClick = {},
-            onSettingsClick = {}
+            onSettingsClick = {},
+            onGoPremiumClick = {}
         )
     }
 }

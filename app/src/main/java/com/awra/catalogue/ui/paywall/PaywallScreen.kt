@@ -33,33 +33,11 @@ fun PaywallScreen(
     onBackClick: () -> Unit,
     onPlanSelected: (String) -> Unit
 ) {
-    var selectedPlan by remember { mutableStateOf("Yearly") }
+    var selectedPlan by remember { mutableStateOf("Pro") }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        }
-    ) { innerPadding ->
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -96,7 +74,7 @@ fun PaywallScreen(
                     )
                 ) {
                     Text(
-                        "Start 7-Day Free Trial",
+                        "Unlock Full Access",
                         fontWeight = FontWeight.Black,
                         fontSize = 18.sp
                     )
@@ -107,6 +85,20 @@ fun PaywallScreen(
             item {
                 FooterSection()
             }
+        }
+
+        // Floating Close Button
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(16.dp)
+                .size(40.dp)
+                .align(Alignment.TopStart)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f))
+        ) {
+            Icon(Icons.Default.Close, contentDescription = "Close", modifier = Modifier.size(20.dp))
         }
     }
 }
@@ -227,19 +219,27 @@ private fun PlansSection(selectedPlan: String, onPlanChange: (String) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         PlanCard(
-            title = "Yearly Access",
-            price = "$4.99/mo",
-            billing = "Billed annually ($59.99)",
-            isSelected = selectedPlan == "Yearly",
-            onClick = { onPlanChange("Yearly") },
-            tag = "Save 50%"
+            title = "Monthly Decoy",
+            price = "50 ETB",
+            billing = "Renewed monthly",
+            isSelected = selectedPlan == "Decoy",
+            onClick = { onPlanChange("Decoy") }
         )
         PlanCard(
-            title = "Monthly Access",
-            price = "$9.99/mo",
-            billing = "Billed monthly",
-            isSelected = selectedPlan == "Monthly",
-            onClick = { onPlanChange("Monthly") }
+            title = "Yearly Pro",
+            price = "450 ETB",
+            billing = "Billed annually",
+            isSelected = selectedPlan == "Pro",
+            onClick = { onPlanChange("Pro") },
+            tag = "Save 25%",
+            isBestValue = true
+        )
+        PlanCard(
+            title = "Lifetime Ultimate",
+            price = "999 ETB",
+            billing = "One-time payment",
+            isSelected = selectedPlan == "Ultimate",
+            onClick = { onPlanChange("Ultimate") }
         )
     }
 }
@@ -252,44 +252,74 @@ private fun PlanCard(
     billing: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    tag: String? = null
+    tag: String? = null,
+    isBestValue: Boolean = false
 ) {
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary 
+                     else if (isBestValue) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                     else Color.Transparent
     
+    val containerColor = if (isBestValue && isSelected) MaterialTheme.colorScheme.primaryContainer
+                         else if (isBestValue) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                         else MaterialTheme.colorScheme.surfaceContainerHigh
+
     Surface(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .border(2.dp, borderColor, ContinuousRoundedRectangle(24.dp)),
+            .padding(horizontal = if (isBestValue && !isSelected) 4.dp else 0.dp) // Subtle scale effect
+            .border(
+                width = if (isSelected) 3.dp else if (isBestValue) 2.dp else 0.dp,
+                color = borderColor,
+                shape = ContinuousRoundedRectangle(24.dp)
+            ),
         shape = ContinuousRoundedRectangle(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = containerColor,
+        tonalElevation = if (isBestValue) 12.dp else 2.dp
     ) {
-        Box {
+        Box(modifier = Modifier.padding(20.dp)) {
             Row(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
-                    Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(billing, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            title, 
+                            fontWeight = FontWeight.Black, 
+                            fontSize = 18.sp,
+                            color = if (isBestValue && !isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
+                        if (tag != null) {
+                            Spacer(Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    tag, 
+                                    color = MaterialTheme.colorScheme.onPrimary, 
+                                    style = MaterialTheme.typography.labelSmall, 
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                    Text(
+                        billing, 
+                        style = MaterialTheme.typography.bodySmall, 
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Text(price, fontWeight = FontWeight.Black, fontSize = 20.sp, color = MaterialTheme.colorScheme.primary)
-            }
-            
-            if (tag != null) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 12.dp, end = 12.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(tag, color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                }
+                Text(
+                    price, 
+                    fontWeight = FontWeight.Black, 
+                    fontSize = 20.sp, 
+                    color = if (isSelected || isBestValue) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -22,10 +23,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kyant.capsule.ContinuousRoundedRectangle
+
+val YearlyProColor = Color(0xFF6366F1) // Vibrant Electric Indigo
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -212,35 +216,34 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PlansSection(selectedPlan: String, onPlanChange: (String) -> Unit) {
+    val plans = listOf(
+        Triple("Decoy", "Monthly Decoy", "50 ETB" to "Renewed monthly"),
+        Triple("Pro", "Yearly Pro", "450 ETB" to "Billed annually"),
+        Triple("Ultimate", "Lifetime Ultimate", "999 ETB" to "One-time payment")
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(24.dp)
     ) {
-        PlanCard(
-            title = "Monthly Decoy",
-            price = "50 ETB",
-            billing = "Renewed monthly",
-            isSelected = selectedPlan == "Decoy",
-            onClick = { onPlanChange("Decoy") }
-        )
-        PlanCard(
-            title = "Yearly Pro",
-            price = "450 ETB",
-            billing = "Billed annually",
-            isSelected = selectedPlan == "Pro",
-            onClick = { onPlanChange("Pro") },
-            tag = "Save 25%",
-            isBestValue = true
-        )
-        PlanCard(
-            title = "Lifetime Ultimate",
-            price = "999 ETB",
-            billing = "One-time payment",
-            isSelected = selectedPlan == "Ultimate",
-            onClick = { onPlanChange("Ultimate") }
-        )
+        plans.forEachIndexed { index, plan ->
+            PlanCard(
+                title = plan.second,
+                price = plan.third.first,
+                billing = plan.third.second,
+                isSelected = selectedPlan == plan.first,
+                onClick = { onPlanChange(plan.first) },
+                tag = if (plan.first == "Pro") "Save 25%" else null,
+                isBestValue = plan.first == "Pro",
+                index = index,
+                count = plans.size
+            )
+            
+            if (index < plans.size - 1) {
+                Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
+            }
+        }
     }
 }
 
@@ -253,27 +256,40 @@ private fun PlanCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     tag: String? = null,
-    isBestValue: Boolean = false
+    isBestValue: Boolean = false,
+    index: Int = 0,
+    count: Int = 1
 ) {
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary 
-                     else if (isBestValue) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+    val outerRadius = 32.dp
+    val innerRadius = 8.dp
+    val itemShape = remember(index, count) {
+        when {
+            count == 1 -> ContinuousRoundedRectangle(outerRadius)
+            index == 0 -> RoundedCornerShape(topStart = outerRadius, topEnd = outerRadius, bottomStart = innerRadius, bottomEnd = innerRadius)
+            index == count - 1 -> RoundedCornerShape(bottomStart = outerRadius, bottomEnd = outerRadius, topStart = innerRadius, topEnd = innerRadius)
+            else -> RoundedCornerShape(innerRadius)
+        }
+    }
+
+    val accentColor = if (isBestValue) YearlyProColor else MaterialTheme.colorScheme.primary
+    val borderColor = if (isSelected) accentColor 
+                     else if (isBestValue) accentColor.copy(alpha = 0.5f)
                      else Color.Transparent
     
-    val containerColor = if (isBestValue && isSelected) MaterialTheme.colorScheme.primaryContainer
-                         else if (isBestValue) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+    val containerColor = if (isBestValue && isSelected) accentColor.copy(alpha = 0.2f)
+                         else if (isBestValue) accentColor.copy(alpha = 0.1f)
                          else MaterialTheme.colorScheme.surfaceContainerHigh
 
     Surface(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = if (isBestValue && !isSelected) 4.dp else 0.dp) // Subtle scale effect
             .border(
                 width = if (isSelected) 3.dp else if (isBestValue) 2.dp else 0.dp,
                 color = borderColor,
-                shape = ContinuousRoundedRectangle(24.dp)
+                shape = itemShape
             ),
-        shape = ContinuousRoundedRectangle(24.dp),
+        shape = itemShape,
         color = containerColor,
         tonalElevation = if (isBestValue) 12.dp else 2.dp
     ) {
@@ -284,24 +300,30 @@ private fun PlanCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
                             title, 
                             fontWeight = FontWeight.Black, 
                             fontSize = 18.sp,
-                            color = if (isBestValue && !isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            color = if (isBestValue) accentColor else MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         if (tag != null) {
                             Spacer(Modifier.width(8.dp))
                             Box(
                                 modifier = Modifier
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primary)
+                                    .background(accentColor)
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     tag, 
-                                    color = MaterialTheme.colorScheme.onPrimary, 
+                                    color = if (isBestValue) Color.White else MaterialTheme.colorScheme.onPrimary, 
                                     style = MaterialTheme.typography.labelSmall, 
                                     fontWeight = FontWeight.Bold
                                 )
@@ -314,11 +336,12 @@ private fun PlanCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                Spacer(Modifier.width(16.dp))
                 Text(
                     price, 
                     fontWeight = FontWeight.Black, 
                     fontSize = 20.sp, 
-                    color = if (isSelected || isBestValue) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    color = if (isSelected || isBestValue) accentColor else MaterialTheme.colorScheme.onSurface
                 )
             }
         }

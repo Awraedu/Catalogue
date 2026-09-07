@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -27,9 +28,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.*
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 val YearlyProColor = Color(0xFF6366F1) // Vibrant Electric Indigo
+
+data class PricingPlan(
+    val id: String,
+    val title: String,
+    val price: String,
+    val billing: String,
+    val tag: String? = null,
+    val isBestValue: Boolean = false
+)
+
+val AvailablePlans = listOf(
+    PricingPlan("Decoy", "Monthly Decoy", "50 ETB", "Renewed monthly"),
+    PricingPlan("Pro", "Yearly Pro", "450 ETB", "Billed annually", tag = "Save 25%", isBestValue = true),
+    PricingPlan("Ultimate", "Lifetime Ultimate", "999 ETB", "One-time payment")
+)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -37,7 +54,8 @@ fun PaywallScreen(
     onBackClick: () -> Unit,
     onPlanSelected: (String) -> Unit
 ) {
-    var selectedPlan by remember { mutableStateOf("Pro") }
+    var selectedPlanId by remember { mutableStateOf("Pro") }
+    val selectedPlan = remember(selectedPlanId) { AvailablePlans.find { it.id == selectedPlanId }!! }
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
@@ -58,27 +76,27 @@ fun PaywallScreen(
             // Plans Section
             item {
                 PlansSection(
-                    selectedPlan = selectedPlan,
-                    onPlanChange = { selectedPlan = it }
+                    selectedPlanId = selectedPlanId,
+                    onPlanChange = { selectedPlanId = it }
                 )
             }
 
             // Subscribe Button
             item {
                 Button(
-                    onClick = { onPlanSelected(selectedPlan) },
+                    onClick = { onPlanSelected(selectedPlanId) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .height(64.dp),
                     shape = ContinuousRoundedRectangle(32.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = if (selectedPlan.isBestValue) YearlyProColor else MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
                     )
                 ) {
                     Text(
-                        "Unlock Full Access",
+                        "Unlock for ${selectedPlan.price}",
                         fontWeight = FontWeight.Black,
                         fontSize = 18.sp
                     )
@@ -115,25 +133,23 @@ private fun HeaderSection() {
             .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.Asset("premiume.lottie"))
+        val progress by animateLottieCompositionAsState(
+            composition,
+            iterations = LottieConstants.IterateForever
+        )
+
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .clip(ContinuousRoundedRectangle(24.dp))
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.secondary
-                        )
-                    )
-                ),
+                .size(120.dp)
+                .clip(ContinuousRoundedRectangle(32.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                Icons.Default.AutoAwesome,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = Color.White
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
         }
 
@@ -164,7 +180,7 @@ private fun FeaturesSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         FeatureItem(
@@ -215,32 +231,26 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun PlansSection(selectedPlan: String, onPlanChange: (String) -> Unit) {
-    val plans = listOf(
-        Triple("Decoy", "Monthly Decoy", "50 ETB" to "Renewed monthly"),
-        Triple("Pro", "Yearly Pro", "450 ETB" to "Billed annually"),
-        Triple("Ultimate", "Lifetime Ultimate", "999 ETB" to "One-time payment")
-    )
-
+private fun PlansSection(selectedPlanId: String, onPlanChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp)
     ) {
-        plans.forEachIndexed { index, plan ->
+        AvailablePlans.forEachIndexed { index, plan ->
             PlanCard(
-                title = plan.second,
-                price = plan.third.first,
-                billing = plan.third.second,
-                isSelected = selectedPlan == plan.first,
-                onClick = { onPlanChange(plan.first) },
-                tag = if (plan.first == "Pro") "Save 25%" else null,
-                isBestValue = plan.first == "Pro",
+                title = plan.title,
+                price = plan.price,
+                billing = plan.billing,
+                isSelected = selectedPlanId == plan.id,
+                onClick = { onPlanChange(plan.id) },
+                tag = plan.tag,
+                isBestValue = plan.isBestValue,
                 index = index,
-                count = plans.size
+                count = AvailablePlans.size
             )
             
-            if (index < plans.size - 1) {
+            if (index < AvailablePlans.size - 1) {
                 Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
             }
         }
@@ -323,7 +333,7 @@ private fun PlanCard(
                             ) {
                                 Text(
                                     tag, 
-                                    color = if (isBestValue) Color.White else MaterialTheme.colorScheme.onPrimary, 
+                                    color = Color.White, 
                                     style = MaterialTheme.typography.labelSmall, 
                                     fontWeight = FontWeight.Bold
                                 )

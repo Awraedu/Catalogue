@@ -36,6 +36,7 @@ import com.awra.catalogue.ui.utility.*
 import com.awra.catalogue.ui.infographic.InfographicListScreen
 import com.awra.catalogue.ui.infographic.InfographicDetailScreen
 import com.awra.catalogue.ui.infographic.InfographicViewModel
+import com.awra.catalogue.ui.paywall.PaywallScreen
 import com.awra.catalogue.ui.components.FloatingNavigationBar
 import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.schedule.ScheduleScreen
@@ -103,6 +104,9 @@ class MainActivity : ComponentActivity() {
                             currentMaterialType = null
                             flashcardConfig = null
                         }
+                        currentMaterialType == MaterialType.PAYWALL -> {
+                            currentMaterialType = MaterialType.SETTINGS
+                        }
                         currentMaterialType != null -> currentMaterialType = null
                         currentSubject != null -> currentSubject = null
                     }
@@ -148,7 +152,17 @@ class MainActivity : ComponentActivity() {
                                     state.materialType == MaterialType.SETTINGS -> {
                                         SettingsScreen(
                                             viewModel = settingsViewModel,
-                                            onBackClick = { currentMaterialType = null }
+                                            onBackClick = { currentMaterialType = null },
+                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL }
+                                        )
+                                    }
+                                    state.materialType == MaterialType.PAYWALL -> {
+                                        PaywallScreen(
+                                            onBackClick = { currentMaterialType = MaterialType.SETTINGS },
+                                            onPlanSelected = { plan ->
+                                                // Handle purchase logic
+                                                currentMaterialType = null
+                                            }
                                         )
                                     }
                                     state.materialType == MaterialType.ANALYTICS -> {

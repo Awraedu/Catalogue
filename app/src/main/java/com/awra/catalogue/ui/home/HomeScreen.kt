@@ -84,7 +84,8 @@ fun HomeScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HomeTopBar(
-                onSettingsClick = onSettingsClick
+                onSettingsClick = onSettingsClick,
+                onPremiumClick = onGoPremiumClick
             )
         },
         bottomBar = { }

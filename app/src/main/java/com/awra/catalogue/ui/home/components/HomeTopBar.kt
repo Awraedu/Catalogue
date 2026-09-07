@@ -18,13 +18,14 @@ import com.awra.catalogue.R
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onPremiumClick: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = { },
         navigationIcon = {
             Button(
-                onClick = { /* Handle Premium Click */ },
+                onClick = onPremiumClick,
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .height(48.dp),

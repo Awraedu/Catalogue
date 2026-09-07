@@ -133,8 +133,9 @@ fun HomeScreenContent(
                         onClick = onGoPremiumClick,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clip(ContinuousRoundedRectangle(24.dp))
                             .shimmerEffect(
-                                shimmerColor = Color.White.copy(alpha = 0.15f),
+                                shimmerColor = Color.White.copy(alpha = 0.2f),
                                 durationMillis = 2000
                             ),
                         shape = ContinuousRoundedRectangle(24.dp),

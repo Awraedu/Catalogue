@@ -30,8 +30,9 @@ fun HomeTopBar(
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .height(48.dp)
+                    .clip(CircleShape)
                     .shimmerEffect(
-                        shimmerColor = Color.White.copy(alpha = 0.2f),
+                        shimmerColor = Color.White.copy(alpha = 0.25f),
                         durationMillis = 2000
                     ),
                 shape = CircleShape,

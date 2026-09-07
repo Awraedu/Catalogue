@@ -32,6 +32,7 @@ import com.awra.catalogue.ui.home.components.StudyAnalyticsCard
 import com.awra.catalogue.ui.home.components.RecentlyOpenedSection
 import com.awra.catalogue.ui.components.FloatingNavigationBar
 import com.awra.catalogue.ui.components.NavDestination
+import com.awra.catalogue.ui.components.shimmerEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 import java.util.Calendar
 import androidx.compose.ui.tooling.preview.Preview
@@ -130,7 +131,12 @@ fun HomeScreenContent(
                     // Get Premium Banner
                     Surface(
                         onClick = onGoPremiumClick,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shimmerEffect(
+                                shimmerColor = Color.White.copy(alpha = 0.15f),
+                                durationMillis = 2000
+                            ),
                         shape = ContinuousRoundedRectangle(24.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer

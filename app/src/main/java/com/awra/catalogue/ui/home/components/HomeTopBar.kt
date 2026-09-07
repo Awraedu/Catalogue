@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.R
+import com.awra.catalogue.ui.components.shimmerEffect
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,11 @@ fun HomeTopBar(
                 onClick = onPremiumClick,
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .height(48.dp),
+                    .height(48.dp)
+                    .shimmerEffect(
+                        shimmerColor = Color.White.copy(alpha = 0.2f),
+                        durationMillis = 2000
+                    ),
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

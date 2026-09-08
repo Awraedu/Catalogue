@@ -41,5 +41,3 @@ lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", versio
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-symbol-processing = { id = "com.google.devtools.ksp", version = "2.2.10-2.0.2" }
-
-

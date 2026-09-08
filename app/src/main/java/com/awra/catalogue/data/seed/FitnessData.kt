@@ -1,9 +1,123 @@
 package com.awra.catalogue.data.seed
 
 object FitnessData {
+
     val units = listOf(
-        "Foundations of Health" to listOf("Exercise Physiology", "Nutritional Basics", "Mental Well-being"),
-        "Training Methods" to listOf("Strength and Conditioning", "Cardiovascular Fitness", "Flexibility and Mobility"),
-        "Lifestyle Management" to listOf("Stress Reduction", "Sleep Hygiene", "Habit Formation")
+
+        "Concepts of Physical Fitness" to listOf(
+            "Meaning and Definition of Physical Fitness",
+            "Physical Activity",
+            "Physical Exercise",
+            "Sport",
+            "Health-Related Fitness",
+            "Skill-Related Fitness",
+            "Benefits of Physical Fitness",
+            "Principles of Fitness Training",
+            "Principle of Overload",
+            "FIIT Principle",
+            "Frequency",
+            "Intensity",
+            "Time",
+            "Type",
+            "Rest and Recovery",
+            "Periodization",
+            "Principle of Reversibility",
+            "Principle of Individual Differences",
+            "Behavior Modification for Fitness"
+        ),
+
+        "Health Benefits of Physical Activity" to listOf(
+            "Physical Activity and Health",
+            "Physical Activity and Hypokinetic Diseases",
+            "Sedentary Lifestyle",
+            "Physical Activity and Cardiovascular Disease",
+            "Coronary Heart Disease",
+            "Hypertension",
+            "Hypercholesterolemia and Dyslipidemia",
+            "Diabetes Mellitus",
+            "Obesity and Overweight",
+            "Metabolic Syndrome",
+            "Physical Activity and Aging",
+            "Physical Activity and Postural Deformities",
+            "Musculoskeletal Diseases and Disorders",
+            "Disease Prevention Through Physical Activity",
+            "Physical Activity and Healthy Aging",
+            "Physical Activity Guidelines",
+            "Moderate and Vigorous Physical Activity",
+            "Benefits of Regular Exercise"
+        ),
+
+        "Making Well-Informed Food Choices" to listOf(
+            "Basics of Nutrition",
+            "Sound Eating Practices",
+            "Macronutrients",
+            "Carbohydrates",
+            "Proteins",
+            "Fats",
+            "Micronutrients",
+            "Vitamins",
+            "Minerals",
+            "Calories and Food Energy",
+            "Energy Balance",
+            "Nutrition and Physical Performance",
+            "Nutrition Before Exercise",
+            "Nutrition During Exercise",
+            "Nutrition After Exercise",
+            "Hydration and Exercise",
+            "Planning a Training Diet",
+            "Healthy Food Choices",
+            "Nutrition for Fitness"
+        ),
+
+        "Health-Related Fitness and Exercise Prescription" to listOf(
+            "Health-Related Components of Fitness",
+            "Cardiorespiratory Fitness",
+            "Muscle Fitness",
+            "Muscular Strength",
+            "Muscular Endurance",
+            "Flexibility",
+            "Body Composition",
+            "Fitness Goals",
+            "Principles of Exercise Prescription",
+            "Mode of Exercise",
+            "Warm-Up",
+            "Primary Conditioning Period",
+            "Workout Planning",
+            "Cool-Down",
+            "Individualizing a Workout",
+            "Developing Cardiorespiratory Fitness",
+            "Cardiorespiratory Exercise Prescription",
+            "Starting and Maintaining a Cardiorespiratory Program",
+            "Training Techniques",
+            "Developing Muscle Fitness",
+            "Strength and Endurance Programs",
+            "Weight Training Programs",
+            "Weight Training Exercise Prescription",
+            "Individualized Exercise Prescription",
+            "Developing Flexibility",
+            "Flexibility Exercise Prescription",
+            "Avoiding Hazardous Exercise"
+        ),
+
+        "Assessment of Fitness Components" to listOf(
+            "Evaluating Health Status",
+            "Fitness Assessment",
+            "Assessment of Cardiorespiratory Fitness",
+            "1.5-Mile Run Test",
+            "1-Mile Walk Test",
+            "Cycle Ergometer Fitness Test",
+            "Step Test",
+            "Assessment of Muscle Fitness",
+            "Assessment of Muscular Strength",
+            "Assessment of Muscular Endurance",
+            "Assessment of Flexibility",
+            "Trunk Flexibility",
+            "Shoulder Flexibility",
+            "Assessment of Body Composition",
+            "Skinfold Test",
+            "Estimation of Body Composition",
+            "Field Techniques for Fitness Assessment",
+            "Interpreting Fitness Assessment Results"
+        )
     )
 }

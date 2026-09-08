@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.awra.catalogue" />
+                  <option name="mobileSdkAppId" value="1:834060005941:android:99d85c261cab6f9a65b77c" />
+                  <option name="projectId" value="glass-464b4" />
+                  <option name="projectNumber" value="834060005941" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

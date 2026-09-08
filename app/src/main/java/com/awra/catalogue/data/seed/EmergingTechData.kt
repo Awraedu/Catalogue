@@ -1,9 +1,154 @@
 package com.awra.catalogue.data.seed
 
 object EmergingTechData {
+
     val units = listOf(
-        "Data Science and AI" to listOf("Machine Learning", "Big Data Analytics", "AI Ethics"),
-        "Internet of Things (IoT)" to listOf("Sensors and Connectivity", "Smart Cities", "Industrial IoT"),
-        "Future Frontiers" to listOf("Blockchain", "Augmented Reality", "Quantum Computing")
+
+        "Introduction to Emerging Technologies" to listOf(
+            "Meaning and Concept of Emerging Technologies",
+            "Evolution of Technology",
+            "History of Industrial Revolutions",
+            "First Industrial Revolution",
+            "Second Industrial Revolution",
+            "Third Industrial Revolution",
+            "Fourth Industrial Revolution",
+            "Industry 4.0",
+            "Role of Data in Emerging Technologies",
+            "Data-Driven Technologies",
+            "Programmable Devices",
+            "Human–Machine Interaction",
+            "Human–Computer Interaction",
+            "Future Trends in Emerging Technologies"
+        ),
+
+        "Data Science and Big Data" to listOf(
+            "Introduction to Data Science",
+            "Data Science Concepts",
+            "Data and Information",
+            "Types of Data",
+            "Structured and Unstructured Data",
+            "Data Collection",
+            "Data Storage",
+            "Data Processing",
+            "Data Analysis",
+            "Data Visualization",
+            "Big Data",
+            "Characteristics of Big Data",
+            "The Five Vs of Big Data",
+            "Big Data Analytics",
+            "Applications of Big Data",
+            "Advantages of Big Data",
+            "Challenges of Big Data",
+            "Big Data in Ethiopia"
+        ),
+
+        "Artificial Intelligence" to listOf(
+            "Introduction to Artificial Intelligence",
+            "Definition and Characteristics of AI",
+            "History of Artificial Intelligence",
+            "Evolution of AI",
+            "Types of Artificial Intelligence",
+            "Narrow AI",
+            "General AI",
+            "Super AI",
+            "Machine Learning",
+            "Deep Learning",
+            "Natural Language Processing",
+            "Computer Vision",
+            "Robotics and AI",
+            "AI Applications in Healthcare",
+            "AI Applications in Education",
+            "AI Applications in Agriculture",
+            "AI Applications in Business",
+            "AI Tools and Platforms",
+            "Examples of Artificial Intelligence Systems",
+            "Benefits and Limitations of AI"
+        ),
+
+        "Internet of Things (IoT)" to listOf(
+            "Introduction to the Internet of Things",
+            "Definition and Characteristics of IoT",
+            "History and Evolution of IoT",
+            "IoT Devices and Sensors",
+            "IoT Connectivity",
+            "IoT Architecture",
+            "IoT Components",
+            "IoT Communication",
+            "IoT Platforms",
+            "IoT Tools",
+            "Smart Home",
+            "Smart City",
+            "Smart Grid",
+            "Smart Farming",
+            "IoT in Healthcare",
+            "IoT in Industry",
+            "Advantages of IoT",
+            "Challenges of IoT",
+            "Security and Privacy in IoT"
+        ),
+
+        "Virtual, Augmented and Mixed Reality" to listOf(
+            "Introduction to Extended Reality",
+            "Virtual Reality",
+            "Augmented Reality",
+            "Mixed Reality",
+            "Differences Between VR, AR and MR",
+            "History of Virtual Reality",
+            "How Virtual Reality Works",
+            "How Augmented Reality Works",
+            "VR and AR Architecture",
+            "VR and AR Devices",
+            "Sensors and Tracking",
+            "Applications of Virtual Reality",
+            "Applications of Augmented Reality",
+            "VR and AR in Education",
+            "VR and AR in Healthcare",
+            "VR and AR in Business",
+            "Benefits of Immersive Technologies",
+            "Limitations and Challenges"
+        ),
+
+        "Ethics and Professionalism of Emerging Technologies" to listOf(
+            "Technology and Ethics",
+            "Ethical Issues in Emerging Technologies",
+            "Privacy",
+            "Data Privacy",
+            "Digital Identity",
+            "Security and Trust",
+            "Accountability",
+            "Transparency",
+            "Bias in Artificial Intelligence",
+            "Algorithmic Decision Making",
+            "Ethics of Automation",
+            "Professional Responsibility",
+            "Technology and Human Rights",
+            "Social Impact of Emerging Technologies",
+            "Economic Impact of Emerging Technologies",
+            "Threats and Challenges of Emerging Technologies",
+            "Responsible Use of Technology"
+        ),
+
+        "Other Emerging Technologies" to listOf(
+            "Nanotechnology",
+            "Applications of Nanotechnology",
+            "Biotechnology",
+            "Applications of Biotechnology",
+            "Blockchain Technology",
+            "Blockchain Architecture",
+            "Applications of Blockchain",
+            "Cloud Computing",
+            "Cloud Computing Models",
+            "Quantum Computing",
+            "Quantum Computing Concepts",
+            "Autonomic Computing",
+            "Computer Vision",
+            "Cybersecurity",
+            "Cybersecurity Threats",
+            "Cybersecurity Technologies",
+            "Embedded Systems",
+            "Additive Manufacturing",
+            "3D Printing",
+            "Applications of 3D Printing"
+        )
     )
 }

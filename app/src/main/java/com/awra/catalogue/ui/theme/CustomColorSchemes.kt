@@ -262,56 +262,81 @@ object CustomColorSchemes {
     )
 
     // --- VIBRANT ORANGE (Brand Theme) ---
+    // A detailed, high-contrast theme using Orange as the core brand color,
+    // with Indigo and Emerald as functional secondary/tertiary colors for tools like Periodic Tables.
     val VibrantOrangeDark = darkColorScheme(
-        primary = Color(0xFFFF6D00),
+        primary = Color(0xFFFF6D00), // Vibrant Orange
         onPrimary = Color(0xFFFFFFFF),
-        primaryContainer = Color(0xFF4B2000),
+        primaryContainer = Color(0xFF7A2E00),
         onPrimaryContainer = Color(0xFFFFDBCB),
-        secondary = Color(0xFF222222),
-        onSecondary = Color(0xFFE0E0E0),
-        secondaryContainer = Color(0xFF333333),
-        onSecondaryContainer = Color(0xFFF0F0F0),
-        tertiary = Color(0xFFCCCCCC),
-        onTertiary = Color(0xFF222222),
-        surface = Color(0xFF000000),
+        
+        secondary = Color(0xFF7C3AED), // Vivid Violet/Indigo
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFF4C1D95),
+        onSecondaryContainer = Color(0xFFEDE9FE),
+        
+        tertiary = Color(0xFF059669), // Vivid Emerald
+        onTertiary = Color(0xFFFFFFFF),
+        tertiaryContainer = Color(0xFF064E3B),
+        onTertiaryContainer = Color(0xFFD1FAE5),
+        
+        surface = Color(0xFF000000), // Pure Black background
         background = Color(0xFF000000),
-        onSurface = Color(0xFFE0E0E0),
-        onSurfaceVariant = Color(0xFFA0A0A0),
-        outline = Color(0xFF707070),
+        onSurface = Color(0xFFF9FAFB),
+        onSurfaceVariant = Color(0xFFD1D5DB),
+        
+        outline = Color(0xFF6B7280),
+        outlineVariant = Color(0xFF374151),
+        
         surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF0A0A0A),
-        surfaceContainer = Color(0xFF121212),
-        surfaceContainerHigh = Color(0xFF1A1A1A),
-        surfaceContainerHighest = Color(0xFF222222),
-        inverseSurface = Color(0xFFE0E0E0),
-        inverseOnSurface = Color(0xFF121212),
-        error = Color(0xFFFFB4AB),
-        onError = Color(0xFF690005)
+        surfaceContainerLow = Color(0xFF09090B),
+        surfaceContainer = Color(0xFF111113),
+        surfaceContainerHigh = Color(0xFF18181B),
+        surfaceContainerHighest = Color(0xFF27272A),
+        
+        inverseSurface = Color(0xFFF9FAFB),
+        inverseOnSurface = Color(0xFF09090B),
+        
+        error = Color(0xFFEF4444),
+        onError = Color(0xFFFFFFFF),
+        errorContainer = Color(0xFF991B1B),
+        onErrorContainer = Color(0xFFFEE2E2)
     )
 
     val VibrantOrangeLight = lightColorScheme(
         primary = Color(0xFFFF6D00),
         onPrimary = Color(0xFFFFFFFF),
-        primaryContainer = Color(0xFFFFDBCB),
-        onPrimaryContainer = Color(0xFF2F0F00),
-        secondary = Color(0xFFE0E0E0),
-        onSecondary = Color(0xFF121212),
-        secondaryContainer = Color(0xFFF5F5F5),
-        onSecondaryContainer = Color(0xFF000000),
-        tertiary = Color(0xFF424242),
+        primaryContainer = Color(0xFFFFF7ED),
+        onPrimaryContainer = Color(0xFF7C2D12),
+        
+        secondary = Color(0xFF7C3AED), // Vivid Violet/Indigo
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFEDE9FE),
+        onSecondaryContainer = Color(0xFF4C1D95),
+        
+        tertiary = Color(0xFF059669), // Vivid Emerald
         onTertiary = Color(0xFFFFFFFF),
-        surface = Color(0xFFFFFFFF),
+        tertiaryContainer = Color(0xFFD1FAE5),
+        onTertiaryContainer = Color(0xFF064E3B),
+        
+        surface = Color(0xFFFFFFFF), // Pure White background
         background = Color(0xFFFFFFFF),
-        onSurface = Color(0xFF121212),
-        onSurfaceVariant = Color(0xFF424242),
-        outline = Color(0xFF797979),
+        onSurface = Color(0xFF09090B),
+        onSurfaceVariant = Color(0xFF4B5563),
+        
+        outline = Color(0xFF9CA3AF),
+        outlineVariant = Color(0xFFE5E7EB),
+        
         surfaceContainerLowest = Color(0xFFFFFFFF),
-        surfaceContainerLow = Color(0xFFF9F9F9),
-        surfaceContainer = Color(0xFFF2F2F2),
-        surfaceContainerHigh = Color(0xFFEBEBEB),
-        surfaceContainerHighest = Color(0xFFE0E0E0),
-        error = Color(0xFFBA1A1A),
-        onError = Color(0xFFFFFFFF)
+        surfaceContainerLow = Color(0xFFFAFAFA),
+        surfaceContainer = Color(0xFFF4F4F5),
+        surfaceContainerHigh = Color(0xFFE4E4E7),
+        surfaceContainerHighest = Color(0xFFD4D4D8),
+        
+        error = Color(0xFFDC2626),
+        onError = Color(0xFFFFFFFF),
+        errorContainer = Color(0xFFFEE2E2),
+        onErrorContainer = Color(0xFF7F1D1D)
     )
 
     val Schemes = mapOf(

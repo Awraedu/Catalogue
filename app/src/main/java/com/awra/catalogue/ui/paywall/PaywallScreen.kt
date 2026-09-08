@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
 import com.kyant.capsule.ContinuousRoundedRectangle
 
-val YearlyProColor = Color(0xFF6366F1) // Vibrant Electric Indigo
-
 data class PricingPlan(
     val id: String,
     val title: String,
@@ -91,7 +89,7 @@ fun PaywallScreen(
                         .height(64.dp),
                     shape = ContinuousRoundedRectangle(32.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedPlan.isBestValue) YearlyProColor else MaterialTheme.colorScheme.primary,
+                        containerColor = if (selectedPlan.isBestValue) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
                     )
                 ) {
@@ -281,7 +279,8 @@ private fun PlanCard(
         }
     }
 
-    val accentColor = if (isBestValue) YearlyProColor else MaterialTheme.colorScheme.primary
+    // Use theme colors for integration
+    val accentColor = if (isBestValue) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
     val borderColor = if (isSelected) accentColor 
                      else if (isBestValue) accentColor.copy(alpha = 0.5f)
                      else Color.Transparent
@@ -333,7 +332,7 @@ private fun PlanCard(
                             ) {
                                 Text(
                                     tag, 
-                                    color = Color.White, 
+                                    color = if (isBestValue) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.labelSmall, 
                                     fontWeight = FontWeight.Bold
                                 )

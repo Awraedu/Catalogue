@@ -62,6 +62,15 @@ dependencies {
     // Lottie
     implementation(libs.lottie.compose)
 
+    // Markwon (Industry Standard Markdown)
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.ext.tables)
+    implementation(libs.markwon.ext.latex)
+    implementation(libs.markwon.image.coil)
+    implementation(libs.markwon.inline.parser)
+    implementation(libs.jlatexmath.android)
+    implementation("io.noties.markwon:ext-tasklist:4.6.2")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     testImplementation(libs.junit)

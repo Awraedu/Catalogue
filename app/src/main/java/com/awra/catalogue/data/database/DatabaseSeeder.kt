@@ -9,44 +9,61 @@ import com.awra.catalogue.data.util.QuizLoader
 object DatabaseSeeder {
     val initialSubjects = listOf(
         // Common Subjects
-        Subject(name = "Communicative English I", description = "Foundational language skills.", stream = Stream.COMMON, shape = ExpressiveShape.CIRCLE),
-        Subject(name = "Communicative English II", description = "Advanced academic writing.", stream = Stream.COMMON, shape = ExpressiveShape.OVAL),
-        Subject(name = "General Psychology", description = "Introduction to human behavior.", stream = Stream.COMMON, shape = ExpressiveShape.PILL),
-        Subject(name = "Social Anthropology", description = "Study of human societies and cultures.", stream = Stream.COMMON, shape = ExpressiveShape.SEMICIRCLE),
-        Subject(name = "Critical Thinking", description = "Logic and reasoning skills.", stream = Stream.COMMON, shape = ExpressiveShape.ARCH),
-        Subject(name = "Moral and Civic Education", description = "Ethics and citizenship.", stream = Stream.COMMON, shape = ExpressiveShape.BUN),
+        Subject(name = "English I", description = "Foundational language skills.", stream = Stream.COMMON, shape = ExpressiveShape.CIRCLE),
+        Subject(name = "English II", description = "Advanced academic writing.", stream = Stream.COMMON, shape = ExpressiveShape.OVAL),
+        Subject(name = "Psychology", description = "Introduction to human behavior.", stream = Stream.COMMON, shape = ExpressiveShape.PILL),
+        Subject(name = "Anthropology", description = "Study of human societies and cultures.", stream = Stream.COMMON, shape = ExpressiveShape.SEMICIRCLE),
+        Subject(name = "Logic", description = "Logic and reasoning skills.", stream = Stream.COMMON, shape = ExpressiveShape.ARCH),
+        Subject(name = "Civics", description = "Ethics and citizenship.", stream = Stream.COMMON, shape = ExpressiveShape.BUN),
         Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.COMMON, shape = ExpressiveShape.FAN),
         Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.COMMON, shape = ExpressiveShape.HEART),
-        Subject(name = "Emerging Technologies", description = "AI, IoT, and future tech.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_4),
+        Subject(name = "Emerging Tech", description = "AI, IoT, and future tech.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_4),
         Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_6),
         Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_7),
         
         // Natural Stream
-        Subject(name = "General Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
-        Subject(name = "General Chemistry", description = "Atomic structure and bonding.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_12),
-        Subject(name = "General Biology", description = "Cell biology and genetics.", stream = Stream.NATURAL, shape = ExpressiveShape.CLOVER_4),
-        Subject(name = "Mathematics for Natural Sciences", description = "Calculus and linear algebra.", stream = Stream.NATURAL, shape = ExpressiveShape.CIRCLE),
+        Subject(name = "Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
+        Subject(name = "Chemistry", description = "Atomic structure and bonding.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_12),
+        Subject(name = "Biology", description = "Cell biology and genetics.", stream = Stream.NATURAL, shape = ExpressiveShape.CLOVER_4),
+        Subject(name = "Natural Math", description = "Calculus and linear algebra.", stream = Stream.NATURAL, shape = ExpressiveShape.CIRCLE),
         
         // Social Stream
-        Subject(name = "Geography of Ethiopia and the Horn", description = "Physical and human geography.", stream = Stream.SOCIAL, shape = ExpressiveShape.OVAL),
-        Subject(name = "History of Ethiopia and the Horn", description = "Historical developments in the region.", stream = Stream.SOCIAL, shape = ExpressiveShape.PILL),
-        Subject(name = "Introduction to Economics", description = "Micro and macroeconomics principles.", stream = Stream.SOCIAL, shape = ExpressiveShape.SEMICIRCLE),
-        Subject(name = "Introduction to Sociology", description = "Social structures and interactions.", stream = Stream.SOCIAL, shape = ExpressiveShape.ARCH),
-        Subject(name = "Mathematics for Social Sciences", description = "Probability and statistics.", stream = Stream.SOCIAL, shape = ExpressiveShape.BUN)
+        Subject(name = "Geography", description = "Physical and human geography.", stream = Stream.SOCIAL, shape = ExpressiveShape.OVAL),
+        Subject(name = "History", description = "Historical developments in the region.", stream = Stream.SOCIAL, shape = ExpressiveShape.PILL),
+        Subject(name = "Economics", description = "Micro and macroeconomics principles.", stream = Stream.SOCIAL, shape = ExpressiveShape.SEMICIRCLE),
+        Subject(name = "Sociology", description = "Social structures and interactions.", stream = Stream.SOCIAL, shape = ExpressiveShape.ARCH),
+        Subject(name = "Social Math", description = "Probability and statistics.", stream = Stream.SOCIAL, shape = ExpressiveShape.BUN)
     )
 
     private val subjectFolderMap = mapOf(
+        "English I" to "Communicative_English_I",
+        "English II" to "Communicative_English_II",
+        "Psychology" to "General_Psychology",
+        "Anthropology" to "Social_Anthropology",
+        "Logic" to "Critical_Thinking",
+        "Civics" to "Moral_and_Civic_Education",
+        "Inclusiveness" to "Inclusiveness",
+        "Entrepreneurship" to "Entrepreneurship",
+        "Emerging Tech" to "Emerging_Technologies",
+        "Fitness" to "Fitness",
+        "Global Trends" to "Global_Trends",
+        "Physics" to "General_Physics",
+        "Chemistry" to "General_Chemistry",
+        "Biology" to "General_Biology",
+        "Natural Math" to "Mathematics_for_Natural_Sciences",
+        "Geography" to "Geography_of_Ethiopia_and_the_Horn",
+        "History" to "History_of_Ethiopia_and_the_Horn",
+        "Economics" to "Introduction_to_Economics",
+        "Sociology" to "Introduction_to_Sociology",
+        "Social Math" to "Mathematics_for_Social_Sciences",
+        // Supporting both short and long names to be safe
         "Communicative English I" to "Communicative_English_I",
         "Communicative English II" to "Communicative_English_II",
         "General Psychology" to "General_Psychology",
         "Social Anthropology" to "Social_Anthropology",
         "Critical Thinking" to "Critical_Thinking",
         "Moral and Civic Education" to "Moral_and_Civic_Education",
-        "Inclusiveness" to "Inclusiveness",
-        "Entrepreneurship" to "Entrepreneurship",
         "Emerging Technologies" to "Emerging_Technologies",
-        "Fitness" to "Fitness",
-        "Global Trends" to "Global_Trends",
         "General Physics" to "General_Physics",
         "General Chemistry" to "General_Chemistry",
         "General Biology" to "General_Biology",
@@ -65,21 +82,21 @@ object DatabaseSeeder {
             val subjectId = dao.insertSubject(subject)
             
             when (subject.name) {
-                "Communicative English I" -> seedEnglishI(context, dao, subjectId)
-                "Communicative English II" -> seedEnglishII(context, dao, subjectId)
-                "General Psychology" -> {
+                "English I" -> seedEnglishI(context, dao, subjectId)
+                "English II" -> seedEnglishII(context, dao, subjectId)
+                "Psychology" -> {
                     seedPsychology(context, dao, subjectId)
                     seedPsychologyUtilities(dao, subjectId)
                 }
-                "Social Anthropology" -> {
+                "Anthropology" -> {
                     seedAnthropology(context, dao, subjectId)
                     seedAnthropologyUtilities(dao, subjectId)
                 }
-                "Critical Thinking" -> {
+                "Logic" -> {
                     seedCriticalThinking(context, dao, subjectId)
                     seedLogicUtilities(dao, subjectId)
                 }
-                "Moral and Civic Education" -> {
+                "Civics" -> {
                     seedCivics(context, dao, subjectId)
                     seedCivicsUtilities(dao, subjectId)
                 }
@@ -91,7 +108,7 @@ object DatabaseSeeder {
                     seedEntrepreneurship(context, dao, subjectId)
                     seedEntrepreneurshipUtilities(dao, subjectId)
                 }
-                "Emerging Technologies" -> {
+                "Emerging Tech" -> {
                     seedEmergingTech(context, dao, subjectId)
                     seedEmergingTechUtilities(dao, subjectId)
                 }
@@ -103,33 +120,33 @@ object DatabaseSeeder {
                     seedGlobalTrends(context, dao, subjectId)
                     seedGlobalTrendsUtilities(dao, subjectId)
                 }
-                "General Physics" -> {
+                "Physics" -> {
                     seedPhysics(context, dao, subjectId)
                     seedPhysicsUtilities(dao, subjectId)
                 }
-                "General Chemistry" -> {
+                "Chemistry" -> {
                     seedChemistry(context, dao, subjectId)
                     seedChemistryUtilities(dao, subjectId)
                 }
-                "General Biology" -> {
+                "Biology" -> {
                     seedBiology(context, dao, subjectId)
                     seedBiologyUtilities(dao, subjectId)
                 }
-                "Mathematics for Natural Sciences" -> {
+                "Natural Math" -> {
                     seedNaturalMath(context, dao, subjectId)
                     seedMathUtilities(dao, subjectId)
                 }
-                "Geography of Ethiopia and the Horn" -> {
+                "Geography" -> {
                     seedGeography(context, dao, subjectId)
                     seedGeographyUtilities(dao, subjectId)
                 }
-                "History of Ethiopia and the Horn" -> seedHistory(context, dao, subjectId)
-                "Introduction to Economics" -> {
+                "History" -> seedHistory(context, dao, subjectId)
+                "Economics" -> {
                     seedEconomics(context, dao, subjectId)
                     seedEconomicsUtilities(dao, subjectId)
                 }
-                "Introduction to Sociology" -> seedSociology(context, dao, subjectId)
-                "Mathematics for Social Sciences" -> {
+                "Sociology" -> seedSociology(context, dao, subjectId)
+                "Social Math" -> {
                     seedSocialMath(context, dao, subjectId)
                     seedMathUtilities(dao, subjectId)
                 }
@@ -223,8 +240,13 @@ object DatabaseSeeder {
                 val topicId = dao.insertTopic(
                     Topic(chapterId = chapterId, title = topicTitle)
                 )
+                
+                // Content stores the asset path for the Markdown file
+                val sanitizedTopic = topicTitle.replace(" ", "_").replace("?", "").replace(":", "")
+                val assetPath = "handouts/$folderName/$sanitizedTopic.md"
+                
                 dao.insertHandout(
-                    Handout(topicId = topicId, content = "Full detailed module content for $topicTitle in $subjectName.")
+                    Handout(topicId = topicId, content = assetPath)
                 )
                 
                 // Seed quizzes from JSON if available for this topic, otherwise fallback

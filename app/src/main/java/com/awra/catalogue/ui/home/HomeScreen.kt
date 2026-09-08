@@ -28,7 +28,7 @@ import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.ui.home.components.HomeTopBar
 import com.awra.catalogue.ui.home.components.SubjectCard
 import com.awra.catalogue.ui.home.components.StreamSelector
-import com.awra.catalogue.ui.home.components.StudyAnalyticsCard
+import com.awra.catalogue.ui.home.components.HomeHeroCard
 import com.awra.catalogue.ui.home.components.RecentlyOpenedSection
 import com.awra.catalogue.ui.components.FloatingNavigationBar
 import com.awra.catalogue.ui.components.NavDestination
@@ -125,7 +125,7 @@ fun HomeScreenContent(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    StudyAnalyticsCard()
+                    HomeHeroCard()
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     // Get Premium Banner

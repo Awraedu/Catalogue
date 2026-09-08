@@ -18,10 +18,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +39,8 @@ import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.ui.theme.YourAppTheme
-import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.awra.catalogue.ui.theme.getSubjectBackgroundImage
+import com.awra.catalogue.ui.theme.getSubjectIcon
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
 
@@ -42,7 +52,8 @@ fun SubjectDetailScreen(
     onCategoryClick: (MaterialType) -> Unit,
     onContinueClick: () -> Unit
 ) {
-    val subjectColors = getSubjectAdaptiveColors(subject.id)
+    val backgroundImage = getSubjectBackgroundImage(subject.name)
+    val subjectColors = com.awra.catalogue.ui.theme.getSubjectAdaptiveColors(subject.id)
     
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -81,74 +92,134 @@ fun SubjectDetailScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Hero Card: Resume Study
+            // Hero Card: Redesigned for Maximum Contrast with Black Text
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
                 shape = ContinuousRoundedRectangle(32.dp),
-                colors = CardDefaults.cardColors(containerColor = subjectColors.container)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Resume Study",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = subjectColors.content
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // 1. Base Image
+                    androidx.compose.foundation.Image(
+                        painter = painterResource(id = backgroundImage),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    
+                    // 2. Light Progressive Blur (White-ish for black text contrast)
+                    androidx.compose.foundation.Image(
+                        painter = painterResource(id = backgroundImage),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blur(70.dp)
+                            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                            .drawWithContent {
+                                drawContent()
+                                drawRect(
+                                    brush = Brush.verticalGradient(
+                                        0.2f to Color.Transparent,
+                                        0.6f to subjectColors.container
+                                    ),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            },
+                        contentScale = ContentScale.FillHeight
+                    )
+                    
+                    // 3. Light Overlay for guaranteed black text readability
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    0.3f to Color.Transparent,
+                                    1f to subjectColors.container.copy(alpha = 0.7f)
+                                )
                             )
-                            Text(
-                                text = "Chapter 3: Quantum Mechanics",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = subjectColors.content.copy(alpha = 0.7f)
-                            )
-                        }
-                        
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(subject.shape.toShape())
-                                .background(subjectColors.content.copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Book,
-                                contentDescription = null,
-                                tint = subjectColors.content,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
+                    )
 
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        LinearWavyProgressIndicator(
-                            progress = { 0.65f },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = subjectColors.content,
-                            trackColor = subjectColors.content.copy(alpha = 0.2f),
-                            amplitude = { 1f } // Significant wave height increase
-                        )
-                        
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Top Section: Metadata
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "45% Completed",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = subjectColors.content
-                            )
+                            // Subject Icon (Themed)
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(subject.shape.toShape())
+                                    .background(subjectColors.content),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = getSubjectIcon(subject.name),
+                                    contentDescription = null,
+                                    tint = subjectColors.container,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            // Colored Progress Tag Pill
+                            Surface(
+                                shape = CircleShape,
+                                color = subjectColors.container,
+                                modifier = Modifier.height(28.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.TrendingUp,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Text(
+                                        text = "65%",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Black,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+
+                        // Bottom Section: Title, Description, and Action (Black Text)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = subject.name,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color(0xFEFEFEFE), // Deep Black 000000
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "Chapter 3: Quantum Mechanics",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFEFEFEFE), // Deep Black 000000
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                             
                             val interactionSource = remember { MutableInteractionSource() }
                             val isPressed by interactionSource.collectIsPressedAsState()
@@ -159,14 +230,12 @@ fun SubjectDetailScreen(
                                 interactionSource = interactionSource,
                                 shape = ContinuousRoundedRectangle(cornerRadius),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = subjectColors.content,
-                                    contentColor = subjectColors.container
+                                    containerColor = subjectColors.container,
+                                    contentColor = subjectColors.content
                                 ),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
                             ) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Resume")
+                                Text("Resume", fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
                             }
                         }
                     }

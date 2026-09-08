@@ -14,7 +14,7 @@ import androidx.core.view.WindowCompat
 @Composable
 fun YourAppTheme(
     darkMode: String = "SYSTEM",
-    selectedTheme: String = "DEFAULT",
+    selectedTheme: String = "VIBRANT_ORANGE",
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

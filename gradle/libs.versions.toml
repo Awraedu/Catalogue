@@ -13,8 +13,15 @@ room = "2.8.4"
 capsule = "2.1.3"
 coil = "2.7.0"
 lottie = "6.6.2"
+markwon = "4.6.2"
 
 [libraries]
+markwon-core = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+markwon-ext-tables = { group = "io.noties.markwon", name = "ext-tables", version.ref = "markwon" }
+markwon-ext-latex = { group = "io.noties.markwon", name = "ext-latex", version.ref = "markwon" }
+markwon-image-coil = { group = "io.noties.markwon", name = "image-coil", version.ref = "markwon" }
+markwon-inline-parser = { group = "io.noties.markwon", name = "inline-parser", version.ref = "markwon" }
+jlatexmath-android = { group = "ru.noties", name = "jlatexmath-android", version = "0.2.0" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

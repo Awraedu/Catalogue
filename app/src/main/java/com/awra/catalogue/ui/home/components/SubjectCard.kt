@@ -14,10 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.awra.catalogue.ui.theme.getSubjectIcon
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
 
@@ -54,7 +56,7 @@ fun SubjectCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getIconForSubject(subject.name),
+                    imageVector = getSubjectIcon(subject.name),
                     contentDescription = null,
                     tint = colorRoles.content,
                     modifier = Modifier.size(24.dp)
@@ -66,7 +68,9 @@ fun SubjectCard(
                     text = subject.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = colorRoles.content
+                    color = colorRoles.content,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -81,23 +85,3 @@ fun SubjectCard(
     }
 }
 
-private fun getIconForSubject(name: String): ImageVector {
-    return when {
-        name.contains("English", ignoreCase = true) -> Icons.AutoMirrored.Filled.MenuBook
-        name.contains("Physics", ignoreCase = true) -> Icons.Default.Science
-        name.contains("Psychology", ignoreCase = true) -> Icons.Default.Psychology
-        name.contains("Mathematics", ignoreCase = true) -> Icons.Default.Calculate
-        name.contains("Logic", ignoreCase = true) -> Icons.Default.Lightbulb
-        name.contains("Geography", ignoreCase = true) -> Icons.Default.Public
-        name.contains("Anthropol", ignoreCase = true) -> Icons.Default.Groups
-        name.contains("Emerging", ignoreCase = true) -> Icons.Default.Memory
-        name.contains("Civics", ignoreCase = true) -> Icons.Default.Gavel
-        name.contains("Fitness", ignoreCase = true) -> Icons.Default.FitnessCenter
-        name.contains("Global", ignoreCase = true) -> Icons.Default.Language
-        name.contains("Chemistry", ignoreCase = true) -> Icons.Default.Biotech
-        name.contains("Biology", ignoreCase = true) -> Icons.Default.PestControl
-        name.contains("Economics", ignoreCase = true) -> Icons.AutoMirrored.Filled.TrendingUp
-        name.contains("Entreprene", ignoreCase = true) -> Icons.Default.BusinessCenter
-        else -> Icons.Default.Book
-    }
-}

@@ -958,27 +958,6 @@ The student should review notes, correct missing information, summarize the less
 
 ---
 
-# 34. Self-Assessment
-
-Before moving to the next chapter, check whether you can do the following:
-
-* [ ] Define a lecture.
-* [ ] Explain the purpose of a lecture.
-* [ ] Identify the three parts of a lecture.
-* [ ] Explain the role of a lecturer.
-* [ ] Explain the role of students.
-* [ ] Identify main ideas.
-* [ ] Identify supporting details.
-* [ ] Take useful lecture notes.
-* [ ] Recognize important signal words.
-* [ ] Explain why examples are used.
-* [ ] Describe what to do before, during, and after a lecture.
-* [ ] Summarize a lecture in your own words.
-
-If you cannot confidently check one of these items, review that section again.
-
----
-
 # Chapter Summary
 
 A **lecture** is a structured academic presentation used to teach students about a particular topic. A successful lecture normally consists of an **introduction, body, and conclusion**.

@@ -133,6 +133,7 @@ fun SettingsScreen(
                 Column {
                     listOf(
                         "DEFAULT" to "Adaptive (System)",
+                        "VIBRANT_ORANGE" to "Vibrant Orange (Brand)",
                         "MIDNIGHT_MONO" to "Midnight Mono",
                         "FOREST_SAGE" to "Forest Sage",
                         "EARTH_BROWN" to "Earth Brown",
@@ -247,6 +248,7 @@ fun SettingsScreen(
                             Text("Color palette", fontWeight = FontWeight.Bold)
                             val themeName = when(selectedTheme) {
                                 "DEFAULT" -> "Adaptive (System)"
+                                "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
                                 "MIDNIGHT_MONO" -> "Midnight Mono"
                                 "FOREST_SAGE" -> "Forest Sage"
                                 "EARTH_BROWN" -> "Earth Brown"

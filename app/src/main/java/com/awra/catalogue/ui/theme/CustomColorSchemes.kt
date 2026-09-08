@@ -261,12 +261,66 @@ object CustomColorSchemes {
         onErrorContainer = Color(0xFF410002)
     )
 
+    // --- VIBRANT ORANGE (Brand Theme) ---
+    val VibrantOrangeDark = darkColorScheme(
+        primary = Color(0xFFFF6D00),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFF4B2000),
+        onPrimaryContainer = Color(0xFFFFDBCB),
+        secondary = Color(0xFF222222),
+        onSecondary = Color(0xFFE0E0E0),
+        secondaryContainer = Color(0xFF333333),
+        onSecondaryContainer = Color(0xFFF0F0F0),
+        tertiary = Color(0xFFCCCCCC),
+        onTertiary = Color(0xFF222222),
+        surface = Color(0xFF000000),
+        background = Color(0xFF000000),
+        onSurface = Color(0xFFE0E0E0),
+        onSurfaceVariant = Color(0xFFA0A0A0),
+        outline = Color(0xFF707070),
+        surfaceContainerLowest = Color(0xFF000000),
+        surfaceContainerLow = Color(0xFF0A0A0A),
+        surfaceContainer = Color(0xFF121212),
+        surfaceContainerHigh = Color(0xFF1A1A1A),
+        surfaceContainerHighest = Color(0xFF222222),
+        inverseSurface = Color(0xFFE0E0E0),
+        inverseOnSurface = Color(0xFF121212),
+        error = Color(0xFFFFB4AB),
+        onError = Color(0xFF690005)
+    )
+
+    val VibrantOrangeLight = lightColorScheme(
+        primary = Color(0xFFFF6D00),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFFFDBCB),
+        onPrimaryContainer = Color(0xFF2F0F00),
+        secondary = Color(0xFFE0E0E0),
+        onSecondary = Color(0xFF121212),
+        secondaryContainer = Color(0xFFF5F5F5),
+        onSecondaryContainer = Color(0xFF000000),
+        tertiary = Color(0xFF424242),
+        onTertiary = Color(0xFFFFFFFF),
+        surface = Color(0xFFFFFFFF),
+        background = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF121212),
+        onSurfaceVariant = Color(0xFF424242),
+        outline = Color(0xFF797979),
+        surfaceContainerLowest = Color(0xFFFFFFFF),
+        surfaceContainerLow = Color(0xFFF9F9F9),
+        surfaceContainer = Color(0xFFF2F2F2),
+        surfaceContainerHigh = Color(0xFFEBEBEB),
+        surfaceContainerHighest = Color(0xFFE0E0E0),
+        error = Color(0xFFBA1A1A),
+        onError = Color(0xFFFFFFFF)
+    )
+
     val Schemes = mapOf(
         "DEFAULT" to null,
         "MIDNIGHT_MONO" to (MidnightMonoLight to MidnightMonoDark),
         "FOREST_SAGE" to (ForestSageLight to ForestSageDark),
         "EARTH_BROWN" to (EarthBrownLight to EarthBrownDark),
-        "TWILIGHT_LAVENDER" to (TwilightLavenderLight to TwilightLavenderDark)
+        "TWILIGHT_LAVENDER" to (TwilightLavenderLight to TwilightLavenderDark),
+        "VIBRANT_ORANGE" to (VibrantOrangeLight to VibrantOrangeDark)
     )
 
     fun getScheme(id: String, isDark: Boolean): ColorScheme? {

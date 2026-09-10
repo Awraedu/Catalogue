@@ -7,12 +7,14 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -140,8 +142,8 @@ class MainActivity : ComponentActivity() {
                     AnimatedContent(
                         targetState = screenState,
                         transitionSpec = {
-                            fadeIn(animationSpec = tween(300)) togetherWith
-                            fadeOut(animationSpec = tween(300))
+                            fadeIn(animationSpec = tween(500, easing = FastOutSlowInEasing)) togetherWith
+                            fadeOut(animationSpec = tween(500, easing = FastOutSlowInEasing))
                         },
                         label = "screen_transition",
                         modifier = Modifier.fillMaxSize()
@@ -253,88 +255,100 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                     state.materialType == MaterialType.HANDOUT -> {
-                                        val handoutViewModel = remember(state.subject!!.id) {
-                                            HandoutViewModel(repository, state.subject.id)
-                                        }
-                                        if (state.handout == null) {
-                                            HandoutListScreen(
-                                                subject = state.subject,
-                                                viewModel = handoutViewModel,
-                                                onBackClick = { currentMaterialType = null },
-                                                onHandoutClick = { 
-                                                    currentHandout = it
-                                                    handoutViewModel.markRecentlyOpened(it.id)
-                                                }
-                                            )
-                                        } else {
-                                            HandoutDetailScreen(
-                                                handout = state.handout,
-                                                onBackClick = { currentHandout = null },
-                                                onFinish = { timeSpent ->
-                                                    handoutViewModel.recordStudy(state.handout.topicId, timeSpent)
-                                                }
-                                            )
+                                        val subject = state.subject
+                                        if (subject != null) {
+                                            val handoutViewModel = remember(subject.id) {
+                                                HandoutViewModel(repository, subject.id)
+                                            }
+                                            if (state.handout == null) {
+                                                HandoutListScreen(
+                                                    subject = subject,
+                                                    viewModel = handoutViewModel,
+                                                    onBackClick = { currentMaterialType = null },
+                                                    onHandoutClick = { 
+                                                        currentHandout = it
+                                                        handoutViewModel.markRecentlyOpened(it.id)
+                                                    }
+                                                )
+                                            } else {
+                                                HandoutDetailScreen(
+                                                    handout = state.handout,
+                                                    onBackClick = { currentHandout = null },
+                                                    onFinish = { timeSpent ->
+                                                        handoutViewModel.recordStudy(state.handout.topicId, timeSpent)
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                     state.materialType == MaterialType.INFOGRAPHIC -> {
-                                        val infographicViewModel = remember(state.subject!!.id) {
-                                            InfographicViewModel(repository, state.subject.id)
-                                        }
-                                        if (state.infographic == null) {
-                                            InfographicListScreen(
-                                                subject = state.subject,
-                                                viewModel = infographicViewModel,
-                                                onBackClick = { currentMaterialType = null },
-                                                onInfographicClick = {
-                                                    currentInfographic = it
-                                                    infographicViewModel.markRecentlyOpened(it.id)
-                                                }
-                                            )
-                                        } else {
-                                            InfographicDetailScreen(
-                                                infographic = state.infographic,
-                                                onBackClick = { currentInfographic = null },
-                                                onFinish = { timeSpent ->
-                                                    lifecycleScope.launch {
-                                                        repository.recordStudySession(state.infographic.topicId, MaterialType.INFOGRAPHIC, timeSpent)
+                                        val subject = state.subject
+                                        if (subject != null) {
+                                            val infographicViewModel = remember(subject.id) {
+                                                InfographicViewModel(repository, subject.id)
+                                            }
+                                            if (state.infographic == null) {
+                                                InfographicListScreen(
+                                                    subject = subject,
+                                                    viewModel = infographicViewModel,
+                                                    onBackClick = { currentMaterialType = null },
+                                                    onInfographicClick = {
+                                                        currentInfographic = it
+                                                        infographicViewModel.markRecentlyOpened(it.id)
                                                     }
-                                                }
-                                            )
+                                                )
+                                            } else {
+                                                InfographicDetailScreen(
+                                                    infographic = state.infographic,
+                                                    onBackClick = { currentInfographic = null },
+                                                    onFinish = { timeSpent ->
+                                                        lifecycleScope.launch {
+                                                            repository.recordStudySession(state.infographic.topicId, MaterialType.INFOGRAPHIC, timeSpent)
+                                                        }
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                     state.materialType == MaterialType.QUIZ -> {
-                                        val quizViewModel = remember(quizConfig, currentQuizTopic) {
-                                            QuizViewModel(
-                                                repository = repository,
-                                                config = quizConfig,
-                                                topicId = currentQuizTopic?.id
+                                        val subject = state.subject
+                                        if (subject != null) {
+                                            val quizViewModel = remember(quizConfig, currentQuizTopic) {
+                                                QuizViewModel(
+                                                    repository = repository,
+                                                    config = quizConfig,
+                                                    topicId = currentQuizTopic?.id
+                                                )
+                                            }
+                                            QuizScreen(
+                                                subject = subject,
+                                                viewModel = quizViewModel,
+                                                onBackClick = { 
+                                                    currentMaterialType = null
+                                                    quizConfig = null
+                                                    currentQuizTopic = null
+                                                }
                                             )
                                         }
-                                        QuizScreen(
-                                            subject = state.subject!!,
-                                            viewModel = quizViewModel,
-                                            onBackClick = { 
-                                                currentMaterialType = null
-                                                quizConfig = null
-                                                currentQuizTopic = null
-                                            }
-                                        )
                                     }
                                     state.materialType == MaterialType.FLASHCARD -> {
-                                        val flashcardViewModel = remember(flashcardConfig) {
-                                            FlashcardViewModel(
-                                                repository = repository,
-                                                config = flashcardConfig
+                                        val subject = state.subject
+                                        if (subject != null) {
+                                            val flashcardViewModel = remember(flashcardConfig) {
+                                                FlashcardViewModel(
+                                                    repository = repository,
+                                                    config = flashcardConfig
+                                                )
+                                            }
+                                            FlashcardScreen(
+                                                subject = subject,
+                                                viewModel = flashcardViewModel,
+                                                onBackClick = {
+                                                    currentMaterialType = null
+                                                    flashcardConfig = null
+                                                }
                                             )
                                         }
-                                        FlashcardScreen(
-                                            subject = state.subject!!,
-                                            viewModel = flashcardViewModel,
-                                            onBackClick = {
-                                                currentMaterialType = null
-                                                flashcardConfig = null
-                                            }
-                                        )
                                     }
                                     state.materialType == MaterialType.TERM -> {
                                         val termsViewModel = remember(state.subject?.id) {
@@ -355,24 +369,27 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                     state.materialType == MaterialType.UTILITY -> {
-                                        if (state.utility == null) {
-                                            val utilityViewModel = remember(state.subject!!.id) {
-                                                UtilityViewModel(repository, state.subject.id)
-                                            }
-                                            UtilityListScreen(
-                                                subject = state.subject,
-                                                viewModel = utilityViewModel,
-                                                onBackClick = { currentMaterialType = null },
-                                                onUtilityClick = { 
-                                                    currentUtility = it
-                                                    utilityViewModel.markRecentlyOpened(it.id)
+                                        val subject = state.subject
+                                        if (subject != null) {
+                                            if (state.utility == null) {
+                                                val utilityViewModel = remember(subject.id) {
+                                                    UtilityViewModel(repository, subject.id)
                                                 }
-                                            )
-                                        } else {
-                                            UtilityDetailScreen(
-                                                utility = state.utility,
-                                                onBackClick = { currentUtility = null }
-                                            )
+                                                UtilityListScreen(
+                                                    subject = subject,
+                                                    viewModel = utilityViewModel,
+                                                    onBackClick = { currentMaterialType = null },
+                                                    onUtilityClick = { 
+                                                        currentUtility = it
+                                                        utilityViewModel.markRecentlyOpened(it.id)
+                                                    }
+                                                )
+                                            } else {
+                                                UtilityDetailScreen(
+                                                    utility = state.utility,
+                                                    onBackClick = { currentUtility = null }
+                                                )
+                                            }
                                         }
                                     }
                                     else -> {
@@ -386,30 +403,35 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (currentNavDestination != null) {
-                        FloatingNavigationBar(
-                            currentDestination = currentNavDestination,
-                            onNavigate = { dest ->
-                                when (dest) {
-                                    NavDestination.HOME -> {
-                                        currentSubject = null
-                                        currentMaterialType = null
-                                    }
-                                    NavDestination.SCHEDULE -> {
-                                        currentSubject = null
-                                        currentMaterialType = MaterialType.SCHEDULE
-                                    }
-                                    NavDestination.ANALYTICS -> {
-                                        currentSubject = null
-                                        currentMaterialType = MaterialType.ANALYTICS
-                                    }
-                                    NavDestination.TERMS -> {
-                                        currentSubject = null
-                                        currentMaterialType = MaterialType.TERM
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 16.dp)
+                        ) {
+                            FloatingNavigationBar(
+                                currentDestination = currentNavDestination,
+                                onNavigate = { dest ->
+                                    when (dest) {
+                                        NavDestination.HOME -> {
+                                            currentSubject = null
+                                            currentMaterialType = null
+                                        }
+                                        NavDestination.SCHEDULE -> {
+                                            currentSubject = null
+                                            currentMaterialType = MaterialType.SCHEDULE
+                                        }
+                                        NavDestination.ANALYTICS -> {
+                                            currentSubject = null
+                                            currentMaterialType = MaterialType.ANALYTICS
+                                        }
+                                        NavDestination.TERMS -> {
+                                            currentSubject = null
+                                            currentMaterialType = MaterialType.TERM
+                                        }
                                     }
                                 }
-                            },
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
+                            )
+                        }
                     }
                 }
             }

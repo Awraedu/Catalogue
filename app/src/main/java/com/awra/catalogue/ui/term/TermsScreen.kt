@@ -82,9 +82,8 @@ fun TermsScreen(
                         }
                     }) {
                         Icon(
-                            imageVector = if (searchBarState.currentValue == SearchBarValue.Expanded)
-                                Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.Search,
-                            contentDescription = if (searchBarState.currentValue == SearchBarValue.Expanded) "Back" else "Search"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
                         )
                     }
                 },

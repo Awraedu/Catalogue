@@ -28,7 +28,6 @@ fun getSubjectAdaptiveColors(subjectId: Long): SubjectColors {
     }
 }
 
-@Composable
 fun getSubjectBackgroundImage(subjectName: String): Int {
     return when {
         subjectName.contains("Biology", ignoreCase = true) || 

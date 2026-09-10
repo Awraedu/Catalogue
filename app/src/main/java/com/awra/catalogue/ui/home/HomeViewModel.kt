@@ -23,6 +23,25 @@ class HomeViewModel(application: Application, private val repository: CatalogueR
 
     val recentlyOpened: Flow<List<RecentlyOpenedDisplayItem>> = repository.getRecentlyOpened()
 
+    private val subjectCache = mutableMapOf<Long, Subject>()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recentSubjects: StateFlow<List<Subject>> = recentlyOpened
+        .mapLatest { items ->
+            items.map { it.subjectId }
+                .distinct()
+                .take(5)
+                .mapNotNull { id ->
+                    subjectCache[id] ?: repository.getSubjectById(id)?.also { subjectCache[id] = it }
+                }
+        }
+        .distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     init {
         viewModelScope.launch {
             repository.seedDatabase(getApplication())

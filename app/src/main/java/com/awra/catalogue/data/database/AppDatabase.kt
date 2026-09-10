@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
         RecentItem::class,
         ClassSchedule::class
     ],
-    version = 48,
+    version = 50,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

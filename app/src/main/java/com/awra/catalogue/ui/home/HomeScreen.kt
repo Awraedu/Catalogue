@@ -14,7 +14,8 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.carousel.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -53,12 +54,14 @@ fun HomeScreen(
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
     val recentlyOpened by viewModel.recentlyOpened.collectAsState(initial = emptyList())
+    val recentSubjects by viewModel.recentSubjects.collectAsState(initial = emptyList())
 
     HomeScreenContent(
         userName = userName,
         selectedStream = selectedStream,
         subjects = subjects,
         recentlyOpened = recentlyOpened,
+        recentSubjects = recentSubjects,
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
         onRecentItemClick = onRecentItemClick,
@@ -67,13 +70,14 @@ fun HomeScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     userName: String,
     selectedStream: Stream,
     subjects: List<Subject>,
     recentlyOpened: List<com.awra.catalogue.data.model.RecentlyOpenedDisplayItem>,
+    recentSubjects: List<Subject>,
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
     onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
@@ -104,14 +108,20 @@ fun HomeScreenContent(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                ),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Dashboard Section
             item(span = { GridItemSpan(2) }) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             text = "$greeting, ",
                             style = MaterialTheme.typography.titleMedium,
@@ -125,7 +135,10 @@ fun HomeScreenContent(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    HomeHeroCard()
+                    RecentSubjectsCarousel(
+                        recentSubjects = recentSubjects,
+                        onSubjectClick = onSubjectClick
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     // Get Premium Banner
@@ -133,6 +146,7 @@ fun HomeScreenContent(
                         onClick = onGoPremiumClick,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                             .clip(ContinuousRoundedRectangle(24.dp))
                             .shimmerEffect(
                                 shimmerColor = Color.White.copy(alpha = 0.2f),
@@ -221,6 +235,43 @@ fun HomeScreenContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun RecentSubjectsCarousel(
+    recentSubjects: List<Subject>,
+    onSubjectClick: (Subject) -> Unit
+) {
+    if (recentSubjects.isEmpty()) {
+        HomeHeroCard(
+            subject = null,
+            onClick = {},
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    } else {
+        val carouselState = rememberCarouselState { recentSubjects.size }
+        
+        HorizontalUncontainedCarousel(
+            state = carouselState,
+            itemWidth = 320.dp,
+            itemSpacing = 12.dp,
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(210.dp)
+        ) { index ->
+            val subject = recentSubjects[index]
+            key(subject.id) {
+                HomeHeroCard(
+                    subject = subject,
+                    onClick = { onSubjectClick(subject) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
@@ -233,6 +284,10 @@ fun HomeScreenPreview() {
                 Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4)
             ),
             recentlyOpened = emptyList(),
+            recentSubjects = listOf(
+                Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4),
+                Subject(3, "Math", "Desc", Stream.NATURAL, ExpressiveShape.CIRCLE)
+            ),
             onStreamSelected = {},
             onSubjectClick = {},
             onRecentItemClick = {},

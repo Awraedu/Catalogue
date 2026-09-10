@@ -2,7 +2,6 @@ package com.awra.catalogue.ui.term
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.data.model.Term
 import com.awra.catalogue.data.repository.CatalogueRepository
@@ -25,9 +24,8 @@ class TermsViewModel(
     val selectedSubjectId: StateFlow<Long?> = _selectedSubjectId.asStateFlow()
 
     // Get all unique subjects for filtering
-    val subjects: Flow<List<Subject>> = repository.getSubjects(Stream.COMMON)
-        .combine(repository.getSubjects(Stream.NATURAL)) { common, natural -> (common + natural).distinctBy { it.id } }
-        .combine(repository.getSubjects(Stream.SOCIAL)) { acc, social -> (acc + social).distinctBy { it.id } }
+    val subjects: Flow<List<Subject>> = repository.getAllSubjects()
+        .map { it.distinctBy { sub -> sub.name } }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val terms: StateFlow<List<Term>> = combine(
@@ -44,6 +42,11 @@ class TermsViewModel(
             repository.searchTerms(subjectId, query)
         } else {
             repository.searchAllTerms(query)
+        }
+    }.map { list ->
+        // Ensure UI only shows unique terms (by word and definition)
+        list.distinctBy { term -> 
+            term.word.lowercase().trim() + ":" + term.definition.lowercase().trim()
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

@@ -30,7 +30,8 @@ import com.awra.catalogue.ui.home.components.HomeTopBar
 import com.awra.catalogue.ui.home.components.SubjectCard
 import com.awra.catalogue.ui.home.components.StreamSelector
 import com.awra.catalogue.ui.home.components.HomeHeroCard
-import com.awra.catalogue.ui.home.components.RecentlyOpenedSection
+import com.awra.catalogue.ui.home.components.SummaryHeroCard
+import com.awra.catalogue.ui.home.components.PinnedItemsSection
 import com.awra.catalogue.ui.components.FloatingNavigationBar
 import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.components.shimmerEffect
@@ -53,18 +54,22 @@ fun HomeScreen(
 ) {
     val selectedStream by viewModel.selectedStream.collectAsState()
     val subjects by viewModel.subjects.collectAsState(initial = emptyList())
-    val recentlyOpened by viewModel.recentlyOpened.collectAsState(initial = emptyList())
-    val recentSubjects by viewModel.recentSubjects.collectAsState(initial = emptyList())
+    val pinnedItems by viewModel.pinnedItems.collectAsState(initial = emptyList())
+    val quizzesCount by viewModel.quizzesCount.collectAsState()
+    val flashcardsCount by viewModel.flashcardsCount.collectAsState()
+    val handoutsProgress by viewModel.handoutsProgress.collectAsState()
 
     HomeScreenContent(
         userName = userName,
         selectedStream = selectedStream,
         subjects = subjects,
-        recentlyOpened = recentlyOpened,
-        recentSubjects = recentSubjects,
+        pinnedItems = pinnedItems,
+        quizzesCount = quizzesCount,
+        flashcardsCount = flashcardsCount,
+        handoutsProgress = handoutsProgress,
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
-        onRecentItemClick = onRecentItemClick,
+        onPinnedItemClick = onRecentItemClick,
         onSettingsClick = onSettingsClick,
         onGoPremiumClick = onGoPremiumClick
     )
@@ -76,11 +81,13 @@ fun HomeScreenContent(
     userName: String,
     selectedStream: Stream,
     subjects: List<Subject>,
-    recentlyOpened: List<com.awra.catalogue.data.model.RecentlyOpenedDisplayItem>,
-    recentSubjects: List<Subject>,
+    pinnedItems: List<com.awra.catalogue.data.model.RecentlyOpenedDisplayItem>,
+    quizzesCount: Int,
+    flashcardsCount: Int,
+    handoutsProgress: Float,
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
-    onRecentItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
+    onPinnedItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
     onSettingsClick: () -> Unit,
     onGoPremiumClick: () -> Unit
 ) {
@@ -117,13 +124,18 @@ fun HomeScreenContent(
         ) {
             // Dashboard Section
             item(span = { GridItemSpan(2) }) {
-                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                val isEmpty = quizzesCount == 0 && flashcardsCount == 0 && handoutsProgress == 0f
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "$greeting, ",
+                            text = if (isEmpty) "Welcome, " else "$greeting, ",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -134,62 +146,32 @@ fun HomeScreenContent(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
+                    if (isEmpty) {
+                        Text(
+                            text = "Day 1 of your academic excellence",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
-                    RecentSubjectsCarousel(
-                        recentSubjects = recentSubjects,
-                        onSubjectClick = onSubjectClick
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Get Premium Banner
-                    Surface(
-                        onClick = onGoPremiumClick,
+                    SummaryHeroCard(
+                        quizzesCount = quizzesCount,
+                        flashcardsCount = flashcardsCount,
+                        handoutsProgress = handoutsProgress,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
-                            .clip(ContinuousRoundedRectangle(24.dp))
-                            .shimmerEffect(
-                                shimmerColor = Color.White.copy(alpha = 0.2f),
-                                durationMillis = 2000
-                            ),
-                        shape = ContinuousRoundedRectangle(24.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primary),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.AutoAwesome,
-                                    null,
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Get Premium", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
-                                Text("Unlock full access to all features.", style = MaterialTheme.typography.bodySmall)
-                            }
-                            Icon(Icons.Default.ChevronRight, null)
-                        }
-                    }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            // Recently Opened Section
+            // Pinned Items Section
             item(span = { GridItemSpan(2) }) {
-                RecentlyOpenedSection(
-                    items = recentlyOpened,
-                    onItemClick = onRecentItemClick
+                PinnedItemsSection(
+                    items = pinnedItems,
+                    onItemClick = onPinnedItemClick
                 )
             }
 
@@ -235,42 +217,7 @@ fun HomeScreenContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
-@Composable
-private fun RecentSubjectsCarousel(
-    recentSubjects: List<Subject>,
-    onSubjectClick: (Subject) -> Unit
-) {
-    if (recentSubjects.isEmpty()) {
-        HomeHeroCard(
-            subject = null,
-            onClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    } else {
-        val carouselState = rememberCarouselState { recentSubjects.size }
-        
-        HorizontalUncontainedCarousel(
-            state = carouselState,
-            itemWidth = 320.dp,
-            itemSpacing = 12.dp,
-            contentPadding = PaddingValues(horizontal = 24.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(210.dp)
-        ) { index ->
-            val subject = recentSubjects[index]
-            key(subject.id) {
-                HomeHeroCard(
-                    subject = subject,
-                    onClick = { onSubjectClick(subject) },
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-        }
-    }
-}
+
 
 @Preview(showBackground = true)
 @Composable
@@ -283,14 +230,13 @@ fun HomeScreenPreview() {
                 Subject(1, "English", "Desc", Stream.COMMON, ExpressiveShape.CIRCLE),
                 Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4)
             ),
-            recentlyOpened = emptyList(),
-            recentSubjects = listOf(
-                Subject(2, "Physics", "Desc", Stream.NATURAL, ExpressiveShape.CLOVER_4),
-                Subject(3, "Math", "Desc", Stream.NATURAL, ExpressiveShape.CIRCLE)
-            ),
+            pinnedItems = emptyList(),
+            quizzesCount = 12,
+            flashcardsCount = 45,
+            handoutsProgress = 0.65f,
             onStreamSelected = {},
             onSubjectClick = {},
-            onRecentItemClick = {},
+            onPinnedItemClick = {},
             onSettingsClick = {},
             onGoPremiumClick = {}
         )

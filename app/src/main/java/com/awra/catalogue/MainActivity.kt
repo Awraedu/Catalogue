@@ -63,7 +63,11 @@ class MainActivity : ComponentActivity() {
             }
         })[HomeViewModel::class.java]
 
-        val settingsViewModel = SettingsViewModel(preferenceManager)
+        val settingsViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return SettingsViewModel(application, preferenceManager) as T
+            }
+        })[SettingsViewModel::class.java]
         val scheduleViewModel = ScheduleViewModel(repository)
 
         enableEdgeToEdge()
@@ -267,12 +271,18 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onHandoutClick = { 
                                                         currentHandout = it
-                                                        handoutViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.handout.id, MaterialType.HANDOUT).collectAsState(initial = false)
                                                 HandoutDetailScreen(
                                                     handout = state.handout,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.handout.id, MaterialType.HANDOUT)
+                                                        }
+                                                    },
                                                     onBackClick = { currentHandout = null },
                                                     onFinish = { timeSpent ->
                                                         handoutViewModel.recordStudy(state.handout.topicId, timeSpent)
@@ -294,12 +304,18 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onInfographicClick = {
                                                         currentInfographic = it
-                                                        infographicViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.infographic.id, MaterialType.INFOGRAPHIC).collectAsState(initial = false)
                                                 InfographicDetailScreen(
                                                     infographic = state.infographic,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.infographic.id, MaterialType.INFOGRAPHIC)
+                                                        }
+                                                    },
                                                     onBackClick = { currentInfographic = null },
                                                     onFinish = { timeSpent ->
                                                         lifecycleScope.launch {
@@ -381,12 +397,18 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onUtilityClick = { 
                                                         currentUtility = it
-                                                        utilityViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.utility.id, MaterialType.UTILITY).collectAsState(initial = false)
                                                 UtilityDetailScreen(
                                                     utility = state.utility,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.utility.id, MaterialType.UTILITY)
+                                                        }
+                                                    },
                                                     onBackClick = { currentUtility = null }
                                                 )
                                             }

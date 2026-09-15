@@ -21,26 +21,18 @@ class HomeViewModel(application: Application, private val repository: CatalogueR
         repository.getSubjects(stream)
     }
 
-    val recentlyOpened: Flow<List<RecentlyOpenedDisplayItem>> = repository.getRecentlyOpened()
+    val pinnedItems: Flow<List<RecentlyOpenedDisplayItem>> = repository.getPinnedItems()
 
-    private val subjectCache = mutableMapOf<Long, Subject>()
+    val quizzesCount: StateFlow<Int> = repository.getGlobalQuizAnalytics()
+        .map { it.totalAttempts }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val recentSubjects: StateFlow<List<Subject>> = recentlyOpened
-        .mapLatest { items ->
-            items.map { it.subjectId }
-                .distinct()
-                .take(5)
-                .mapNotNull { id ->
-                    subjectCache[id] ?: repository.getSubjectById(id)?.also { subjectCache[id] = it }
-                }
-        }
-        .distinctUntilChanged()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    val flashcardsCount: StateFlow<Int> = repository.getGlobalFlashcardCount()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val handoutsProgress: StateFlow<Float> = repository.getGlobalHandoutProgress()
+        .map { it ?: 0f }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     init {
         viewModelScope.launch {

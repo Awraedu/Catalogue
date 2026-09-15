@@ -174,7 +174,8 @@ fun TermsScreen(
                 // Terms List (Visible when not searching or as background)
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
                 ) {
                     itemsIndexed(terms, key = { _, term -> term.id }) { index, term ->
                         TermListItem(
@@ -183,10 +184,6 @@ fun TermsScreen(
                             count = terms.size,
                             onBookmarkClick = { viewModel.toggleBookmark(term) }
                         )
-
-                        if (index < terms.size - 1) {
-                            Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
-                        }
                     }
 
                     if (terms.isEmpty()) {
@@ -236,7 +233,8 @@ fun TermsScreen(
                 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
                 ) {
                     itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
                         TermListItem(
@@ -245,10 +243,6 @@ fun TermsScreen(
                             count = displayTerms.size,
                             onBookmarkClick = { viewModel.toggleBookmark(term) }
                         )
-
-                        if (index < displayTerms.size - 1) {
-                            Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
-                        }
                     }
 
                     if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {

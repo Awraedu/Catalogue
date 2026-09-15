@@ -263,12 +263,33 @@ interface CatalogueDao {
     """)
     fun getDailyStudyTime(since: Long): Flow<List<DailyTime>>
 
-    // Recent Items
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRecentItem(item: RecentItem)
+    @Query("SELECT COUNT(*) FROM flashcard_attempts")
+    fun getGlobalFlashcardCount(): Flow<Int>
 
-    @Query("SELECT * FROM recent_items ORDER BY timestamp DESC LIMIT 10")
-    fun getRecentItems(): Flow<List<RecentItem>>
+    @Query("""
+        SELECT 
+            CAST(COUNT(DISTINCT study_sessions.topicId) AS FLOAT) / 
+            NULLIF((SELECT COUNT(*) FROM topics), 0)
+        FROM study_sessions 
+        WHERE materialType = 'HANDOUT'
+    """)
+    fun getGlobalHandoutProgress(): Flow<Float?>
+
+    // Pinned Items
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPinnedItem(item: PinnedItem)
+
+    @Delete
+    suspend fun deletePinnedItem(item: PinnedItem)
+
+    @Query("SELECT * FROM pinned_items ORDER BY timestamp DESC")
+    fun getPinnedItems(): Flow<List<PinnedItem>>
+
+    @Query("DELETE FROM pinned_items WHERE targetId = :targetId AND type = :type")
+    suspend fun removePinnedItem(targetId: Long, type: MaterialType)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM pinned_items WHERE targetId = :targetId AND type = :type)")
+    fun isItemPinned(targetId: Long, type: MaterialType): Flow<Boolean>
 
     // Schedules
     @Query("SELECT * FROM class_schedules ORDER BY dayOfWeek, startTime")

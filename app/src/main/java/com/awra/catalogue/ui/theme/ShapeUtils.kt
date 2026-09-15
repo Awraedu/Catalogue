@@ -11,8 +11,8 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.awra.catalogue.data.model.ExpressiveShape
+import com.awra.catalogue.R
 
 data class SubjectColors(val container: Color, val content: Color)
 
@@ -86,23 +86,29 @@ fun ExpressiveShape.toShape(): Shape {
     }.toShape()
 }
 
-fun getSubjectIcon(name: String): ImageVector {
+fun getSubjectIcon(name: String): Int {
     return when {
-        name.contains("English", ignoreCase = true) -> Icons.AutoMirrored.Filled.MenuBook
-        name.contains("Physics", ignoreCase = true) -> Icons.Default.Science
-        name.contains("Psychology", ignoreCase = true) -> Icons.Default.Psychology
-        name.contains("Mathematics", ignoreCase = true) -> Icons.Default.Calculate
-        name.contains("Logic", ignoreCase = true) -> Icons.Default.Lightbulb
-        name.contains("Geography", ignoreCase = true) -> Icons.Default.Public
-        name.contains("Anthropol", ignoreCase = true) -> Icons.Default.Groups
-        name.contains("Emerging", ignoreCase = true) -> Icons.Default.Memory
-        name.contains("Civics", ignoreCase = true) -> Icons.Default.Gavel
-        name.contains("Fitness", ignoreCase = true) -> Icons.Default.FitnessCenter
-        name.contains("Global", ignoreCase = true) -> Icons.Default.Language
-        name.contains("Chemistry", ignoreCase = true) -> Icons.Default.Biotech
-        name.contains("Biology", ignoreCase = true) -> Icons.Default.PestControl
-        name.contains("Economics", ignoreCase = true) -> Icons.AutoMirrored.Filled.TrendingUp
-        name.contains("Entreprene", ignoreCase = true) -> Icons.Default.BusinessCenter
-        else -> Icons.Default.Book
+        name.contains("English II", ignoreCase = true) -> R.drawable.english_ii
+        name.contains("English I", ignoreCase = true) -> R.drawable.english_i
+        name.contains("English", ignoreCase = true) -> R.drawable.english_i
+        name.contains("Physics", ignoreCase = true) -> R.drawable.physics
+        name.contains("Psychology", ignoreCase = true) -> R.drawable.psychology
+        name.contains("Natural Math", ignoreCase = true) -> R.drawable.math_ns
+        name.contains("Social Math", ignoreCase = true) -> R.drawable.math_ss
+        name.contains("Mathematics", ignoreCase = true) -> R.drawable.math_ns
+        name.contains("Logic", ignoreCase = true) -> R.drawable.logic
+        name.contains("Geography", ignoreCase = true) -> R.drawable.geography
+        name.contains("Anthropol", ignoreCase = true) -> R.drawable.antropology
+        name.contains("Emerging", ignoreCase = true) -> R.drawable.emerging_tech
+        name.contains("Civics", ignoreCase = true) -> R.drawable.civics
+        name.contains("Fitness", ignoreCase = true) -> R.drawable.fitness
+        name.contains("Global", ignoreCase = true) -> R.drawable.global_trends
+        name.contains("Chemistry", ignoreCase = true) -> R.drawable.chemistry
+        name.contains("Biology", ignoreCase = true) -> R.drawable.biology
+        name.contains("Economics", ignoreCase = true) -> R.drawable.economics
+        name.contains("Entreprene", ignoreCase = true) -> R.drawable.enterprunership
+        name.contains("History", ignoreCase = true) -> R.drawable.history
+        name.contains("Inclusiveness", ignoreCase = true) -> R.drawable.inclusivness
+        else -> R.drawable.english_i
     }
 }

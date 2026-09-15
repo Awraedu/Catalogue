@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
@@ -26,11 +27,11 @@ import kotlinx.coroutines.launch
         FlashcardAttempt::class,
         StudySession::class,
         Utility::class,
-        RecentItem::class,
+        PinnedItem::class,
         ClassSchedule::class
     ],
-    version = 50,
-    exportSchema = false
+    version = 51,
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -40,6 +41,18 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        /**
+         * List of manual migrations. Add new migration objects here when changing schema.
+         */
+        private val ALL_MIGRATIONS = arrayOf<Migration>(
+            // Example Migration from 50 to 51:
+            // object : Migration(50, 51) {
+            //     override fun migrate(db: SupportSQLiteDatabase) {
+            //         db.execSQL("ALTER TABLE PinnedItem ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")
+            //     }
+            // }
+        )
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -47,8 +60,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "catalogue_database"
                 )
-                .fallbackToDestructiveMigration()
-                .build()
+                    .addMigrations(*ALL_MIGRATIONS)
+                    .build()
                 INSTANCE = instance
                 instance
             }

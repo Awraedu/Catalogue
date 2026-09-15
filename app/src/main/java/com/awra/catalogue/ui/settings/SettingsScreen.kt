@@ -31,6 +31,7 @@ fun SettingsScreen(
     val notificationTime by viewModel.notificationTime.collectAsState()
     val selectedTheme by viewModel.selectedTheme.collectAsState()
     val userName by viewModel.userName.collectAsState()
+    val cacheSize by viewModel.cacheSize.collectAsState()
     
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -296,7 +297,7 @@ fun SettingsScreen(
                 SettingsSection(title = "Storage") {
                     SettingsClickableItem(
                         title = "Clear Cache",
-                        subtitle = "Free up some space (42MB)",
+                        subtitle = "Free up some space ($cacheSize)",
                         icon = Icons.Default.DeleteSweep,
                         onClick = { viewModel.clearCache() },
                         index = 0,
@@ -334,7 +335,7 @@ fun SettingsScreen(
                 SettingsSection(title = "About") {
                     SettingsClickableItem(
                         title = "App Version",
-                        subtitle = "1.0.0 (Alpha)",
+                        subtitle = viewModel.appVersion,
                         icon = Icons.Default.Info,
                         onClick = { },
                         index = 0,

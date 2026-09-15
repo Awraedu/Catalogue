@@ -188,8 +188,8 @@ data class Utility(
     val icon: String // Icon identifier
 )
 
-@Entity(tableName = "recent_items")
-data class RecentItem(
+@Entity(tableName = "pinned_items")
+data class PinnedItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val targetId: Long,
     val type: MaterialType,

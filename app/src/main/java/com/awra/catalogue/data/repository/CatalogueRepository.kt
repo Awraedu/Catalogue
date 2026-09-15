@@ -101,6 +101,10 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getGlobalQuizAnalytics() = catalogueDao.getGlobalQuizAnalytics()
 
+    fun getGlobalFlashcardCount() = catalogueDao.getGlobalFlashcardCount()
+
+    fun getGlobalHandoutProgress() = catalogueDao.getGlobalHandoutProgress()
+
     fun getSubjectMastery() = catalogueDao.getSubjectMastery()
 
     fun getAllChaptersPerformance() = catalogueDao.getAllChaptersPerformance()
@@ -111,55 +115,55 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getDailyStudyTime(since: Long) = catalogueDao.getDailyStudyTime(since)
 
-    fun getRecentlyOpened(): Flow<List<RecentlyOpenedDisplayItem>> = catalogueDao.getRecentItems().transform { recents ->
-        val resolved = recents.mapNotNull { recent ->
-            when (recent.type) {
+    fun getPinnedItems(): Flow<List<RecentlyOpenedDisplayItem>> = catalogueDao.getPinnedItems().transform { pins ->
+        val resolved = pins.mapNotNull { pin ->
+            when (pin.type) {
                 MaterialType.HANDOUT -> {
-                    val handout = catalogueDao.getHandoutById(recent.targetId)
+                    val handout = catalogueDao.getHandoutById(pin.targetId)
                     val topic = handout?.let { catalogueDao.getTopicById(it.topicId) }
                     val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
                     topic?.let {
                         RecentlyOpenedDisplayItem(
-                            id = recent.id,
-                            targetId = recent.targetId,
+                            id = pin.id,
+                            targetId = pin.targetId,
                             subjectId = chapter?.subjectId ?: 0,
                             name = it.title,
                             type = MaterialType.HANDOUT,
                             icon = "MenuBook",
                             color = Color(0xFF795548),
-                            timestamp = recent.timestamp
+                            timestamp = pin.timestamp
                         )
                     }
                 }
                 MaterialType.INFOGRAPHIC -> {
-                    val infographic = catalogueDao.getInfographicById(recent.targetId)
+                    val infographic = catalogueDao.getInfographicById(pin.targetId)
                     val topic = infographic?.let { catalogueDao.getTopicById(it.topicId) }
                     val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
                     topic?.let {
                         RecentlyOpenedDisplayItem(
-                            id = recent.id,
-                            targetId = recent.targetId,
+                            id = pin.id,
+                            targetId = pin.targetId,
                             subjectId = chapter?.subjectId ?: 0,
                             name = it.title,
                             type = MaterialType.INFOGRAPHIC,
                             icon = "BarChart",
                             color = Color(0xFF3F51B5),
-                            timestamp = recent.timestamp
+                            timestamp = pin.timestamp
                         )
                     }
                 }
                 MaterialType.UTILITY -> {
-                    val utility = catalogueDao.getUtilityById(recent.targetId)
+                    val utility = catalogueDao.getUtilityById(pin.targetId)
                     utility?.let {
                         RecentlyOpenedDisplayItem(
-                            id = recent.id,
-                            targetId = recent.targetId,
+                            id = pin.id,
+                            targetId = pin.targetId,
                             subjectId = it.subjectId,
                             name = it.name,
                             type = MaterialType.UTILITY,
                             icon = it.icon,
                             color = Color(0xFF009688),
-                            timestamp = recent.timestamp
+                            timestamp = pin.timestamp
                         )
                     }
                 }
@@ -169,9 +173,16 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         emit(resolved)
     }
 
-    suspend fun markAsRecentlyOpened(targetId: Long, type: MaterialType) {
-        catalogueDao.insertRecentItem(RecentItem(targetId = targetId, type = type))
+    suspend fun togglePin(targetId: Long, type: MaterialType) {
+        val isPinned = catalogueDao.isItemPinned(targetId, type).first()
+        if (isPinned) {
+            catalogueDao.removePinnedItem(targetId, type)
+        } else {
+            catalogueDao.insertPinnedItem(PinnedItem(targetId = targetId, type = type))
+        }
     }
+
+    fun isItemPinned(targetId: Long, type: MaterialType) = catalogueDao.isItemPinned(targetId, type)
 
     // Schedules
     fun getAllSchedules() = catalogueDao.getAllSchedules()

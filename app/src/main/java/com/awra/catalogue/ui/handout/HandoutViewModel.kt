@@ -52,10 +52,5 @@ class HandoutViewModel(
         }
     }
 
-    fun markRecentlyOpened(handoutId: Long) {
-        viewModelScope.launch {
-            repository.markAsRecentlyOpened(handoutId, MaterialType.HANDOUT)
-        }
-    }
 }
 

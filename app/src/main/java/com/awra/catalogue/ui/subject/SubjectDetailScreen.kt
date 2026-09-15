@@ -162,7 +162,7 @@ fun SubjectDetailScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = getSubjectIcon(subject.name),
+                                    painter = painterResource(id = getSubjectIcon(subject.name)),
                                     contentDescription = null,
                                     tint = subjectColors.container,
                                     modifier = Modifier.size(24.dp)

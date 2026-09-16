@@ -44,6 +44,8 @@ import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.schedule.ScheduleScreen
 import com.awra.catalogue.ui.schedule.ScheduleViewModel
 import com.awra.catalogue.ui.subject.SubjectDetailScreen
+import com.awra.catalogue.ui.onboarding.OnboardingScreen
+import com.awra.catalogue.ui.onboarding.OnboardingViewModel
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.data.model.Topic
 import com.awra.catalogue.data.util.PreferenceManager
@@ -86,6 +88,13 @@ class MainActivity : ComponentActivity() {
                 return SettingsViewModel(application, preferenceManager) as T
             }
         })[SettingsViewModel::class.java]
+        
+        val onboardingViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return OnboardingViewModel(preferenceManager) as T
+            }
+        })[OnboardingViewModel::class.java]
+
         val scheduleViewModel = ScheduleViewModel(repository)
 
         enableEdgeToEdge()
@@ -93,12 +102,21 @@ class MainActivity : ComponentActivity() {
             val darkMode by settingsViewModel.darkMode.collectAsState()
             val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
             val userName by settingsViewModel.userName.collectAsState()
+            val isOnboardingCompleted by preferenceManager.isOnboardingCompleted.collectAsState()
 
             YourAppTheme(
                 darkMode = darkMode,
                 selectedTheme = selectedTheme
             ) {
-                var currentSubject by remember { mutableStateOf<Subject?>(null) }
+                if (!isOnboardingCompleted) {
+                    OnboardingScreen(
+                        viewModel = onboardingViewModel,
+                        onComplete = { 
+                            onboardingViewModel.nextStep()
+                        }
+                    )
+                } else {
+                    var currentSubject by remember { mutableStateOf<Subject?>(null) }
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
                 var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
                 var currentUtility by remember { mutableStateOf<Utility?>(null) }
@@ -477,8 +495,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 
-    private fun requestNotificationPermission() {
+private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != 
                 PackageManager.PERMISSION_GRANTED) {

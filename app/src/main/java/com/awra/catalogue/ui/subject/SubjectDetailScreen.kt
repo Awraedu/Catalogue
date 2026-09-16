@@ -172,7 +172,7 @@ fun SubjectDetailScreen(
                             // Colored Progress Tag Pill
                             Surface(
                                 shape = CircleShape,
-                                color = subjectColors.container,
+                                color = subjectColors.container.copy(alpha = 1f),
                                 modifier = Modifier.height(28.dp)
                             ) {
                                 Row(

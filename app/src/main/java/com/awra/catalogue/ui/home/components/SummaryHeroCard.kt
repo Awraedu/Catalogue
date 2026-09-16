@@ -1,5 +1,6 @@
 package com.awra.catalogue.ui.home.components
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,7 +10,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -179,6 +180,22 @@ private fun SummaryRingsChart(
     trackColor: Color,
     stats: List<RingStat>
 ) {
+    // Animation state to trigger the "fill" effect once when entering view
+    var animationPlayed by remember { mutableStateOf(false) }
+    val progressFactor by animateFloatAsState(
+        targetValue = if (animationPlayed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 1200,
+            delayMillis = 200,
+            easing = FastOutSlowInEasing
+        ),
+        label = "rings_fill_animation"
+    )
+
+    LaunchedEffect(Unit) {
+        animationPlayed = true
+    }
+
     Canvas(modifier = modifier) {
         val strokeWidth = 40.dp.toPx() // Increased stroke width
         val spacing = 8.dp.toPx()
@@ -202,11 +219,11 @@ private fun SummaryRingsChart(
                 topLeft = Offset(centerX - radius, centerY - radius)
             )
 
-            // Progress arc
+            // Progress arc - multiplied by progressFactor for initial entry animation
             drawArc(
                 color = stat.color,
                 startAngle = 180f,
-                sweepAngle = 90f * stat.progress,
+                sweepAngle = 90f * stat.progress * progressFactor,
                 useCenter = false,
                 style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
                 size = Size(radius * 2, radius * 2),

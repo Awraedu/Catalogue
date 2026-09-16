@@ -325,13 +325,13 @@ object CustomColorSchemes {
         onSurfaceVariant = Color(0xFF4B5563),
         
         outline = Color(0xFF9CA3AF),
-        outlineVariant = Color(0xFFE5E7EB),
+        outlineVariant = Color(0xFFF1F1F3),
         
         surfaceContainerLowest = Color(0xFFFFFFFF),
-        surfaceContainerLow = Color(0xFFFAFAFA),
-        surfaceContainer = Color(0xFFF4F4F5),
-        surfaceContainerHigh = Color(0xFFE4E4E7),
-        surfaceContainerHighest = Color(0xFFD4D4D8),
+        surfaceContainerLow = Color(0xFFFAFAFB),
+        surfaceContainer = Color(0xFFF7F7F9),
+        surfaceContainerHigh = Color(0xFFF1F1F3),
+        surfaceContainerHighest = Color(0xFFE5E7EB),
         
         error = Color(0xFFDC2626),
         onError = Color(0xFFFFFFFF),

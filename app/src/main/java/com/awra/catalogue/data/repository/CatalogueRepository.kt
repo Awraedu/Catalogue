@@ -103,6 +103,10 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getGlobalFlashcardCount() = catalogueDao.getGlobalFlashcardCount()
 
+    fun getUniqueStudyDaysCount() = catalogueDao.getUniqueStudyDaysCount()
+
+    suspend fun getStudySessionsCountToday(startOfDay: Long) = catalogueDao.getStudySessionsCountToday(startOfDay)
+
     fun getGlobalHandoutProgress() = catalogueDao.getGlobalHandoutProgress()
 
     fun getSubjectMastery() = catalogueDao.getSubjectMastery()

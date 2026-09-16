@@ -263,6 +263,12 @@ interface CatalogueDao {
     """)
     fun getDailyStudyTime(since: Long): Flow<List<DailyTime>>
 
+    @Query("SELECT COUNT(*) FROM study_sessions WHERE timestamp >= :startOfDay")
+    suspend fun getStudySessionsCountToday(startOfDay: Long): Int
+
+    @Query("SELECT COUNT(DISTINCT (timestamp / 86400000)) FROM study_sessions")
+    fun getUniqueStudyDaysCount(): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM flashcard_attempts")
     fun getGlobalFlashcardCount(): Flow<Int>
 

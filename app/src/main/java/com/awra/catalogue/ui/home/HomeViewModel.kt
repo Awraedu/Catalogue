@@ -34,6 +34,10 @@ class HomeViewModel(application: Application, private val repository: CatalogueR
         .map { it ?: 0f }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
+    val daysActive: StateFlow<Int> = repository.getUniqueStudyDaysCount()
+        .map { maxOf(1, it) } // Minimum 1 day
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
+
     init {
         viewModelScope.launch {
             repository.seedDatabase(getApplication())

@@ -23,6 +23,10 @@ class PreferenceManager(context: Context) {
     private val _userName = MutableStateFlow(prefs.getString("user_name", "User") ?: "User")
     val userName: StateFlow<String> = _userName
 
+    var lastNotifyDate: Long
+        get() = prefs.getLong("last_notify_date", 0)
+        set(value) = prefs.edit().putLong("last_notify_date", value).apply()
+
     fun setDarkMode(mode: String) {
         prefs.edit().putString("dark_mode", mode).apply()
         _darkMode.value = mode

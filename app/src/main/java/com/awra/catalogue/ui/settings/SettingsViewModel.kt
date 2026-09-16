@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.util.PreferenceManager
+import com.awra.catalogue.data.notification.NotificationScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,8 +36,14 @@ class SettingsViewModel(application: Application, private val preferenceManager:
     }
 
     fun setDarkMode(mode: String) = preferenceManager.setDarkMode(mode)
-    fun setStudyReminders(enabled: Boolean) = preferenceManager.setStudyReminders(enabled)
-    fun setNotificationTime(time: String) = preferenceManager.setNotificationTime(time)
+    fun setStudyReminders(enabled: Boolean) {
+        preferenceManager.setStudyReminders(enabled)
+        NotificationScheduler.scheduleDailyCheck(getApplication())
+    }
+    fun setNotificationTime(time: String) {
+        preferenceManager.setNotificationTime(time)
+        NotificationScheduler.scheduleDailyCheck(getApplication())
+    }
     fun setSelectedTheme(theme: String) = preferenceManager.setSelectedTheme(theme)
     fun setUserName(name: String) = preferenceManager.setUserName(name)
 

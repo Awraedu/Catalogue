@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
         PinnedItem::class,
         ClassSchedule::class
     ],
-    version = 51,
+    version = 52,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -45,10 +45,10 @@ abstract class AppDatabase : RoomDatabase() {
          * List of manual migrations. Add new migration objects here when changing schema.
          */
         private val ALL_MIGRATIONS = arrayOf<Migration>(
-            // Example Migration from 50 to 51:
-            // object : Migration(50, 51) {
+            // Example Migration from 51 to 52:
+            // object : Migration(51, 52) {
             //     override fun migrate(db: SupportSQLiteDatabase) {
-            //         db.execSQL("ALTER TABLE PinnedItem ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")
+            //         // Add migration logic here
             //     }
             // }
         )
@@ -61,6 +61,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "catalogue_database"
                 )
                     .addMigrations(*ALL_MIGRATIONS)
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
                 instance

@@ -2,6 +2,7 @@ package com.awra.catalogue.ui.home.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,14 +28,34 @@ fun SummaryHeroCard(
     quizzesCount: Int,
     flashcardsCount: Int,
     handoutsProgress: Float,
+    daysActive: Int,
     modifier: Modifier = Modifier
 ) {
-    val isEmpty = quizzesCount == 0 && flashcardsCount == 0 && handoutsProgress == 0f
+    // Threshold for "viewable result": 5% handouts, 2 quizzes, or 5 flashcards
+    val isLowProgress = handoutsProgress < 0.05f && quizzesCount < 2 && flashcardsCount < 5
+    val isDark = isSystemInDarkTheme()
+
+    // Peak Vibrance Ethiopian Flag Colors (Material Accent variants for better dark mode visibility)
+    val ethioGreen = if (isDark) Color(0xFF00E676) else Color(0xFF00AD59)
+    val ethioYellow = if (isDark) Color(0xFFFFEA00) else Color(0xFFFFD600)
+    val ethioRed = if (isDark) Color(0xFFFF1744) else Color(0xFFEF4135)
+
+    // Choose title and message based on progress and days
+    val title = when {
+        isLowProgress -> "Ready for Day $daysActive?"
+        else -> "Day $daysActive Progress"
+    }
+
+    val message = when {
+        isLowProgress && daysActive == 1 -> "Every expert was once a beginner. Start your journey today!"
+        isLowProgress && daysActive > 1 -> "Consistency is key! Let's pick up where you left off."
+        else -> "You're making great strides in your academic journey!"
+    }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(240.dp),
+            .height(260.dp), // Increased from 240.dp to prevent cropping
         shape = ContinuousRoundedRectangle(32.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -46,17 +67,18 @@ fun SummaryHeroCard(
             // Chart Area - Positioned as background centered at bottom-right
             SummaryRingsChart(
                 modifier = Modifier.fillMaxSize(),
-                stats = if (isEmpty) {
+                trackColor = MaterialTheme.colorScheme.onSurface,
+                stats = if (isLowProgress) {
                     listOf(
-                        RingStat(0.08f, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
-                        RingStat(0.06f, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)),
-                        RingStat(0.04f, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f))
+                        RingStat(0.08f, ethioGreen),
+                        RingStat(0.06f, ethioYellow),
+                        RingStat(0.04f, ethioRed)
                     )
                 } else {
                     listOf(
-                        RingStat(handoutsProgress.coerceIn(0f, 1f), MaterialTheme.colorScheme.primary), // Outer - Handouts Progress
-                        RingStat((quizzesCount / 50f).coerceIn(0f, 1f), MaterialTheme.colorScheme.secondary), // Middle - Quizzes Taken
-                        RingStat((flashcardsCount / 100f).coerceIn(0f, 1f), MaterialTheme.colorScheme.tertiary)  // Inner - Flashcards Reviewed
+                        RingStat(handoutsProgress.coerceIn(0f, 1f), ethioGreen), // Outer - Handouts Progress
+                        RingStat((quizzesCount / 50f).coerceIn(0f, 1f), ethioYellow), // Middle - Quizzes Taken
+                        RingStat((flashcardsCount / 100f).coerceIn(0f, 1f), ethioRed)  // Inner - Flashcards Reviewed
                     )
                 }
             )
@@ -69,42 +91,42 @@ fun SummaryHeroCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = if (isEmpty) "Ready for Day 1?" else "Your Progress",
+                    text = title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
 
-                if (isEmpty) {
-                    Text(
-                        text = "Every expert was once a beginner. Start your journey today!",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp).width(180.dp)
-                    )
-                }
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .width(200.dp) // Slightly wider to better use space
+                )
 
-                Spacer(modifier = Modifier.height(if (isEmpty) 16.dp else 24.dp))
+                Spacer(modifier = Modifier.height(16.dp)) // Reduced from 24.dp
 
                 // Stats Column
                 Column(
                     modifier = Modifier.width(IntrinsicSize.Max),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp) // Reduced from 16.dp
                 ) {
                     SummaryStatItem(
-                        value = if (isEmpty) "Start" else "${(handoutsProgress * 100).toInt()}%",
+                        value = if (handoutsProgress < 0.05f) "Start" else "${(handoutsProgress * 100).toInt()}%",
                         label = "Handouts Read",
-                        color = MaterialTheme.colorScheme.primary
+                        color = ethioGreen
                     )
                     SummaryStatItem(
-                        value = if (isEmpty) "Join" else "$quizzesCount",
+                        value = if (quizzesCount < 3) "Join" else "$quizzesCount",
                         label = "Quizzes Taken",
-                        color = MaterialTheme.colorScheme.secondary
+                        color = ethioYellow
                     )
                     SummaryStatItem(
-                        value = if (isEmpty) "Try" else "$flashcardsCount",
+                        value = if (flashcardsCount < 5) "Try" else "$flashcardsCount",
                         label = "Flashcards Done",
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = ethioRed
                     )
                 }
             }
@@ -154,6 +176,7 @@ private data class RingStat(val progress: Float, val color: Color)
 @Composable
 private fun SummaryRingsChart(
     modifier: Modifier = Modifier,
+    trackColor: Color,
     stats: List<RingStat>
 ) {
     Canvas(modifier = modifier) {
@@ -168,9 +191,9 @@ private fun SummaryRingsChart(
             // Outer ring has index 0, reduced radius
             val radius = (size.height * 0.7f) - (index * (strokeWidth + spacing))
 
-            // Background track (quarter circle at the corner)
+            // Background track - Uses theme-aware color so it's visible but not muddy in dark mode
             drawArc(
-                color = Color(0xFF2C2C2E).copy(alpha = 0.5f),
+                color = trackColor.copy(alpha = 0.1f),
                 startAngle = 180f,
                 sweepAngle = 90f,
                 useCenter = false,
@@ -201,12 +224,14 @@ fun SummaryHeroCardPreview() {
             SummaryHeroCard(
                 quizzesCount = 12,
                 flashcardsCount = 45,
-                handoutsProgress = 0.65f
+                handoutsProgress = 0.65f,
+                daysActive = 3
             )
             SummaryHeroCard(
                 quizzesCount = 0,
                 flashcardsCount = 0,
-                handoutsProgress = 0f
+                handoutsProgress = 0f,
+                daysActive = 1
             )
         }
     }

@@ -47,11 +47,29 @@ import com.awra.catalogue.ui.subject.SubjectDetailScreen
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.data.model.Topic
 import com.awra.catalogue.data.util.PreferenceManager
+import com.awra.catalogue.data.notification.NotificationScheduler
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        // Permission result handled
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Schedule notifications
+        NotificationScheduler.scheduleDailyCheck(this)
+        
+        // Request notification permission for Android 13+
+        requestNotificationPermission()
         
         val database = AppDatabase.getDatabase(this)
         val repository = CatalogueRepository(database.catalogueDao())
@@ -456,6 +474,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != 
+                PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

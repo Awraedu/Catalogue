@@ -58,6 +58,7 @@ fun HomeScreen(
     val quizzesCount by viewModel.quizzesCount.collectAsState()
     val flashcardsCount by viewModel.flashcardsCount.collectAsState()
     val handoutsProgress by viewModel.handoutsProgress.collectAsState()
+    val daysActive by viewModel.daysActive.collectAsState()
 
     HomeScreenContent(
         userName = userName,
@@ -67,6 +68,7 @@ fun HomeScreen(
         quizzesCount = quizzesCount,
         flashcardsCount = flashcardsCount,
         handoutsProgress = handoutsProgress,
+        daysActive = daysActive,
         onStreamSelected = { viewModel.selectStream(it) },
         onSubjectClick = onSubjectClick,
         onPinnedItemClick = onRecentItemClick,
@@ -85,6 +87,7 @@ fun HomeScreenContent(
     quizzesCount: Int,
     flashcardsCount: Int,
     handoutsProgress: Float,
+    daysActive: Int,
     onStreamSelected: (Stream) -> Unit,
     onSubjectClick: (Subject) -> Unit,
     onPinnedItemClick: (com.awra.catalogue.data.model.RecentlyOpenedDisplayItem) -> Unit,
@@ -146,19 +149,18 @@ fun HomeScreenContent(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    if (isEmpty) {
-                        Text(
-                            text = "Day 1 of your academic excellence",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
-                        )
-                    }
+                    Text(
+                        text = "Day $daysActive of your academic excellence",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     SummaryHeroCard(
                         quizzesCount = quizzesCount,
                         flashcardsCount = flashcardsCount,
                         handoutsProgress = handoutsProgress,
+                        daysActive = daysActive,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -234,6 +236,7 @@ fun HomeScreenPreview() {
             quizzesCount = 12,
             flashcardsCount = 45,
             handoutsProgress = 0.65f,
+            daysActive = 3,
             onStreamSelected = {},
             onSubjectClick = {},
             onPinnedItemClick = {},

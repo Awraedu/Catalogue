@@ -76,6 +76,7 @@ dependencies {
     implementation("io.noties.markwon:ext-tasklist:4.6.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation(libs.androidx.work.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

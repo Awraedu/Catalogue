@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
         PinnedItem::class,
         ClassSchedule::class
     ],
-    version = 52,
+    version = 54,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

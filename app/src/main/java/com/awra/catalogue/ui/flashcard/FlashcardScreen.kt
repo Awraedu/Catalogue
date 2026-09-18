@@ -212,7 +212,7 @@ fun FlashcardScreen(
                             contentColor = MaterialTheme.colorScheme.onErrorContainer
                         )
                     ) {
-                        Text("Missed", fontWeight = FontWeight.Bold)
+                        Text("Lost it", fontWeight = FontWeight.Bold)
                     }
 
                     // "Got it" Button

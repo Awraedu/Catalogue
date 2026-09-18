@@ -362,7 +362,7 @@ object DatabaseSeeder {
                 ))
 
                 // Seed Infographics
-                if (subjectName == "General Biology" && topicTitle == "Introduction to Biology") {
+                if (subjectName.contains("Biology") && topicTitle == "Meaning and Scope of Biology") {
                     dao.insertInfographic(Infographic(topicId = topicId, imageUrl = "bio.png"))
                 }
             }

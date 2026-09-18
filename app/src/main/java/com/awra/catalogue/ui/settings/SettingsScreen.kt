@@ -1,5 +1,8 @@
 package com.awra.catalogue.ui.settings
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kyant.capsule.ContinuousRoundedRectangle
+import androidx.core.net.toUri
 
+@SuppressLint("UseKtx")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsScreen(
@@ -32,6 +38,8 @@ fun SettingsScreen(
     val selectedTheme by viewModel.selectedTheme.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
+    
+    val context = LocalContext.current
     
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -314,15 +322,29 @@ fun SettingsScreen(
                             title = "Help & Feedback",
                             subtitle = "Contact support or report issues",
                             icon = Icons.Default.Help,
-                            onClick = { },
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = Uri.parse("mailto:awra.edu@gmail.com")
+                                    putExtra(Intent.EXTRA_SUBJECT, "Catalogue App Feedback")
+                                }
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    // Handle cases where no email client is installed
+                                }
+                            },
                             index = 0,
                             count = 2
                         )
                         SettingsClickableItem(
                             title = "Visit our website",
-                            subtitle = "www.awra-catalogue.com",
+                            subtitle = "www.AwraDigitals.com",
                             icon = Icons.Default.Language,
-                            onClick = { },
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                    "https://awra-chi.vercel.app/".toUri())
+                                context.startActivity(intent)
+                            },
                             index = 1,
                             count = 2
                         )

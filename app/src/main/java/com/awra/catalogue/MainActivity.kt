@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         
         // Schedule notifications
-        NotificationScheduler.scheduleDailyCheck(this)
+        NotificationScheduler.scheduleAllReminders(this)
         
         // Request notification permission for Android 13+
         requestNotificationPermission()

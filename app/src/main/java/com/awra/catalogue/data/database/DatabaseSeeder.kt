@@ -4,6 +4,7 @@ import android.content.Context
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.seed.*
+import com.awra.catalogue.data.util.FlashcardLoader
 import com.awra.catalogue.data.util.QuizLoader
 
 object DatabaseSeeder {
@@ -227,9 +228,13 @@ object DatabaseSeeder {
         
         // Load all quizzes for the subject
         val easyQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.EASY)
-        val mediumQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.MEDIUM)
         val hardQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.HARD)
-        val allJsonQuizzes = easyQuizzes + mediumQuizzes + hardQuizzes
+        val allJsonQuizzes = easyQuizzes + hardQuizzes
+
+        // Load all flashcards for the subject
+        val easyFlashcards = FlashcardLoader.loadFlashcards(context, folderName, Difficulty.EASY)
+        val hardFlashcards = FlashcardLoader.loadFlashcards(context, folderName, Difficulty.HARD)
+        val allJsonFlashcards = easyFlashcards + hardFlashcards
 
         units.forEachIndexed { index, (unitTitle, topics) ->
             val chapterId = dao.insertChapter(
@@ -264,7 +269,6 @@ object DatabaseSeeder {
                             correctOptionIndex = jsonQ.answerIndex,
                             difficulty = when {
                                 easyQuizzes.contains(jsonQ) -> Difficulty.EASY
-                                mediumQuizzes.contains(jsonQ) -> Difficulty.MEDIUM
                                 else -> Difficulty.HARD
                             },
                             hint = jsonQ.tip,
@@ -286,15 +290,35 @@ object DatabaseSeeder {
                     ))
                 }
 
-                // Seed some mock flashcards
-                dao.insertFlashcards(listOf(
-                    Flashcard(
-                        topicId = topicId,
-                        front = "Define $topicTitle",
-                        back = "The study and application of $topicTitle in the context of $subjectName.",
-                        difficulty = Difficulty.EASY
-                    )
-                ))
+                // Seed flashcards from JSON if available for this topic, otherwise fallback
+                val topicFlashcards = allJsonFlashcards.filter { 
+                    it.chapter.contains(unitTitle, ignoreCase = true) && 
+                    it.topic.contains(topicTitle, ignoreCase = true) 
+                }
+
+                if (topicFlashcards.isNotEmpty()) {
+                    dao.insertFlashcards(topicFlashcards.map { jsonF ->
+                        Flashcard(
+                            topicId = topicId,
+                            front = jsonF.front,
+                            back = jsonF.back,
+                            difficulty = when {
+                                easyFlashcards.contains(jsonF) -> Difficulty.EASY
+                                else -> Difficulty.HARD
+                            }
+                        )
+                    })
+                } else {
+                    // Fallback mock flashcards
+                    dao.insertFlashcards(listOf(
+                        Flashcard(
+                            topicId = topicId,
+                            front = "Define $topicTitle",
+                            back = "The study and application of $topicTitle in the context of $subjectName.",
+                            difficulty = Difficulty.EASY
+                        )
+                    ))
+                }
 
                 // Real Terms for Dictionary (Sample per Topic)
                 val termWord = when {

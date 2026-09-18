@@ -38,11 +38,11 @@ class SettingsViewModel(application: Application, private val preferenceManager:
     fun setDarkMode(mode: String) = preferenceManager.setDarkMode(mode)
     fun setStudyReminders(enabled: Boolean) {
         preferenceManager.setStudyReminders(enabled)
-        NotificationScheduler.scheduleDailyCheck(getApplication())
+        NotificationScheduler.scheduleAllReminders(getApplication<Application>().applicationContext)
     }
     fun setNotificationTime(time: String) {
         preferenceManager.setNotificationTime(time)
-        NotificationScheduler.scheduleDailyCheck(getApplication())
+        NotificationScheduler.scheduleAllReminders(getApplication<Application>().applicationContext)
     }
     fun setSelectedTheme(theme: String) = preferenceManager.setSelectedTheme(theme)
     fun setUserName(name: String) = preferenceManager.setUserName(name)

@@ -158,13 +158,13 @@ fun SubjectDetailScreen(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(subject.shape.toShape())
-                                    .background(subjectColors.content),
+                                    .background(subjectColors.content.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     painter = painterResource(id = getSubjectIcon(subject.name)),
                                     contentDescription = null,
-                                    tint = subjectColors.container,
+                                    tint = subjectColors.content,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }

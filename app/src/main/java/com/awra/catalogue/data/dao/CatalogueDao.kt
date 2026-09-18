@@ -86,7 +86,7 @@ interface CatalogueDao {
     @Query("""
         SELECT flashcards.* FROM flashcards 
         INNER JOIN topics ON flashcards.topicId = topics.id
-        WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
+        WHERE topics.chapterId IN (:chapterIds) AND (:difficulty = 'MIXED' OR difficulty = :difficulty)
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -105,7 +105,7 @@ interface CatalogueDao {
     @Query("""
         SELECT quiz_questions.* FROM quiz_questions 
         INNER JOIN topics ON quiz_questions.topicId = topics.id
-        WHERE topics.chapterId IN (:chapterIds) AND difficulty = :difficulty
+        WHERE topics.chapterId IN (:chapterIds) AND (:difficulty = 'MIXED' OR difficulty = :difficulty)
         ORDER BY RANDOM()
         LIMIT :limit
     """)

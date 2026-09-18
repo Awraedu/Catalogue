@@ -14,7 +14,7 @@ enum class MaterialType {
 }
 
 enum class Difficulty {
-    EASY, MEDIUM, HARD
+    EASY, HARD, MIXED
 }
 
 enum class ExpressiveShape {
@@ -104,7 +104,7 @@ data class Flashcard(
     val topicId: Long,
     val front: String,
     val back: String,
-    val difficulty: Difficulty = Difficulty.MEDIUM
+    val difficulty: Difficulty = Difficulty.EASY
 )
 
 @Entity(
@@ -143,7 +143,7 @@ data class QuizQuestion(
     val question: String,
     val options: List<String>,
     val correctOptionIndex: Int,
-    val difficulty: Difficulty = Difficulty.MEDIUM,
+    val difficulty: Difficulty = Difficulty.MIXED,
     val hint: String = "",
     val explanation: String = ""
 )

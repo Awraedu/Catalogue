@@ -14,16 +14,35 @@ import androidx.compose.ui.graphics.Shape
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.R
 
+import androidx.compose.ui.graphics.luminance
+
 data class SubjectColors(val container: Color, val content: Color)
 
 @Composable
 fun getSubjectAdaptiveColors(subjectId: Long): SubjectColors {
-    return when (subjectId.toInt() % 6) {
+    val isBrandTheme = MaterialTheme.colorScheme.primary == Color(0xFFFF6D00)
+    // Check if the currently applied theme is dark or light based on the background color luminance
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    
+    return when (subjectId.toInt() % 7) {
         0 -> SubjectColors(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
         1 -> SubjectColors(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
         2 -> SubjectColors(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
         3 -> SubjectColors(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
-        4 -> SubjectColors(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.onSurfaceVariant)
+        4 -> {
+            if (isBrandTheme) {
+                if (isDark) {
+                    // Dark Mode Blue: Deeper blue container, high-luminosity sky blue text
+                    SubjectColors(Color(0xFF003355), Color(0xFFB3E5FC))
+                } else {
+                    // Light Mode Blue: Airy, soft blue container with clear azure text
+                    SubjectColors(Color(0xFFF0F9FF), Color(0xFF0288D1))
+                }
+            } else {
+                SubjectColors(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        5 -> SubjectColors(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.onSurfaceVariant)
         else -> SubjectColors(MaterialTheme.colorScheme.surfaceContainerLowest, MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

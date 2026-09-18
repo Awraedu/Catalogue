@@ -7,6 +7,12 @@ import androidx.compose.ui.graphics.Color
 
 object CustomColorSchemes {
 
+    // --- BRAND EXTRAS (Used for subjects in Vibrant Orange theme) ---
+    val BrandBlueLight = Color(0xFF007AFF)
+    val BrandBlueDark = Color(0xFF0A84FF)
+    val BrandYellowLight = Color(0xFFFFD600)
+    val BrandYellowDark = Color(0xFFFFEA00)
+
     // --- MIDNIGHT MONO ---
     val MidnightMonoDark = darkColorScheme(
         primary = Color(0xFFF9F9F9),

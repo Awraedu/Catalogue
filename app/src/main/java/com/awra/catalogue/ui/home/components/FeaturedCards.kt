@@ -69,7 +69,7 @@ fun DailyQuizCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = if (realItem?.isCompleted == true) Icons.Default.CheckCircle else Icons.Default.Quiz, 
+                            painter = if (realItem?.isCompleted == true) painterResource(R.drawable.quiz) else painterResource(R.drawable.quiz),
                             null, 
                             tint = colors.content, 
                             modifier = Modifier.size(20.dp)

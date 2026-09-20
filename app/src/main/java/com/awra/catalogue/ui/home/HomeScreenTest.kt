@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.FeaturedItem
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +83,15 @@ fun HomeScreenTestContent(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showStreamFilter by remember { mutableStateOf(false) }
+
+    val greeting = remember {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        when (hour) {
+            in 0..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+    }
 
     val sortedFeaturedItems = remember(featuredItems) {
         featuredItems.sortedWith(compareByDescending<FeaturedItem> {
@@ -137,14 +147,14 @@ fun HomeScreenTestContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "Welcome back,",
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = "$greeting, ",
+                                style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = userName,
+                                text = userName.uppercase(),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Black,
                                 color = MaterialTheme.colorScheme.onSurface

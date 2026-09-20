@@ -63,7 +63,6 @@ private fun PinnedItemView(
 ) {
     val shape = ContinuousRoundedRectangle(20.dp)
     val subjectColors = getSubjectAdaptiveColors(item.subjectId)
-    val displayColor = if (item.type == MaterialType.UTILITY) subjectColors.content else item.color
 
     val icon = if (item.type == MaterialType.UTILITY) {
         mapUtilityIcon(item.icon)
@@ -90,13 +89,13 @@ private fun PinnedItemView(
             modifier = Modifier
                 .size(40.dp)
                 .clip(ContinuousRoundedRectangle(12.dp))
-                .background(displayColor.copy(alpha = 0.2f)),
+                .background(subjectColors.container),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = displayColor,
+                tint = subjectColors.content,
                 modifier = Modifier.size(24.dp)
             )
         }

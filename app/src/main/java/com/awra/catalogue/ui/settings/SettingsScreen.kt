@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.awra.catalogue.data.model.Stream
 import com.kyant.capsule.ContinuousRoundedRectangle
 import androidx.core.net.toUri
 
@@ -36,6 +37,7 @@ fun SettingsScreen(
     val studyReminders by viewModel.studyReminders.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
     val selectedTheme by viewModel.selectedTheme.collectAsState()
+    val selectedStream by viewModel.selectedStream.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
     
@@ -45,6 +47,7 @@ fun SettingsScreen(
     var showTimePicker by remember { mutableStateOf(false) }
     var showCustomThemeDialog by remember { mutableStateOf(false) }
     var showNameDialog by remember { mutableStateOf(false) }
+    var showStreamDialog by remember { mutableStateOf(false) }
 
     if (showNameDialog) {
         var nameText by remember { mutableStateOf(userName) }
@@ -68,6 +71,37 @@ fun SettingsScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+            },
+            shape = ContinuousRoundedRectangle(28.dp)
+        )
+    }
+
+    if (showStreamDialog) {
+        AlertDialog(
+            onDismissRequest = { showStreamDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showStreamDialog = false }) { Text("Cancel") }
+            },
+            title = { Text("Change Stream") },
+            text = {
+                Column {
+                    Stream.entries.forEach { stream ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.setSelectedStream(stream.name)
+                                    showStreamDialog = false
+                                }
+                                .padding(vertical = 12.dp)
+                        ) {
+                            RadioButton(selected = selectedStream == stream.name, onClick = null)
+                            Spacer(Modifier.width(12.dp))
+                            Text(stream.name.lowercase().replaceFirstChar { it.uppercase() })
+                        }
+                    }
+                }
             },
             shape = ContinuousRoundedRectangle(28.dp)
         )
@@ -200,14 +234,24 @@ fun SettingsScreen(
             // Account Section
             item {
                 SettingsSection(title = "Account") {
-                    SettingsClickableItem(
-                        title = "User Name",
-                        subtitle = userName,
-                        icon = Icons.Default.Person,
-                        onClick = { showNameDialog = true },
-                        index = 0,
-                        count = 1
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        SettingsClickableItem(
+                            title = "User Name",
+                            subtitle = userName,
+                            icon = Icons.Default.Person,
+                            onClick = { showNameDialog = true },
+                            index = 0,
+                            count = 2
+                        )
+                        SettingsClickableItem(
+                            title = "Academic Stream",
+                            subtitle = selectedStream.lowercase().replaceFirstChar { it.uppercase() },
+                            icon = Icons.Default.School,
+                            onClick = { showStreamDialog = true },
+                            index = 1,
+                            count = 2
+                        )
+                    }
                 }
             }
 

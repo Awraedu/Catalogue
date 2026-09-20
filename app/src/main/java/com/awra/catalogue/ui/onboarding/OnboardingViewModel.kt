@@ -62,7 +62,7 @@ class OnboardingViewModel(private val preferenceManager: PreferenceManager) : Vi
 
     private fun completeOnboarding() {
         preferenceManager.setUserName(_name.value.ifBlank { "User" })
-        // Stream selection handled in MainActivity or via PreferenceManager if needed
+        _selectedStream.value?.let { preferenceManager.setSelectedStream(it.name) }
         preferenceManager.setSelectedTheme(_selectedPalette.value)
         preferenceManager.setDarkMode(_darkMode.value)
         preferenceManager.setStudyGoal(_intensityMinutes.value)

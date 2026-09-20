@@ -24,7 +24,7 @@ import com.awra.catalogue.data.repository.CatalogueRepository
 import com.awra.catalogue.ui.handout.HandoutListScreen
 import com.awra.catalogue.ui.handout.HandoutDetailScreen
 import com.awra.catalogue.ui.handout.HandoutViewModel
-import com.awra.catalogue.ui.home.HomeScreen
+import com.awra.catalogue.ui.home.HomeScreenTest
 import com.awra.catalogue.ui.home.HomeViewModel
 import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.flashcard.*
@@ -56,6 +56,7 @@ import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
         
         val homeViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(application, repository) as T
+                return HomeViewModel(application, repository, preferenceManager) as T
             }
         })[HomeViewModel::class.java]
 
@@ -221,7 +222,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                     state.subject == null && state.materialType != MaterialType.TERM -> {
-                                        HomeScreen(
+                                        HomeScreenTest(
                                             viewModel = homeViewModel,
                                             userName = userName,
                                             onSubjectClick = { currentSubject = it },
@@ -249,7 +250,28 @@ class MainActivity : ComponentActivity() {
                                                 }
                                             },
                                             onSettingsClick = { currentMaterialType = MaterialType.SETTINGS },
-                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL }
+                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL },
+                                            onStartDailyQuiz = { topicId ->
+                                                lifecycleScope.launch {
+                                                    val studiedTopics = repository.getStudiedTopics().first()
+                                                    val targetTopic = studiedTopics.find { it.id == topicId }
+                                                    
+                                                    if (targetTopic != null) {
+                                                        val topicsInSameSubject = studiedTopics.filter { it.subjectName == targetTopic.subjectName }
+                                                        val subject = repository.getAllSubjects().first().find { it.name == targetTopic.subjectName }
+                                                        
+                                                        if (subject != null) {
+                                                            currentSubject = subject
+                                                            quizConfig = QuizConfig(
+                                                                topicIds = topicsInSameSubject.map { it.id },
+                                                                difficulty = Difficulty.MIXED,
+                                                                limit = 5
+                                                            )
+                                                            currentMaterialType = MaterialType.QUIZ
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         )
                                     }
                                     state.materialType == null -> {

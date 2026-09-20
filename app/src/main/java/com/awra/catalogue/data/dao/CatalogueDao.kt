@@ -54,6 +54,9 @@ interface CatalogueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTopic(topic: Topic): Long
 
+    @Query("SELECT * FROM topics WHERE id = :id")
+    suspend fun getTopicById(id: Long): Topic?
+
     // Handouts
     @Query("SELECT * FROM handouts WHERE topicId = :topicId")
     fun getHandoutsByTopic(topicId: Long): Flow<List<Handout>>
@@ -64,9 +67,7 @@ interface CatalogueDao {
     @Query("SELECT * FROM handouts WHERE id = :id")
     suspend fun getHandoutById(id: Long): Handout?
 
-    @Query("SELECT * FROM topics WHERE id = :id")
-    suspend fun getTopicById(id: Long): Topic?
-
+    // Infographics
     @Query("SELECT * FROM infographics WHERE id = :id")
     suspend fun getInfographicById(id: Long): Infographic?
 
@@ -76,8 +77,15 @@ interface CatalogueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInfographics(infographics: List<Infographic>): List<Long>
 
+    // Utilities
     @Query("SELECT * FROM utilities WHERE id = :id")
     suspend fun getUtilityById(id: Long): Utility?
+
+    @Query("SELECT * FROM utilities WHERE subjectId = :subjectId")
+    fun getUtilitiesBySubject(subjectId: Long): Flow<List<Utility>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUtility(utility: Utility): Long
 
     // Flashcards
     @Query("SELECT * FROM flashcards WHERE topicId = :topicId")
@@ -111,6 +119,14 @@ interface CatalogueDao {
     """)
     fun getCustomQuizQuestions(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<QuizQuestion>>
 
+    @Query("""
+        SELECT quiz_questions.* FROM quiz_questions 
+        WHERE topicId IN (:topicIds) AND (:difficulty = 'MIXED' OR difficulty = :difficulty)
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun getCustomQuizQuestionsFromTopics(topicIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<QuizQuestion>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuizQuestion(quizQuestion: QuizQuestion): Long
 
@@ -124,19 +140,12 @@ interface CatalogueDao {
     @Query("SELECT * FROM terms WHERE isBookmarked = 1")
     fun getBookmarkedTerms(): Flow<List<Term>>
 
-    @Query("SELECT * FROM utilities WHERE subjectId = :subjectId")
-    fun getUtilitiesBySubject(subjectId: Long): Flow<List<Utility>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUtility(utility: Utility): Long
-
     @Update
     suspend fun updateTerm(term: Term)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTerms(terms: List<Term>): List<Long>
 
-    // Search Terms across subject
     @Query("""
         SELECT terms.* FROM terms
         INNER JOIN topics ON terms.topicId = topics.id 
@@ -263,6 +272,30 @@ interface CatalogueDao {
     """)
     fun getDailyStudyTime(since: Long): Flow<List<DailyTime>>
 
+    @Query("""
+        SELECT DISTINCT topics.id, topics.title, subjects.name as subjectName FROM topics
+        INNER JOIN study_sessions ON topics.id = study_sessions.topicId
+        INNER JOIN chapters ON topics.chapterId = chapters.id
+        INNER JOIN subjects ON chapters.subjectId = subjects.id
+        WHERE study_sessions.materialType = 'HANDOUT'
+        ORDER BY study_sessions.timestamp DESC
+    """)
+    fun getStudiedTopics(): Flow<List<StudiedTopic>>
+
+    @Query("""
+        SELECT COUNT(*) FROM quiz_attempts
+        INNER JOIN quiz_questions ON quiz_attempts.quizQuestionId = quiz_questions.id
+        WHERE quiz_questions.topicId IN (:topicIds) AND quiz_attempts.timestamp >= :startOfDay
+    """)
+    fun getTotalQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long): Flow<Int>
+
+    @Query("""
+        SELECT COUNT(*) FROM quiz_attempts
+        INNER JOIN quiz_questions ON quiz_attempts.quizQuestionId = quiz_questions.id
+        WHERE quiz_questions.topicId IN (:topicIds) AND quiz_attempts.timestamp >= :startOfDay AND quiz_attempts.isCorrect = 1
+    """)
+    fun getTotalCorrectQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM study_sessions WHERE timestamp >= :startOfDay")
     suspend fun getStudySessionsCountToday(startOfDay: Long): Int
 
@@ -307,8 +340,6 @@ interface CatalogueDao {
     @Delete
     suspend fun deleteSchedule(schedule: ClassSchedule)
 }
-
-
 
 data class OverallAnalytics(
     val totalAttempts: Int,
@@ -356,4 +387,10 @@ data class TopicPerformance(
     val subjectName: String,
     val totalAttempts: Int,
     val correctAttempts: Int
+)
+
+data class StudiedTopic(
+    val id: Long,
+    val title: String,
+    val subjectName: String
 )

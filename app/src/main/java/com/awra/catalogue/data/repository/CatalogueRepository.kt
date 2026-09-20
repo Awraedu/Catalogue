@@ -34,6 +34,10 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getTopics(chapterId: Long): Flow<List<Topic>> = catalogueDao.getTopicsByChapter(chapterId)
 
+    suspend fun getTopicById(id: Long) = catalogueDao.getTopicById(id)
+    
+    suspend fun getChapterById(id: Long) = catalogueDao.getChapterById(id)
+
     fun getHandouts(topicId: Long): Flow<List<Handout>> = catalogueDao.getHandoutsByTopic(topicId)
 
     suspend fun getHandoutById(id: Long): Handout? = catalogueDao.getHandoutById(id)
@@ -49,6 +53,9 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     fun getCustomQuizQuestions(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<QuizQuestion>> =
         catalogueDao.getCustomQuizQuestions(chapterIds, difficulty, limit)
+
+    fun getCustomQuizQuestionsFromTopics(topicIds: List<Long>, difficulty: Difficulty, limit: Int) =
+        catalogueDao.getCustomQuizQuestionsFromTopics(topicIds, difficulty, limit)
 
     fun getTerms(topicId: Long): Flow<List<Term>> = catalogueDao.getTermsByTopic(topicId)
 
@@ -98,6 +105,12 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     }
 
     fun getTopicAnalytics(topicId: Long) = catalogueDao.getTopicQuizAnalytics(topicId)
+
+    fun getStudiedTopics() = catalogueDao.getStudiedTopics()
+
+    fun getTotalQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) = catalogueDao.getTotalQuizAttemptsForTopicsToday(topicIds, startOfDay)
+    
+    fun getTotalCorrectQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) = catalogueDao.getTotalCorrectQuizAttemptsForTopicsToday(topicIds, startOfDay)
 
     fun getGlobalQuizAnalytics() = catalogueDao.getGlobalQuizAnalytics()
 
@@ -193,5 +206,3 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     suspend fun addSchedule(schedule: ClassSchedule) = catalogueDao.insertSchedule(schedule)
     suspend fun removeSchedule(schedule: ClassSchedule) = catalogueDao.deleteSchedule(schedule)
 }
-
-

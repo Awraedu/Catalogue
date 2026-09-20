@@ -17,6 +17,7 @@ class SettingsViewModel(application: Application, private val preferenceManager:
     val studyReminders = preferenceManager.studyReminders
     val notificationTime = preferenceManager.notificationTime
     val selectedTheme = preferenceManager.selectedTheme
+    val selectedStream = preferenceManager.selectedStream
     val userName = preferenceManager.userName
 
     private val _cacheSize = MutableStateFlow("Calculated...")
@@ -45,6 +46,7 @@ class SettingsViewModel(application: Application, private val preferenceManager:
         NotificationScheduler.scheduleAllReminders(getApplication<Application>().applicationContext)
     }
     fun setSelectedTheme(theme: String) = preferenceManager.setSelectedTheme(theme)
+    fun setSelectedStream(stream: String) = preferenceManager.setSelectedStream(stream)
     fun setUserName(name: String) = preferenceManager.setUserName(name)
 
     fun clearCache() {

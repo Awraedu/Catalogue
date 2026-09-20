@@ -30,12 +30,16 @@ import com.awra.catalogue.ui.home.components.NextClassCard
 import com.awra.catalogue.ui.home.components.DailyInsightCard
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.FeaturedItem
 import java.util.Calendar
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,6 +87,13 @@ fun HomeScreenTestContent(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showStreamFilter by remember { mutableStateOf(false) }
+    
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    var searchBarOffset by remember { mutableStateOf(0f) }
 
     val greeting = remember {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -119,6 +130,13 @@ fun HomeScreenTestContent(
         }
     }
 
+    // Keep the search bar scrolled up while typing or when query is active
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.isNotEmpty()) {
+            scrollState.scrollTo(searchBarOffset.toInt())
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow // Use a lower surface for the page background
@@ -131,7 +149,7 @@ fun HomeScreenTestContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 // Top Content (Header + Featured + Pinned) with theme-aware background
                 Column(
@@ -245,6 +263,7 @@ fun HomeScreenTestContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .onGloballyPositioned { searchBarOffset = it.positionInParent().y }
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHigh,
                             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
@@ -279,6 +298,13 @@ fun HomeScreenTestContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(54.dp)
+                                .onFocusChanged { 
+                                    if (it.isFocused) {
+                                        coroutineScope.launch {
+                                            scrollState.animateScrollTo(searchBarOffset.toInt())
+                                        }
+                                    }
+                                }
                         )
                     }
 
@@ -344,6 +370,12 @@ fun HomeScreenTestContent(
                                 }
                             }
                         }
+                    }
+                    
+                    // Add dynamic spacer at the end of the content when searching 
+                    // to ensure the search bar can stay at the top even with few results
+                    if (searchQuery.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(screenHeight))
                     }
                 }
             }

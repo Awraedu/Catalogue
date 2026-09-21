@@ -45,6 +45,16 @@ private fun format24to12(time24: String): String {
     }
 }
 
+private fun isTimeAfter(startTime: String, endTime: String): Boolean {
+    return try {
+        val start = startTime.split(":").map { it.toInt() }
+        val end = endTime.split(":").map { it.toInt() }
+        (end[0] * 60 + end[1]) > (start[0] * 60 + start[1])
+    } catch (e: Exception) {
+        false
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ScheduleScreen(
@@ -381,9 +391,10 @@ private fun AddClassDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
+            val isTimeValid = isTimeAfter(startTime, endTime)
             Button(
                 onClick = {
-                    if (selectedSubject != null) {
+                    if (selectedSubject != null && isTimeValid) {
                         onConfirm(ClassSchedule(
                             id = editingSchedule?.id ?: 0,
                             subjectId = selectedSubject!!.id,
@@ -396,6 +407,7 @@ private fun AddClassDialog(
                         ))
                     }
                 },
+                enabled = selectedSubject != null && isTimeValid,
                 shape = CircleShape
             ) { Text(if (editingSchedule != null) "Save Changes" else "Add Class") }
         },
@@ -452,26 +464,36 @@ private fun AddClassDialog(
                     }
                 }
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedCard(
-                        onClick = { showStartTimePicker = true },
-                        modifier = Modifier.weight(1f),
-                        shape = CircleShape
-                    ) {
-                        Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Start", style = MaterialTheme.typography.labelSmall)
-                            Text(format24to12(startTime), fontWeight = FontWeight.Bold)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedCard(
+                            onClick = { showStartTimePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = CircleShape
+                        ) {
+                            Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("Start", style = MaterialTheme.typography.labelSmall)
+                                Text(format24to12(startTime), fontWeight = FontWeight.Bold)
+                            }
+                        }
+                        OutlinedCard(
+                            onClick = { showEndTimePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = CircleShape
+                        ) {
+                            Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("End", style = MaterialTheme.typography.labelSmall)
+                                Text(format24to12(endTime), fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
-                    OutlinedCard(
-                        onClick = { showEndTimePicker = true },
-                        modifier = Modifier.weight(1f),
-                        shape = CircleShape
-                    ) {
-                        Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("End", style = MaterialTheme.typography.labelSmall)
-                            Text(format24to12(endTime), fontWeight = FontWeight.Bold)
-                        }
+                    if (!isTimeAfter(startTime, endTime)) {
+                        Text(
+                            "End time must be after start time",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
                     }
                 }
 
@@ -492,7 +514,12 @@ private fun AddClassDialog(
         TimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { h, m ->
-                startTime = String.format(Locale.US, "%02d:%02d", h, m)
+                val newStartTime = String.format(Locale.US, "%02d:%02d", h, m)
+                if (!isTimeAfter(newStartTime, endTime)) {
+                    val endH = (h + 1) % 24
+                    endTime = String.format(Locale.US, "%02d:%02d", endH, m)
+                }
+                startTime = newStartTime
                 showStartTimePicker = false
             }
         )
@@ -502,7 +529,8 @@ private fun AddClassDialog(
         TimePickerDialog(
             onDismiss = { showEndTimePicker = false },
             onConfirm = { h, m ->
-                endTime = String.format(Locale.US, "%02d:%02d", h, m)
+                val newEndTime = String.format(Locale.US, "%02d:%02d", h, m)
+                endTime = newEndTime
                 showEndTimePicker = false
             }
         )
@@ -519,7 +547,19 @@ private fun AddTestDialog(
 ) {
     var testName by remember { mutableStateOf(editingSchedule?.subjectName ?: "") }
     var selectedType by remember { mutableStateOf(editingSchedule?.testType ?: "Test") }
-    var selectedDate by remember { mutableLongStateOf(editingSchedule?.date ?: System.currentTimeMillis()) }
+    
+    val today = remember {
+        Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+    
+    var selectedDate by remember { 
+        mutableLongStateOf(editingSchedule?.date?.coerceAtLeast(today) ?: today) 
+    }
     var startTime by remember { mutableStateOf(editingSchedule?.startTime ?: "08:00") }
     
     var showDatePicker by remember { mutableStateOf(false) }
@@ -624,7 +664,14 @@ private fun AddTestDialog(
     )
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate,
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return utcTimeMillis >= today
+                }
+            }
+        )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {

@@ -19,12 +19,65 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import com.awra.catalogue.R
 import com.awra.catalogue.data.model.FeaturedItem
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
+
+class TicketShape(
+    private val cornerRadius: Float,
+    private val cutoutRadius: Float,
+    private val cutoutPositionPct: Float = 0.65f
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        return Outline.Generic(Path().apply {
+            reset()
+            // Start from top-left after corner
+            moveTo(cornerRadius, 0f)
+            lineTo(size.width - cornerRadius, 0f)
+            // Top-right corner
+            arcTo(Rect(size.width - cornerRadius * 2, 0f, size.width, cornerRadius * 2), 270f, 90f, false)
+            
+            // Right side with cutout
+            val cutoutY = size.height * cutoutPositionPct
+            lineTo(size.width, cutoutY - cutoutRadius)
+            arcTo(Rect(size.width - cutoutRadius, cutoutY - cutoutRadius, size.width + cutoutRadius, cutoutY + cutoutRadius), 270f, -180f, false)
+            lineTo(size.width, size.height - cornerRadius)
+            
+            // Bottom-right corner
+            arcTo(Rect(size.width - cornerRadius * 2, size.height - cornerRadius * 2, size.width, size.height), 0f, 90f, false)
+            lineTo(cornerRadius, size.height)
+            
+            // Bottom-left corner
+            arcTo(Rect(0f, size.height - cornerRadius * 2, cornerRadius * 2, size.height), 90f, 90f, false)
+            
+            // Left side with cutout
+            lineTo(0f, cutoutY + cutoutRadius)
+            arcTo(Rect(-cutoutRadius, cutoutY - cutoutRadius, cutoutRadius, cutoutY + cutoutRadius), 90f, -180f, false)
+            lineTo(0f, cornerRadius)
+            
+            // Top-left corner
+            arcTo(Rect(0f, 0f, cornerRadius * 2, cornerRadius * 2), 180f, 90f, false)
+            close()
+        })
+    }
+}
 
 @Composable
 fun DailyQuizCard(
@@ -394,6 +447,128 @@ fun DailyInsightCard(
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumTicketCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    val cornerRadius = 32.dp
+    val cutoutRadius = 12.dp
+    
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val ticketShapeWithDensity = remember(density) {
+        TicketShape(
+            cornerRadius = with(density) { cornerRadius.toPx() },
+            cutoutRadius = with(density) { cutoutRadius.toPx() },
+            cutoutPositionPct = 0.72f
+        )
+    }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(0.85f),
+        shape = ticketShapeWithDensity,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFAC00)), // Ethiopian Gold/Yellow
+        onClick = onClick
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Dashed line across the ticket
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val cutoutY = size.height * 0.72f
+                val dashWidth = 8.dp.toPx()
+                val dashSpace = 8.dp.toPx()
+                
+                val startX = cutoutRadius.toPx()
+                val endX = size.width - cutoutRadius.toPx()
+                
+                var currentX = startX
+                while (currentX < endX) {
+                    drawRect(
+                        color = Color.Black.copy(alpha = 0.2f),
+                        topLeft = Offset(currentX, cutoutY),
+                        size = Size(dashWidth, 1.dp.toPx())
+                    )
+                    currentX += dashWidth + dashSpace
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.verify),
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    
+                    Text(
+                        text = "PREMIUM",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+
+                Column {
+                    Text(
+                        text = "Unlock Full Access",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        maxLines = 2
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Get all handouts, quizzes and offline mode.",
+                        color = Color.Black.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        lineHeight = 18.sp
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "LIMITED OFFER",
+                        color = Color.Black.copy(alpha = 0.5f),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
+                }
             }
         }
     }

@@ -67,7 +67,8 @@ fun HomeScreenTest(
         onSubjectClick = onSubjectClick,
         onRecentItemClick = onRecentItemClick,
         onStartDailyQuiz = onStartDailyQuiz,
-        onSettingsClick = onSettingsClick
+        onSettingsClick = onSettingsClick,
+        onGoPremiumClick = onGoPremiumClick
     )
 }
 
@@ -83,7 +84,8 @@ fun HomeScreenTestContent(
     onSubjectClick: (Subject) -> Unit,
     onRecentItemClick: (RecentlyOpenedDisplayItem) -> Unit,
     onStartDailyQuiz: (Long) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onGoPremiumClick: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showStreamFilter by remember { mutableStateOf(false) }
@@ -211,6 +213,12 @@ fun HomeScreenTestContent(
                                 .fillMaxWidth()
                                 .height(260.dp)
                         ) {
+                            item {
+                                com.awra.catalogue.ui.home.components.PremiumTicketCard(
+                                    modifier = Modifier.width(220.dp),
+                                    onClick = onGoPremiumClick
+                                )
+                            }
                             items(sortedFeaturedItems) { item ->
                                 when (item) {
                                     is FeaturedItem.DailyQuiz, is FeaturedItem.EmptyDailyQuiz -> {
@@ -418,6 +426,7 @@ fun HomeScreenTestPreview() {
         onSubjectClick = {},
         onRecentItemClick = {},
         onStartDailyQuiz = {},
-        onSettingsClick = {}
+        onSettingsClick = {},
+        onGoPremiumClick = {}
     )
 }

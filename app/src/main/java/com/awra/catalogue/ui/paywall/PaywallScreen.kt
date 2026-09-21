@@ -55,70 +55,75 @@ fun PaywallScreen(
     var selectedPlanId by remember { mutableStateOf("Pro") }
     val selectedPlan = remember(selectedPlanId) { AvailablePlans.find { it.id == selectedPlanId }!! }
 
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Header Section
-            item {
-                HeaderSection()
-            }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Header Section
+                item {
+                    HeaderSection()
+                }
 
-            // Features Section
-            item {
-                FeaturesSection()
-            }
+                // Features Section
+                item {
+                    FeaturesSection()
+                }
 
-            // Plans Section
-            item {
-                PlansSection(
-                    selectedPlanId = selectedPlanId,
-                    onPlanChange = { selectedPlanId = it }
-                )
-            }
-
-            // Subscribe Button
-            item {
-                Button(
-                    onClick = { onPlanSelected(selectedPlanId) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .height(64.dp),
-                    shape = ContinuousRoundedRectangle(32.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedPlan.isBestValue) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                // Plans Section
+                item {
+                    PlansSection(
+                        selectedPlanId = selectedPlanId,
+                        onPlanChange = { selectedPlanId = it }
                     )
-                ) {
-                    Text(
-                        "Unlock for ${selectedPlan.price}",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 18.sp
-                    )
+                }
+
+                // Subscribe Button
+                item {
+                    Button(
+                        onClick = { onPlanSelected(selectedPlanId) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .height(64.dp),
+                        shape = ContinuousRoundedRectangle(32.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedPlan.isBestValue) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                            contentColor = if (selectedPlan.isBestValue) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            "Unlock for ${selectedPlan.price}",
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
+
+                // Footer Links
+                item {
+                    FooterSection()
                 }
             }
 
-            // Footer Links
-            item {
-                FooterSection()
+            // Floating Close Button
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .align(Alignment.TopStart)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f))
+            ) {
+                Icon(Icons.Default.Close, contentDescription = "Close", modifier = Modifier.size(20.dp))
             }
-        }
-
-        // Floating Close Button
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp)
-                .size(40.dp)
-                .align(Alignment.TopStart)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f))
-        ) {
-            Icon(Icons.Default.Close, contentDescription = "Close", modifier = Modifier.size(20.dp))
         }
     }
 }
@@ -168,7 +173,7 @@ private fun HeaderSection() {
             text = "Join 10,000+ students excelling in their freshman year.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
     }
 }
@@ -221,8 +226,16 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(title, fontWeight = FontWeight.Bold)
-            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = title, 
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = description, 
+                style = MaterialTheme.typography.bodySmall, 
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
         }
     }
 }

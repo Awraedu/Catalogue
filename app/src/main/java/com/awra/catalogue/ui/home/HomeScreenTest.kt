@@ -387,8 +387,8 @@ fun HomeScreenTestContent(
 @Composable
 fun HomeScreenTestPreview() {
     val dummySubjects = listOf(
-        Subject(id = 1, name = "English I", description = "Foundational language skills.", stream = Stream.COMMON, shape = ExpressiveShape.CIRCLE),
-        Subject(id = 2, name = "Psychology", description = "Introduction to human behavior.", stream = Stream.COMMON, shape = ExpressiveShape.PILL),
+        Subject(id = 1, name = "English I", description = "Foundational language skills.", stream = Stream.ALL, shape = ExpressiveShape.CIRCLE),
+        Subject(id = 2, name = "Psychology", description = "Introduction to human behavior.", stream = Stream.ALL, shape = ExpressiveShape.PILL),
         Subject(id = 3, name = "Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
         Subject(id = 4, name = "Chemistry", description = "Atomic structure and bonding.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_12)
     )

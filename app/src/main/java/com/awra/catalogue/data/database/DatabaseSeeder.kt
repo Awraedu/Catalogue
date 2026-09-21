@@ -10,17 +10,17 @@ import com.awra.catalogue.data.util.QuizLoader
 object DatabaseSeeder {
     val initialSubjects = listOf(
         // Common Subjects
-        Subject(name = "English I", description = "Foundational language skills.", stream = Stream.COMMON, shape = ExpressiveShape.CIRCLE),
-        Subject(name = "English II", description = "Advanced academic writing.", stream = Stream.COMMON, shape = ExpressiveShape.OVAL),
-        Subject(name = "Psychology", description = "Introduction to human behavior.", stream = Stream.COMMON, shape = ExpressiveShape.PILL),
-        Subject(name = "Anthropology", description = "Study of human societies and cultures.", stream = Stream.COMMON, shape = ExpressiveShape.SEMICIRCLE),
-        Subject(name = "Logic", description = "Logic and reasoning skills.", stream = Stream.COMMON, shape = ExpressiveShape.ARCH),
-        Subject(name = "Civics", description = "Ethics and citizenship.", stream = Stream.COMMON, shape = ExpressiveShape.BUN),
-        Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.COMMON, shape = ExpressiveShape.FAN),
-        Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.COMMON, shape = ExpressiveShape.HEART),
-        Subject(name = "Emerging Tech", description = "AI, IoT, and future tech.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_4),
-        Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_6),
-        Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_7),
+        Subject(name = "English I", description = "Foundational language skills.", stream = Stream.ALL, shape = ExpressiveShape.CIRCLE),
+        Subject(name = "English II", description = "Advanced academic writing.", stream = Stream.ALL, shape = ExpressiveShape.OVAL),
+        Subject(name = "Psychology", description = "Introduction to human behavior.", stream = Stream.ALL, shape = ExpressiveShape.PILL),
+        Subject(name = "Anthropology", description = "Study of human societies and cultures.", stream = Stream.ALL, shape = ExpressiveShape.SEMICIRCLE),
+        Subject(name = "Logic", description = "Logic and reasoning skills.", stream = Stream.ALL, shape = ExpressiveShape.ARCH),
+        Subject(name = "Civics", description = "Ethics and citizenship.", stream = Stream.ALL, shape = ExpressiveShape.BUN),
+        Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.ALL, shape = ExpressiveShape.FAN),
+        Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.ALL, shape = ExpressiveShape.HEART),
+        Subject(name = "Emerging Tech", description = "AI, IoT, and future tech.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_4),
+        Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_6),
+        Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_7),
         
         // Natural Stream
         Subject(name = "Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
@@ -141,7 +141,10 @@ object DatabaseSeeder {
                     seedGeography(context, dao, subjectId)
                     seedGeographyUtilities(dao, subjectId)
                 }
-                "History" -> seedHistory(context, dao, subjectId)
+                "History" -> {
+                    seedHistory(context, dao, subjectId)
+                    seedHistoryUtilities(dao, subjectId)
+                }
                 "Economics" -> {
                     seedEconomics(context, dao, subjectId)
                     seedEconomicsUtilities(dao, subjectId)
@@ -391,6 +394,12 @@ object DatabaseSeeder {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Climate Zones", type = "CLIMATE_ZONES", icon = "WbSunny"))
         dao.insertUtility(Utility(subjectId = subjectId, name = "Earth Layers", type = "EARTH_LAYERS", icon = "Layers"))
         dao.insertUtility(Utility(subjectId = subjectId, name = "Ethiopia Regions", type = "ETHIOPIA_REGIONS", icon = "Map"))
+    }
+
+    private suspend fun seedHistoryUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Historical Timeline", type = "HIST_TIMELINE", icon = "Timeline"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Ancient Civilizations", type = "ANCIENT_CIV", icon = "AccountBalance"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Historical Leaders", type = "HIST_LEADERS", icon = "Person"))
     }
 
     private suspend fun seedPsychologyUtilities(dao: CatalogueDao, subjectId: Long) {

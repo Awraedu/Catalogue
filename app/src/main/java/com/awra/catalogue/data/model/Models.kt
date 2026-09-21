@@ -1,12 +1,13 @@
 package com.awra.catalogue.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
 import androidx.room.Index
 
 enum class Stream {
-    NATURAL, SOCIAL, COMMON
+    NATURAL, SOCIAL, ALL
 }
 
 enum class MaterialType {
@@ -29,7 +30,8 @@ data class Subject(
     val name: String,
     val description: String = "",
     val stream: Stream,
-    val shape: ExpressiveShape
+    val shape: ExpressiveShape,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = 0
 )
 
 @Entity(

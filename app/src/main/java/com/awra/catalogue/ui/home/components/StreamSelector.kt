@@ -14,7 +14,7 @@ fun StreamSelector(
     onStreamSelected: (Stream) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val streams = Stream.entries.filter { it != Stream.COMMON }
+    val streams = Stream.entries
     
     SingleChoiceSegmentedButtonRow(
         modifier = modifier

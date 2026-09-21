@@ -212,6 +212,7 @@ fun LottieAsset(type: String, modifier: Modifier = Modifier) {
                     "identity" -> Icons.Default.Person
                     "natural" -> Icons.Default.Science
                     "soacial" -> Icons.Default.Public
+                    "all" -> Icons.Default.AllInclusive
                     "palette" -> Icons.Default.Palette
                     "goal" -> Icons.Default.Timer
                     "clock" -> Icons.Default.Schedule
@@ -346,20 +347,29 @@ private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                StreamLargeCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Natural",
+                    lottieType = "natural",
+                    isSelected = selectedStream == Stream.NATURAL,
+                    onClick = { onStreamSelect(Stream.NATURAL) }
+                )
+                StreamLargeCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Social",
+                    lottieType = "soacial",
+                    isSelected = selectedStream == Stream.SOCIAL,
+                    onClick = { onStreamSelect(Stream.SOCIAL) }
+                )
+            }
             StreamLargeCard(
-                modifier = Modifier.weight(1f),
-                title = "Natural",
-                lottieType = "natural",
-                isSelected = selectedStream == Stream.NATURAL,
-                onClick = { onStreamSelect(Stream.NATURAL) }
-            )
-            StreamLargeCard(
-                modifier = Modifier.weight(1f),
-                title = "Social",
-                lottieType = "soacial",
-                isSelected = selectedStream == Stream.SOCIAL,
-                onClick = { onStreamSelect(Stream.SOCIAL) }
+                modifier = Modifier.fillMaxWidth().height(160.dp),
+                title = "Both (All)",
+                lottieType = "all",
+                isSelected = selectedStream == Stream.ALL,
+                onClick = { onStreamSelect(Stream.ALL) }
             )
         }
         

@@ -26,6 +26,7 @@ import com.awra.catalogue.ui.utility.tools.entrepreneurship.*
 import com.awra.catalogue.ui.utility.tools.fitness.*
 import com.awra.catalogue.ui.utility.tools.geography.*
 import com.awra.catalogue.ui.utility.tools.globaltrends.*
+import com.awra.catalogue.ui.utility.tools.history.*
 import com.awra.catalogue.ui.utility.tools.english.GrammarRulesContent
 import com.awra.catalogue.ui.utility.tools.english.LiteraryDevicesContent
 import com.awra.catalogue.ui.utility.tools.english.PhoneticChart
@@ -158,6 +159,9 @@ fun UtilityDetailScreen(
                 "ECON_FORMULA" -> EconomicFormulasContent(onItemClick)
                 "MARKET_STRUCTURES" -> MarketStructuresContent(onItemClick)
                 "SUPPLY_DEMAND" -> SupplyDemandContent(onItemClick)
+                "HIST_TIMELINE" -> HistoricalTimelineContent()
+                "ANCIENT_CIV" -> AncientCivilizationsContent()
+                "HIST_LEADERS" -> HistoricalLeadersContent()
                 else -> Text("Content for ${utility.name} coming soon.", modifier = Modifier.align(Alignment.Center))
             }
 

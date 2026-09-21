@@ -16,7 +16,10 @@ import java.util.*
 
 class HomeViewModel(application: Application, private val repository: CatalogueRepository, private val preferenceManager: PreferenceManager) : AndroidViewModel(application) {
 
-    private val _selectedStream = MutableStateFlow(Stream.valueOf(preferenceManager.selectedStream.value))
+    private val _selectedStream = MutableStateFlow(
+        try { Stream.valueOf(preferenceManager.selectedStream.value) } 
+        catch (e: Exception) { Stream.ALL }
+    )
     val selectedStream: StateFlow<Stream> = _selectedStream.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)

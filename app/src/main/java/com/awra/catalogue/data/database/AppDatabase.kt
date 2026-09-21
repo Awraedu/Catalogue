@@ -1,6 +1,7 @@
 package com.awra.catalogue.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -30,7 +31,14 @@ import kotlinx.coroutines.launch
         PinnedItem::class,
         ClassSchedule::class
     ],
-    version = 54,
+    version = 56,
+    autoMigrations = [
+        AutoMigration(from = 51, to = 52),
+        AutoMigration(from = 52, to = 53),
+        AutoMigration(from = 53, to = 54),
+        AutoMigration(from = 54, to = 55),
+        AutoMigration(from = 55, to = 56)
+    ],
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -61,7 +69,6 @@ abstract class AppDatabase : RoomDatabase() {
                     "catalogue_database"
                 )
                     .addMigrations(*ALL_MIGRATIONS)
-                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
                 instance

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CatalogueDao {
     // Subjects
-    @Query("SELECT * FROM subjects WHERE stream = :stream OR stream = 'COMMON'")
+    @Query("SELECT * FROM subjects WHERE :stream = 'ALL' OR stream = :stream OR stream = 'ALL'")
     fun getSubjectsByStream(stream: Stream): Flow<List<Subject>>
 
     @Query("SELECT * FROM subjects")

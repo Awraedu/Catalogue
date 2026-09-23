@@ -345,13 +345,92 @@ object CustomColorSchemes {
         onErrorContainer = Color(0xFF7F1D1D)
     )
 
+    // --- OCEAN BLUE (Pacific Slate & Ice Cyan) ---
+    // A cohesive, atmospheric oceanic theme inspired by Forest Sage & Earth Brown.
+    // Uses Pacific Blue, Seafoam Cyan, and Periwinkle Mist over soft oceanic slate surfaces.
+    val OceanBlueDark = darkColorScheme(
+        primary = Color(0xFF90CDF4), // Soft Ice Pacific Blue
+        onPrimary = Color(0xFF0F2B48),
+        primaryContainer = Color(0xFF1E4976),
+        onPrimaryContainer = Color(0xFFD0E8FF),
+        
+        secondary = Color(0xFF90E0EF), // Soft Seafoam Azure
+        onSecondary = Color(0xFF0A3440),
+        secondaryContainer = Color(0xFF1B4D5C),
+        onSecondaryContainer = Color(0xFFC8F3FA),
+        
+        tertiary = Color(0xFFA3BFFA), // Soft Periwinkle Mist
+        onTertiary = Color(0xFF1A264F),
+        tertiaryContainer = Color(0xFF2E3D75),
+        onTertiaryContainer = Color(0xFFDEE6FF),
+        
+        surface = Color(0xFF090E17), // Deep Oceanic Midnight Surface
+        background = Color(0xFF090E17),
+        onSurface = Color(0xFFE2E8F0),
+        onSurfaceVariant = Color(0xFFA0AEC0),
+        
+        outline = Color(0xFF64748B),
+        outlineVariant = Color(0xFF334155),
+        
+        surfaceContainerLowest = Color(0xFF04070D),
+        surfaceContainerLow = Color(0xFF0E1624),
+        surfaceContainer = Color(0xFF141F30),
+        surfaceContainerHigh = Color(0xFF1B283D),
+        surfaceContainerHighest = Color(0xFF23324B),
+        
+        inverseSurface = Color(0xFFE2E8F0),
+        inverseOnSurface = Color(0xFF090E17),
+        
+        error = Color(0xFFFFB4AB),
+        onError = Color(0xFF690005),
+        errorContainer = Color(0xFF93000A),
+        onErrorContainer = Color(0xFFFFDAD6)
+    )
+
+    val OceanBlueLight = lightColorScheme(
+        primary = Color(0xFF1D5C96), // Rich Pacific Blue
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFD4E8FF),
+        onPrimaryContainer = Color(0xFF001D38),
+        
+        secondary = Color(0xFF2B7A8C), // Muted Cyan Slate
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFC7F0F8),
+        onSecondaryContainer = Color(0xFF002027),
+        
+        tertiary = Color(0xFF3B4D80), // Deep Periwinkle Slate
+        onTertiary = Color(0xFFFFFFFF),
+        tertiaryContainer = Color(0xFFDCE2FF),
+        onTertiaryContainer = Color(0xFF001548),
+        
+        surface = Color(0xFFF4F7FA), // Cool Porcelain Frost
+        background = Color(0xFFF4F4F4),
+        onSurface = Color(0xFF0F172A),
+        onSurfaceVariant = Color(0xFF475569),
+        
+        outline = Color(0xFF78889B),
+        outlineVariant = Color(0xFFD1DBE5),
+        
+        surfaceContainerLowest = Color(0xFFFFFFFF),
+        surfaceContainerLow = Color(0xFFEDF2F7),
+        surfaceContainer = Color(0xFFE2E8F0),
+        surfaceContainerHigh = Color(0xFFD5DFEB),
+        surfaceContainerHighest = Color(0xFFC8D5E3),
+        
+        error = Color(0xFFBA1A1A),
+        onError = Color(0xFFFFFFFF),
+        errorContainer = Color(0xFFFFDAD6),
+        onErrorContainer = Color(0xFF410002)
+    )
+
     val Schemes = mapOf(
         "DEFAULT" to null,
         "MIDNIGHT_MONO" to (MidnightMonoLight to MidnightMonoDark),
         "FOREST_SAGE" to (ForestSageLight to ForestSageDark),
         "EARTH_BROWN" to (EarthBrownLight to EarthBrownDark),
         "TWILIGHT_LAVENDER" to (TwilightLavenderLight to TwilightLavenderDark),
-        "VIBRANT_ORANGE" to (VibrantOrangeLight to VibrantOrangeDark)
+        "VIBRANT_ORANGE" to (VibrantOrangeLight to VibrantOrangeDark),
+        "OCEAN_BLUE" to (OceanBlueLight to OceanBlueDark)
     )
 
     fun getScheme(id: String, isDark: Boolean): ColorScheme? {

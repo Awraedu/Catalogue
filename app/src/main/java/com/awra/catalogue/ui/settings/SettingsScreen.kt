@@ -177,6 +177,7 @@ fun SettingsScreen(
                     listOf(
                         "DEFAULT" to "Adaptive (System)",
                         "VIBRANT_ORANGE" to "Vibrant Orange (Brand)",
+                        "OCEAN_BLUE" to "Ocean Blue",
                         "MIDNIGHT_MONO" to "Midnight Mono",
                         "FOREST_SAGE" to "Forest Sage",
                         "EARTH_BROWN" to "Earth Brown",
@@ -302,6 +303,7 @@ fun SettingsScreen(
                             val themeName = when(selectedTheme) {
                                 "DEFAULT" -> "Adaptive (System)"
                                 "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
+                                "OCEAN_BLUE" -> "Ocean Blue"
                                 "MIDNIGHT_MONO" -> "Midnight Mono"
                                 "FOREST_SAGE" -> "Forest Sage"
                                 "EARTH_BROWN" -> "Earth Brown"

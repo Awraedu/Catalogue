@@ -5,6 +5,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -426,6 +428,7 @@ private fun CustomizationStep(
         
         val paletteName = when(selectedPalette) {
             "VIBRANT_ORANGE" -> "Vibrant Orange"
+            "OCEAN_BLUE" -> "Ocean Blue"
             "MIDNIGHT_MONO" -> "Midnight Mono"
             "FOREST_SAGE" -> "Forest Sage"
             "EARTH_BROWN" -> "Earth Brown"
@@ -462,16 +465,22 @@ private fun CustomizationStep(
         Spacer(modifier = Modifier.height(24.dp))
         
         Text("Color Palette", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-        Row(modifier = Modifier.padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             val context = androidx.compose.ui.platform.LocalContext.current
             val isS = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
             val systemPrimary = if (isS) dynamicLightColorScheme(context).primary else MaterialTheme.colorScheme.primary
             val systemSecondary = if (isS) dynamicLightColorScheme(context).secondary else MaterialTheme.colorScheme.secondary
             val systemTertiary = if (isS) dynamicLightColorScheme(context).tertiary else MaterialTheme.colorScheme.tertiary
             
-            listOf("DEFAULT", "VIBRANT_ORANGE", "MIDNIGHT_MONO", "FOREST_SAGE", "EARTH_BROWN", "TWILIGHT_LAVENDER").forEach { id ->
+            listOf("DEFAULT", "VIBRANT_ORANGE", "OCEAN_BLUE", "MIDNIGHT_MONO", "FOREST_SAGE", "EARTH_BROWN", "TWILIGHT_LAVENDER").forEach { id ->
                 val colors = when(id) {
                     "VIBRANT_ORANGE" -> listOf(Color(0xFFFF6D00), Color(0xFF7C3AED), Color(0xFF059669))
+                    "OCEAN_BLUE" -> listOf(Color(0xFF1D5C96), Color(0xFF2B7A8C), Color(0xFF3B4D80))
                     "MIDNIGHT_MONO" -> listOf(Color(0xFF000000), Color(0xFF424242), Color(0xFF616161))
                     "FOREST_SAGE" -> listOf(Color(0xFF386B41), Color(0xFF52634F), Color(0xFF386567))
                     "EARTH_BROWN" -> listOf(Color(0xFF7A5900), Color(0xFF6B5D3F), Color(0xFF4A605E))

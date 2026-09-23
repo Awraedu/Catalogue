@@ -96,6 +96,12 @@ class MainActivity : ComponentActivity() {
             }
         })[OnboardingViewModel::class.java]
 
+        val authViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return com.awra.catalogue.ui.auth.AuthViewModel(preferenceManager) as T
+            }
+        })[com.awra.catalogue.ui.auth.AuthViewModel::class.java]
+
         val scheduleViewModel = ScheduleViewModel(repository)
 
         enableEdgeToEdge()
@@ -104,12 +110,20 @@ class MainActivity : ComponentActivity() {
             val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
             val userName by settingsViewModel.userName.collectAsState()
             val isOnboardingCompleted by preferenceManager.isOnboardingCompleted.collectAsState()
+            var firebaseUser by remember { mutableStateOf(com.google.firebase.auth.FirebaseAuth.getInstance().currentUser) }
 
             YourAppTheme(
                 darkMode = darkMode,
                 selectedTheme = selectedTheme
             ) {
-                if (!isOnboardingCompleted) {
+                if (firebaseUser == null) {
+                    com.awra.catalogue.ui.auth.AuthScreen(
+                        viewModel = authViewModel,
+                        onAuthSuccess = {
+                            firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                        }
+                    )
+                } else if (!isOnboardingCompleted) {
                     OnboardingScreen(
                         viewModel = onboardingViewModel,
                         onComplete = { 

@@ -120,23 +120,69 @@ fun HandoutDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onTogglePin) {
-                        Icon(
-                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                            contentDescription = if (isPinned) "Unpin" else "Pin",
-                            tint = if (isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    Box(modifier = Modifier.padding(end = 8.dp)) {
+                        SplitButtonLayout(
+                            leadingButton = {
+                                SplitButtonDefaults.LeadingButton(
+                                    onClick = onTogglePin,
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = if (isPinned)
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        else
+                                            MaterialTheme.colorScheme.surfaceContainerHigh,
+                                        contentColor = if (isPinned)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+                                    )
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                                            contentDescription = if (isPinned) "Unpin" else "Pin",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Text(
+                                            text = if (isPinned) "Pinned" else "Pin",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            },
+                            trailingButton = {
+                                SplitButtonDefaults.TrailingButton(
+                                    onClick = { showMenu = !showMenu },
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = if (isPinned)
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        else
+                                            MaterialTheme.colorScheme.surfaceContainerHighest,
+                                        contentColor = if (isPinned)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "More options",
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
                         )
-                    }
-                    Box {
-                        IconButton(onClick = { showMenu = !showMenu }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
-                        }
+
                         DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Re-download from GitHub") },
+                                text = { Text("Re-download Handout") },
                                 leadingIcon = { Icon(Icons.Default.Refresh, null) },
                                 onClick = {
                                     showMenu = false
@@ -265,7 +311,7 @@ fun HandoutDetailScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Fetching study materials from GitHub...",
+                                    text = "Fetching study materials...",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center

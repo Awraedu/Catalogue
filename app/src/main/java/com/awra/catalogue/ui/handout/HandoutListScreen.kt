@@ -278,7 +278,7 @@ private fun TopicItem(
             } else {
                 Icon(
                     imageVector = Icons.Default.CloudDownload,
-                    contentDescription = "Available on GitHub",
+                    contentDescription = "Available for download",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     modifier = Modifier.size(20.dp)
                 )

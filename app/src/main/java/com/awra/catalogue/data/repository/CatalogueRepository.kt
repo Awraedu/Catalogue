@@ -116,7 +116,7 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     }
 
     companion object {
-        var GITHUB_HANDOUTS_BASE_URL: String = "https://raw.githubusercontent.com/Awraedu/Catalogue/updated/"
+        var GITHUB_HANDOUTS_BASE_URL: String = "https://raw.githubusercontent.com/Awraedu/handouts/main/"
     }
 
     suspend fun getInfographicById(id: Long): Infographic? = catalogueDao.getInfographicById(id)

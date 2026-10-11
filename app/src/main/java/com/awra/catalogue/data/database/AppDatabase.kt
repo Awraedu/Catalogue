@@ -36,8 +36,7 @@ import kotlinx.coroutines.launch
         AutoMigration(from = 51, to = 52),
         AutoMigration(from = 52, to = 53),
         AutoMigration(from = 53, to = 54),
-        AutoMigration(from = 54, to = 55),
-        AutoMigration(from = 55, to = 56)
+        AutoMigration(from = 54, to = 56)
     ],
     exportSchema = true
 )

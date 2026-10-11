@@ -349,6 +349,7 @@ class MainActivity : ComponentActivity() {
                                                 val isPinned by repository.isItemPinned(state.handout.id, MaterialType.HANDOUT).collectAsState(initial = false)
                                                 HandoutDetailScreen(
                                                     handout = state.handout,
+                                                    viewModel = handoutViewModel,
                                                     isPinned = isPinned,
                                                     onTogglePin = {
                                                         lifecycleScope.launch {

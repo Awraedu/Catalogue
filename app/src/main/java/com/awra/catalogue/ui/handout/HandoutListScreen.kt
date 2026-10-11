@@ -12,7 +12,9 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -124,6 +127,7 @@ fun HandoutListScreen(
                 chapters.forEachIndexed { index, chapterWithTopics ->
                     chapterSection(
                         chapterWithTopics = chapterWithTopics,
+                        viewModel = viewModel,
                         onHandoutClick = onHandoutClick,
                         accentColor = neutralColor
                     )
@@ -170,6 +174,7 @@ fun HandoutListScreen(
                     chapters.forEachIndexed { index, chapterWithTopics ->
                         chapterSection(
                             chapterWithTopics = chapterWithTopics,
+                            viewModel = viewModel,
                             onHandoutClick = {
                                 scope.launch { searchBarState.animateToCollapsed() }
                                 onHandoutClick(it)
@@ -190,6 +195,7 @@ fun HandoutListScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyListScope.chapterSection(
     chapterWithTopics: ChapterWithTopics,
+    viewModel: HandoutViewModel? = null,
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
@@ -207,10 +213,16 @@ private fun LazyListScope.chapterSection(
         items = chapterWithTopics.topics,
         key = { _, topicWithHandout -> "top_${topicWithHandout.topic.id}" }
     ) { index, topicWithHandout ->
+        val context = LocalContext.current
+        val isDownloaded = remember(topicWithHandout.handout) {
+            topicWithHandout.handout?.let { viewModel?.isHandoutDownloaded(context, it) } ?: false
+        }
+
         TopicItem(
             topicWithHandout = topicWithHandout,
             index = index,
             count = chapterWithTopics.topics.size,
+            isDownloaded = isDownloaded,
             onHandoutClick = onHandoutClick,
             accentColor = accentColor
         )
@@ -227,6 +239,7 @@ private fun TopicItem(
     topicWithHandout: TopicWithHandout,
     index: Int,
     count: Int,
+    isDownloaded: Boolean,
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
@@ -252,7 +265,24 @@ private fun TopicItem(
             Icon(Icons.Default.Description, contentDescription = null, tint = accentColor)
         },
         supportingContent = {
-            Text("Topic study materials")
+            Text(if (isDownloaded) "Saved & Encrypted offline" else "Tap to download & study")
+        },
+        trailingContent = {
+            if (isDownloaded) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Downloaded",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.CloudDownload,
+                    contentDescription = "Available on GitHub",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh

@@ -352,23 +352,30 @@ private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 StreamLargeCard(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(200.dp),
                     title = "Natural",
                     lottieType = "natural",
                     isSelected = selectedStream == Stream.NATURAL,
                     onClick = { onStreamSelect(Stream.NATURAL) }
                 )
                 StreamLargeCard(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(200.dp),
                     title = "Social",
                     lottieType = "soacial",
                     isSelected = selectedStream == Stream.SOCIAL,
                     onClick = { onStreamSelect(Stream.SOCIAL) }
                 )
             }
-            StreamLargeCard(
-                modifier = Modifier.fillMaxWidth().height(160.dp),
+            StreamHorizontalCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp),
                 title = "Both (All)",
+                subtitle = "Includes Natural & Social courses",
                 lottieType = "all",
                 isSelected = selectedStream == Stream.ALL,
                 onClick = { onStreamSelect(Stream.ALL) }
@@ -389,10 +396,16 @@ private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit
 }
 
 @Composable
-private fun StreamLargeCard(modifier: Modifier, title: String, lottieType: String, isSelected: Boolean, onClick: () -> Unit) {
+private fun StreamLargeCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    lottieType: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
     Card(
         onClick = onClick,
-        modifier = modifier.height(260.dp),
+        modifier = modifier,
         shape = ContinuousRoundedRectangle(32.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
@@ -400,13 +413,54 @@ private fun StreamLargeCard(modifier: Modifier, title: String, lottieType: Strin
         border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Center
         ) {
-            LottieAsset(lottieType, modifier = Modifier.size(120.dp))
+            LottieAsset(lottieType, modifier = Modifier.size(100.dp))
+            Spacer(Modifier.height(12.dp))
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-            Spacer(Modifier.size(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun StreamHorizontalCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String,
+    lottieType: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = ContinuousRoundedRectangle(32.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            LottieAsset(lottieType, modifier = Modifier.size(64.dp))
+            Spacer(Modifier.width(16.dp))
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -635,7 +689,7 @@ private fun ScheduleStep(arrivalTime: String, onTimeChange: (String) -> Unit, on
         Spacer(modifier = Modifier.height(64.dp))
         LottieAsset("clock", modifier = Modifier.size(120.dp).align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "The Clock", style = MaterialTheme.typography.headlineSmall, color = Color(0xFFFFD600))
+        Text(text = "The Clock", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.tertiary)
         Text(text = "When do you finish class?", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black)
         
         Spacer(modifier = Modifier.height(32.dp))
@@ -645,20 +699,29 @@ private fun ScheduleStep(arrivalTime: String, onTimeChange: (String) -> Unit, on
                 .fillMaxWidth()
                 .height(180.dp)
                 .clip(ContinuousRoundedRectangle(32.dp))
-                .background(Color(0xFFFFD600).copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f))
                 .clickable { showTimePicker = true },
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Default.Schedule, null, modifier = Modifier.size(48.dp), tint = Color(0xFFFFD600))
+                Icon(
+                    imageVector = Icons.Default.Schedule,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = arrivalTime,
                     style = MaterialTheme.typography.displayLarge,
                     fontWeight = FontWeight.Black,
-                    color = Color(0xFF000000)
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
-                Text("Tap to change", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = "Tap to change",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+                )
             }
         }
         
@@ -675,7 +738,10 @@ private fun ScheduleStep(arrivalTime: String, onTimeChange: (String) -> Unit, on
             onClick = onNext,
             modifier = Modifier.fillMaxWidth().height(64.dp),
             shape = ContinuousRoundedRectangle(24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD600), contentColor = Color.Black)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary
+            )
         ) {
             Text("Sync Notifications", fontWeight = FontWeight.Bold)
         }

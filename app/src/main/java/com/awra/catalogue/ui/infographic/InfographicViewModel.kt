@@ -15,9 +15,4 @@ class InfographicViewModel(
 
     val chapters: Flow<List<ChapterWithInfographicTopics>> = repository.getChaptersWithInfographics(subjectId)
 
-    fun markRecentlyOpened(infographicId: Long) {
-        viewModelScope.launch {
-            repository.markAsRecentlyOpened(infographicId, MaterialType.INFOGRAPHIC)
-        }
-    }
 }

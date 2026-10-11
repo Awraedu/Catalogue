@@ -32,17 +32,56 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.platform.LocalLocale
 
+private fun format24to12(time24: String): String {
+    return try {
+        val parts = time24.split(":")
+        var hour = parts[0].toInt()
+        val min = parts[1].toInt()
+        val ampm = if (hour >= 12) "PM" else "AM"
+        val hour12 = if (hour % 12 == 0) 12 else hour % 12
+        String.format(Locale.US, "%d:%02d %s", hour12, min, ampm)
+    } catch (e: Exception) {
+        time24
+    }
+}
+
+private fun isTimeAfter(startTime: String, endTime: String): Boolean {
+    return try {
+        val start = startTime.split(":").map { it.toInt() }
+        val end = endTime.split(":").map { it.toInt() }
+        (end[0] * 60 + end[1]) > (start[0] * 60 + start[1])
+    } catch (e: Exception) {
+        false
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ScheduleScreen(
     viewModel: ScheduleViewModel
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val schedules by viewModel.schedules.collectAsState(initial = emptyList())
     val subjects by viewModel.allSubjects.collectAsState(initial = emptyList())
-    var selectedDay by remember { mutableIntStateOf(1) } // 1 = Monday
+    
+    val currentDay = remember {
+        val cal = Calendar.getInstance()
+        when (cal.get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> 1
+            Calendar.TUESDAY -> 2
+            Calendar.WEDNESDAY -> 3
+            Calendar.THURSDAY -> 4
+            Calendar.FRIDAY -> 5
+            Calendar.SATURDAY -> 6
+            else -> 1 // Default to Monday if it's Sunday
+        }
+    }
+    
+    var selectedDay by remember { mutableIntStateOf(currentDay) }
     
     var showAddClassDialog by remember { mutableStateOf(false) }
     var showAddTestDialog by remember { mutableStateOf(false) }
+    var editingSchedule by remember { mutableStateOf<ClassSchedule?>(null) }
     var fabExpanded by remember { mutableStateOf(false) }
 
     val days = remember { listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") }
@@ -50,6 +89,7 @@ fun ScheduleScreen(
         schedules.filter { 
             if (it.isTest && it.date != null) {
                 val cal = Calendar.getInstance().apply { timeInMillis = it.date }
+                // Calendar.SUNDAY is 1. Our day mapping: Mon=1, Tue=2... Sat=6.
                 val day = if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 7 else cal.get(Calendar.DAY_OF_WEEK) - 1
                 day == selectedDay
             } else {
@@ -158,7 +198,14 @@ fun ScheduleScreen(
                             subject = subject,
                             index = index,
                             count = filteredSchedules.size,
-                            onDelete = { viewModel.removeSchedule(it) }
+                            onDelete = { 
+                                viewModel.removeSchedule(it)
+                                com.awra.catalogue.data.notification.NotificationScheduler.scheduleAllReminders(context)
+                            },
+                            onEdit = {
+                                editingSchedule = it
+                                if (it.isTest) showAddTestDialog = true else showAddClassDialog = true
+                            }
                         )
                     }
                 }
@@ -169,20 +216,33 @@ fun ScheduleScreen(
     if (showAddClassDialog) {
         AddClassDialog(
             subjects = subjects,
-            onDismiss = { showAddClassDialog = false },
+            selectedDay = selectedDay,
+            editingSchedule = editingSchedule,
+            onDismiss = { 
+                showAddClassDialog = false
+                editingSchedule = null
+            },
             onConfirm = { schedule ->
                 viewModel.addSchedule(schedule)
+                com.awra.catalogue.data.notification.NotificationScheduler.scheduleAllReminders(context)
                 showAddClassDialog = false
+                editingSchedule = null
             }
         )
     }
 
     if (showAddTestDialog) {
         AddTestDialog(
-            onDismiss = { showAddTestDialog = false },
+            editingSchedule = editingSchedule,
+            onDismiss = { 
+                showAddTestDialog = false
+                editingSchedule = null
+            },
             onConfirm = { schedule ->
                 viewModel.addSchedule(schedule)
+                com.awra.catalogue.data.notification.NotificationScheduler.scheduleAllReminders(context)
                 showAddTestDialog = false
+                editingSchedule = null
             }
         )
     }
@@ -195,7 +255,8 @@ private fun ScheduleItemWrapper(
     subject: Subject?,
     index: Int,
     count: Int,
-    onDelete: (ClassSchedule) -> Unit
+    onDelete: (ClassSchedule) -> Unit,
+    onEdit: (ClassSchedule) -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState()
     
@@ -222,7 +283,7 @@ private fun ScheduleItemWrapper(
             }
         },
         content = {
-            ScheduleItem(schedule, subject, index, count)
+            ScheduleItem(schedule, subject, index, count, onClick = { onEdit(schedule) })
         },
         modifier = Modifier.fillMaxWidth()
     )
@@ -235,7 +296,8 @@ private fun ScheduleItem(
     schedule: ClassSchedule,
     subject: Subject?,
     index: Int,
-    count: Int
+    count: Int,
+    onClick: () -> Unit
 ) {
     val subjectColors = if (subject != null) getSubjectAdaptiveColors(subject.id) else null
     val displayColor = if (schedule.isTest) MaterialTheme.colorScheme.error else (subjectColors?.content ?: Color(schedule.color))
@@ -244,6 +306,7 @@ private fun ScheduleItem(
     Card(
         shape = getItemShape(index, count),
         colors = CardDefaults.cardColors(containerColor = containerColor),
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -275,9 +338,9 @@ private fun ScheduleItem(
                     if (schedule.isTest && schedule.date != null) {
                         val locale = LocalLocale.current.platformLocale
                         val dateStr = SimpleDateFormat("MMM dd, yyyy", locale).format(Date(schedule.date))
-                        "$dateStr • ${schedule.startTime}"
+                        "$dateStr • ${format24to12(schedule.startTime)}"
                     } else {
-                        "${schedule.startTime} - ${schedule.endTime}"
+                        "${format24to12(schedule.startTime)} - ${format24to12(schedule.endTime ?: "")}"
                     },
                     style = MaterialTheme.typography.bodySmall, 
                     color = if (schedule.isTest) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
@@ -310,14 +373,16 @@ private fun getItemShape(index: Int, count: Int): Shape {
 @Composable
 private fun AddClassDialog(
     subjects: List<Subject>,
+    selectedDay: Int,
+    editingSchedule: ClassSchedule? = null,
     onDismiss: () -> Unit,
     onConfirm: (ClassSchedule) -> Unit
 ) {
-    var selectedSubject by remember { mutableStateOf<Subject?>(null) }
-    var dayOfWeek by remember { mutableIntStateOf(1) }
-    var startTime by remember { mutableStateOf("08:00") }
-    var endTime by remember { mutableStateOf("09:00") }
-    var room by remember { mutableStateOf("") }
+    var selectedSubject by remember { mutableStateOf<Subject?>(subjects.find { it.id == editingSchedule?.subjectId }) }
+    var dayOfWeek by remember { mutableIntStateOf(editingSchedule?.dayOfWeek ?: selectedDay) }
+    var startTime by remember { mutableStateOf(editingSchedule?.startTime ?: "08:00") }
+    var endTime by remember { mutableStateOf(editingSchedule?.endTime ?: "09:00") }
+    var room by remember { mutableStateOf(editingSchedule?.room ?: "") }
     
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
@@ -326,10 +391,12 @@ private fun AddClassDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
+            val isTimeValid = isTimeAfter(startTime, endTime)
             Button(
                 onClick = {
-                    if (selectedSubject != null) {
+                    if (selectedSubject != null && isTimeValid) {
                         onConfirm(ClassSchedule(
+                            id = editingSchedule?.id ?: 0,
                             subjectId = selectedSubject!!.id,
                             subjectName = selectedSubject!!.name,
                             dayOfWeek = dayOfWeek,
@@ -340,13 +407,14 @@ private fun AddClassDialog(
                         ))
                     }
                 },
+                enabled = selectedSubject != null && isTimeValid,
                 shape = CircleShape
-            ) { Text("Add Class") }
+            ) { Text(if (editingSchedule != null) "Save Changes" else "Add Class") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }
         },
-        title = { Text("Add Class") },
+        title = { Text(if (editingSchedule != null) "Edit Class" else "Add Class") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 ExposedDropdownMenuBox(
@@ -396,26 +464,36 @@ private fun AddClassDialog(
                     }
                 }
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedCard(
-                        onClick = { showStartTimePicker = true },
-                        modifier = Modifier.weight(1f),
-                        shape = CircleShape
-                    ) {
-                        Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Start", style = MaterialTheme.typography.labelSmall)
-                            Text(startTime, fontWeight = FontWeight.Bold)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedCard(
+                            onClick = { showStartTimePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = CircleShape
+                        ) {
+                            Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("Start", style = MaterialTheme.typography.labelSmall)
+                                Text(format24to12(startTime), fontWeight = FontWeight.Bold)
+                            }
+                        }
+                        OutlinedCard(
+                            onClick = { showEndTimePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = CircleShape
+                        ) {
+                            Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("End", style = MaterialTheme.typography.labelSmall)
+                                Text(format24to12(endTime), fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
-                    OutlinedCard(
-                        onClick = { showEndTimePicker = true },
-                        modifier = Modifier.weight(1f),
-                        shape = CircleShape
-                    ) {
-                        Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("End", style = MaterialTheme.typography.labelSmall)
-                            Text(endTime, fontWeight = FontWeight.Bold)
-                        }
+                    if (!isTimeAfter(startTime, endTime)) {
+                        Text(
+                            "End time must be after start time",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
                     }
                 }
 
@@ -436,8 +514,12 @@ private fun AddClassDialog(
         TimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { h, m ->
-                val locale = Locale.getDefault()
-                startTime = String.format(locale, "%02d:%02d", h, m)
+                val newStartTime = String.format(Locale.US, "%02d:%02d", h, m)
+                if (!isTimeAfter(newStartTime, endTime)) {
+                    val endH = (h + 1) % 24
+                    endTime = String.format(Locale.US, "%02d:%02d", endH, m)
+                }
+                startTime = newStartTime
                 showStartTimePicker = false
             }
         )
@@ -447,8 +529,8 @@ private fun AddClassDialog(
         TimePickerDialog(
             onDismiss = { showEndTimePicker = false },
             onConfirm = { h, m ->
-                val locale = Locale.getDefault()
-                endTime = String.format(locale, "%02d:%02d", h, m)
+                val newEndTime = String.format(Locale.US, "%02d:%02d", h, m)
+                endTime = newEndTime
                 showEndTimePicker = false
             }
         )
@@ -459,13 +541,26 @@ private fun AddClassDialog(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AddTestDialog(
+    editingSchedule: ClassSchedule? = null,
     onDismiss: () -> Unit,
     onConfirm: (ClassSchedule) -> Unit
 ) {
-    var testName by remember { mutableStateOf("") }
-    var selectedType by remember { mutableStateOf("Test") }
-    var selectedDate by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    var startTime by remember { mutableStateOf("08:00") }
+    var testName by remember { mutableStateOf(editingSchedule?.subjectName ?: "") }
+    var selectedType by remember { mutableStateOf(editingSchedule?.testType ?: "Test") }
+    
+    val today = remember {
+        Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+    
+    var selectedDate by remember { 
+        mutableLongStateOf(editingSchedule?.date?.coerceAtLeast(today) ?: today) 
+    }
+    var startTime by remember { mutableStateOf(editingSchedule?.startTime ?: "08:00") }
     
     var showDatePicker by remember { mutableStateOf(false) }
     var showStartTimePicker by remember { mutableStateOf(false) }
@@ -483,6 +578,7 @@ private fun AddTestDialog(
                         val day = if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 7 else cal.get(Calendar.DAY_OF_WEEK) - 1
                         
                         onConfirm(ClassSchedule(
+                            id = editingSchedule?.id ?: 0,
                             subjectName = testName,
                             testType = selectedType,
                             dayOfWeek = day,
@@ -493,12 +589,12 @@ private fun AddTestDialog(
                     }
                 },
                 shape = CircleShape
-            ) { Text("Add Exam") }
+            ) { Text(if (editingSchedule != null) "Save Changes" else "Add Exam") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }
         },
-        title = { Text("Add Exam/Test") },
+        title = { Text(if (editingSchedule != null) "Edit Exam/Test" else "Add Exam/Test") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
@@ -558,7 +654,7 @@ private fun AddTestDialog(
                     ) {
                         Column(Modifier.padding(vertical = 10.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Time", style = MaterialTheme.typography.labelSmall)
-                            Text(startTime, fontWeight = FontWeight.Bold)
+                            Text(format24to12(startTime), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -568,7 +664,14 @@ private fun AddTestDialog(
     )
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate,
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return utcTimeMillis >= today
+                }
+            }
+        )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
@@ -589,7 +692,7 @@ private fun AddTestDialog(
         TimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { h, m ->
-                startTime = String.format(Locale.getDefault(), "%02d:%02d", h, m)
+                startTime = String.format(Locale.US, "%02d:%02d", h, m)
                 showStartTimePicker = false
             }
         )
@@ -602,7 +705,7 @@ private fun TimePickerDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int, Int) -> Unit
 ) {
-    val state = rememberTimePickerState(is24Hour = true)
+    val state = rememberTimePickerState(is24Hour = false)
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {

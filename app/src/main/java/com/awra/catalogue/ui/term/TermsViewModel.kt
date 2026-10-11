@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.data.model.Term
 import com.awra.catalogue.data.repository.CatalogueRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -24,12 +26,13 @@ class TermsViewModel(
     val selectedSubjectId: StateFlow<Long?> = _selectedSubjectId.asStateFlow()
 
     // Get all unique subjects for filtering
-    val subjects: Flow<List<Subject>> = repository.getAllSubjects()
+    val subjects: StateFlow<List<Subject>> = repository.getAllSubjects()
         .map { it.distinctBy { sub -> sub.name } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val terms: StateFlow<List<Term>> = combine(
-        _searchQuery.debounce(300), 
+        _searchQuery.debounce { if (it.isEmpty()) 0L else 300L }, 
         _showBookmarkedOnly, 
         _selectedSubjectId
     ) { query, bookmarkedOnly, subjectId ->
@@ -48,7 +51,8 @@ class TermsViewModel(
         list.distinctBy { term -> 
             term.word.lowercase().trim() + ":" + term.definition.lowercase().trim()
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.flowOn(Dispatchers.Default)
+    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query

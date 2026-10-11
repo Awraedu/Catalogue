@@ -15,10 +15,5 @@ class UtilityViewModel(
 
     val utilities: Flow<List<Utility>> = repository.getUtilities(subjectId)
 
-    fun markRecentlyOpened(utilityId: Long) {
-        viewModelScope.launch {
-            repository.markAsRecentlyOpened(utilityId, MaterialType.UTILITY)
-        }
-    }
 }
 

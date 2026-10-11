@@ -4,22 +4,23 @@ import android.content.Context
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.seed.*
+import com.awra.catalogue.data.util.FlashcardLoader
 import com.awra.catalogue.data.util.QuizLoader
 
 object DatabaseSeeder {
     val initialSubjects = listOf(
         // Common Subjects
-        Subject(name = "English I", description = "Foundational language skills.", stream = Stream.COMMON, shape = ExpressiveShape.CIRCLE),
-        Subject(name = "English II", description = "Advanced academic writing.", stream = Stream.COMMON, shape = ExpressiveShape.OVAL),
-        Subject(name = "Psychology", description = "Introduction to human behavior.", stream = Stream.COMMON, shape = ExpressiveShape.PILL),
-        Subject(name = "Anthropology", description = "Study of human societies and cultures.", stream = Stream.COMMON, shape = ExpressiveShape.SEMICIRCLE),
-        Subject(name = "Logic", description = "Logic and reasoning skills.", stream = Stream.COMMON, shape = ExpressiveShape.ARCH),
-        Subject(name = "Civics", description = "Ethics and citizenship.", stream = Stream.COMMON, shape = ExpressiveShape.BUN),
-        Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.COMMON, shape = ExpressiveShape.FAN),
-        Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.COMMON, shape = ExpressiveShape.HEART),
-        Subject(name = "Emerging Tech", description = "AI, IoT, and future tech.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_4),
-        Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_6),
-        Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.COMMON, shape = ExpressiveShape.COOKIE_7),
+        Subject(name = "English I", description = "Foundational language skills.", stream = Stream.ALL, shape = ExpressiveShape.CIRCLE),
+        Subject(name = "English II", description = "Advanced academic writing.", stream = Stream.ALL, shape = ExpressiveShape.OVAL),
+        Subject(name = "Psychology", description = "Introduction to human behavior.", stream = Stream.ALL, shape = ExpressiveShape.PILL),
+        Subject(name = "Anthropology", description = "Study of human societies and cultures.", stream = Stream.ALL, shape = ExpressiveShape.SEMICIRCLE),
+        Subject(name = "Logic", description = "Logic and reasoning skills.", stream = Stream.ALL, shape = ExpressiveShape.ARCH),
+        Subject(name = "Civics", description = "Ethics and citizenship.", stream = Stream.ALL, shape = ExpressiveShape.BUN),
+        Subject(name = "Inclusiveness", description = "Diverse learners and special needs.", stream = Stream.ALL, shape = ExpressiveShape.FAN),
+        Subject(name = "Entrepreneurship", description = "Business mindset and innovation.", stream = Stream.ALL, shape = ExpressiveShape.HEART),
+        Subject(name = "Emerging Tech", description = "AI, IoT, and future tech.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_4),
+        Subject(name = "Fitness", description = "Physical health and well-being.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_6),
+        Subject(name = "Global Trends", description = "International relations and issues.", stream = Stream.ALL, shape = ExpressiveShape.COOKIE_7),
         
         // Natural Stream
         Subject(name = "Physics", description = "Mechanics and thermodynamics.", stream = Stream.NATURAL, shape = ExpressiveShape.COOKIE_9),
@@ -140,7 +141,10 @@ object DatabaseSeeder {
                     seedGeography(context, dao, subjectId)
                     seedGeographyUtilities(dao, subjectId)
                 }
-                "History" -> seedHistory(context, dao, subjectId)
+                "History" -> {
+                    seedHistory(context, dao, subjectId)
+                    seedHistoryUtilities(dao, subjectId)
+                }
                 "Economics" -> {
                     seedEconomics(context, dao, subjectId)
                     seedEconomicsUtilities(dao, subjectId)
@@ -227,9 +231,13 @@ object DatabaseSeeder {
         
         // Load all quizzes for the subject
         val easyQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.EASY)
-        val mediumQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.MEDIUM)
         val hardQuizzes = QuizLoader.loadQuizzes(context, folderName, Difficulty.HARD)
-        val allJsonQuizzes = easyQuizzes + mediumQuizzes + hardQuizzes
+        val allJsonQuizzes = easyQuizzes + hardQuizzes
+
+        // Load all flashcards for the subject
+        val easyFlashcards = FlashcardLoader.loadFlashcards(context, folderName, Difficulty.EASY)
+        val hardFlashcards = FlashcardLoader.loadFlashcards(context, folderName, Difficulty.HARD)
+        val allJsonFlashcards = easyFlashcards + hardFlashcards
 
         units.forEachIndexed { index, (unitTitle, topics) ->
             val chapterId = dao.insertChapter(
@@ -264,7 +272,6 @@ object DatabaseSeeder {
                             correctOptionIndex = jsonQ.answerIndex,
                             difficulty = when {
                                 easyQuizzes.contains(jsonQ) -> Difficulty.EASY
-                                mediumQuizzes.contains(jsonQ) -> Difficulty.MEDIUM
                                 else -> Difficulty.HARD
                             },
                             hint = jsonQ.tip,
@@ -286,15 +293,35 @@ object DatabaseSeeder {
                     ))
                 }
 
-                // Seed some mock flashcards
-                dao.insertFlashcards(listOf(
-                    Flashcard(
-                        topicId = topicId,
-                        front = "Define $topicTitle",
-                        back = "The study and application of $topicTitle in the context of $subjectName.",
-                        difficulty = Difficulty.EASY
-                    )
-                ))
+                // Seed flashcards from JSON if available for this topic, otherwise fallback
+                val topicFlashcards = allJsonFlashcards.filter { 
+                    it.chapter.contains(unitTitle, ignoreCase = true) && 
+                    it.topic.contains(topicTitle, ignoreCase = true) 
+                }
+
+                if (topicFlashcards.isNotEmpty()) {
+                    dao.insertFlashcards(topicFlashcards.map { jsonF ->
+                        Flashcard(
+                            topicId = topicId,
+                            front = jsonF.front,
+                            back = jsonF.back,
+                            difficulty = when {
+                                easyFlashcards.contains(jsonF) -> Difficulty.EASY
+                                else -> Difficulty.HARD
+                            }
+                        )
+                    })
+                } else {
+                    // Fallback mock flashcards
+                    dao.insertFlashcards(listOf(
+                        Flashcard(
+                            topicId = topicId,
+                            front = "Define $topicTitle",
+                            back = "The study and application of $topicTitle in the context of $subjectName.",
+                            difficulty = Difficulty.EASY
+                        )
+                    ))
+                }
 
                 // Real Terms for Dictionary (Sample per Topic)
                 val termWord = when {
@@ -338,7 +365,7 @@ object DatabaseSeeder {
                 ))
 
                 // Seed Infographics
-                if (subjectName == "General Biology" && topicTitle == "Introduction to Biology") {
+                if (subjectName.contains("Biology") && topicTitle == "Meaning and Scope of Biology") {
                     dao.insertInfographic(Infographic(topicId = topicId, imageUrl = "bio.png"))
                 }
             }
@@ -367,6 +394,12 @@ object DatabaseSeeder {
         dao.insertUtility(Utility(subjectId = subjectId, name = "Climate Zones", type = "CLIMATE_ZONES", icon = "WbSunny"))
         dao.insertUtility(Utility(subjectId = subjectId, name = "Earth Layers", type = "EARTH_LAYERS", icon = "Layers"))
         dao.insertUtility(Utility(subjectId = subjectId, name = "Ethiopia Regions", type = "ETHIOPIA_REGIONS", icon = "Map"))
+    }
+
+    private suspend fun seedHistoryUtilities(dao: CatalogueDao, subjectId: Long) {
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Historical Timeline", type = "HIST_TIMELINE", icon = "Timeline"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Ancient Civilizations", type = "ANCIENT_CIV", icon = "AccountBalance"))
+        dao.insertUtility(Utility(subjectId = subjectId, name = "Historical Leaders", type = "HIST_LEADERS", icon = "Person"))
     }
 
     private suspend fun seedPsychologyUtilities(dao: CatalogueDao, subjectId: Long) {

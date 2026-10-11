@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,9 +23,9 @@ import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @Composable
-fun RecentlyOpenedSection(
+fun PinnedItemsSection(
     items: List<RecentlyOpenedDisplayItem>,
-    onItemClick: (RecentlyOpenedDisplayItem) -> Unit
+    onItemClick: (RecentlyOpenedDisplayItem) -> Unit,
 ) {
     if (items.isEmpty()) return
 
@@ -35,7 +34,7 @@ fun RecentlyOpenedSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Recently Opened",
+            text = "Pinned Items",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -48,10 +47,9 @@ fun RecentlyOpenedSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(items) { item ->
-                RecentlyOpenedItem(
-                    item = item,
-                    onClick = { onItemClick(item) }
-                )
+                PinnedItemView(item = item) {
+                    onItemClick(item)
+                }
             }
         }
     }
@@ -59,13 +57,12 @@ fun RecentlyOpenedSection(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun RecentlyOpenedItem(
+private fun PinnedItemView(
     item: RecentlyOpenedDisplayItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val shape = ContinuousRoundedRectangle(20.dp)
     val subjectColors = getSubjectAdaptiveColors(item.subjectId)
-    val displayColor = if (item.type == MaterialType.UTILITY) subjectColors.content else item.color
 
     val icon = if (item.type == MaterialType.UTILITY) {
         mapUtilityIcon(item.icon)
@@ -92,13 +89,13 @@ private fun RecentlyOpenedItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(ContinuousRoundedRectangle(12.dp))
-                .background(displayColor.copy(alpha = 0.2f)),
+                .background(subjectColors.container),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = displayColor,
+                tint = subjectColors.content,
                 modifier = Modifier.size(24.dp)
             )
         }

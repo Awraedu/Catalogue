@@ -1,12 +1,13 @@
 package com.awra.catalogue.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
 import androidx.room.Index
 
 enum class Stream {
-    NATURAL, SOCIAL, COMMON
+    NATURAL, SOCIAL, ALL
 }
 
 enum class MaterialType {
@@ -14,7 +15,7 @@ enum class MaterialType {
 }
 
 enum class Difficulty {
-    EASY, MEDIUM, HARD
+    EASY, HARD, MIXED
 }
 
 enum class ExpressiveShape {
@@ -29,7 +30,8 @@ data class Subject(
     val name: String,
     val description: String = "",
     val stream: Stream,
-    val shape: ExpressiveShape
+    val shape: ExpressiveShape,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = 0
 )
 
 @Entity(
@@ -104,7 +106,7 @@ data class Flashcard(
     val topicId: Long,
     val front: String,
     val back: String,
-    val difficulty: Difficulty = Difficulty.MEDIUM
+    val difficulty: Difficulty = Difficulty.EASY
 )
 
 @Entity(
@@ -143,7 +145,7 @@ data class QuizQuestion(
     val question: String,
     val options: List<String>,
     val correctOptionIndex: Int,
-    val difficulty: Difficulty = Difficulty.MEDIUM,
+    val difficulty: Difficulty = Difficulty.MIXED,
     val hint: String = "",
     val explanation: String = ""
 )
@@ -188,8 +190,8 @@ data class Utility(
     val icon: String // Icon identifier
 )
 
-@Entity(tableName = "recent_items")
-data class RecentItem(
+@Entity(tableName = "pinned_items")
+data class PinnedItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val targetId: Long,
     val type: MaterialType,

@@ -19,11 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.awra.catalogue.R
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 enum class NavDestination {
@@ -60,25 +61,25 @@ fun FloatingNavigationBar(
             ) {
                 NavTab(
                     selected = currentDestination == NavDestination.HOME,
-                    icon = Icons.Default.Home,
+                    iconRes = R.drawable.home,
                     label = "Home",
                     onClick = { onNavigate(NavDestination.HOME) }
                 )
                 NavTab(
                     selected = currentDestination == NavDestination.SCHEDULE,
-                    icon = Icons.Default.Schedule,
+                    iconRes = R.drawable.schedule,
                     label = "Schedule",
                     onClick = { onNavigate(NavDestination.SCHEDULE) }
                 )
                 NavTab(
                     selected = currentDestination == NavDestination.ANALYTICS,
-                    icon = Icons.Default.BarChart,
+                    iconRes = R.drawable.analytics,
                     label = "Stats",
                     onClick = { onNavigate(NavDestination.ANALYTICS) }
                 )
                 NavTab(
                     selected = currentDestination == NavDestination.TERMS,
-                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    iconRes = R.drawable.terms,
                     label = "Terms",
                     onClick = { onNavigate(NavDestination.TERMS) }
                 )
@@ -116,7 +117,7 @@ fun FloatingNavigationBarDarkPreview() {
 @Composable
 private fun NavTab(
     selected: Boolean,
-    icon: ImageVector,
+    iconRes: Int,
     label: String,
     onClick: () -> Unit
 ) {
@@ -151,7 +152,7 @@ private fun NavTab(
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = icon,
+                painter = painterResource(id = iconRes),
                 contentDescription = label,
                 tint = contentColor,
                 modifier = Modifier.size(24.dp)

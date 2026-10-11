@@ -28,8 +28,12 @@ class QuizViewModel(
     private fun loadQuestions() {
         viewModelScope.launch {
             val flow = when {
-                config != null -> repository.getCustomQuizQuestions(config.chapterIds, config.difficulty, config.limit)
-                topicId != null -> repository.getQuizQuestions(topicId)
+                config != null && config.topicIds.isNotEmpty() -> 
+                    repository.getCustomQuizQuestionsFromTopics(config.topicIds, config.difficulty, config.limit)
+                config != null -> 
+                    repository.getCustomQuizQuestions(config.chapterIds, config.difficulty, config.limit)
+                topicId != null -> 
+                    repository.getQuizQuestions(topicId)
                 else -> emptyFlow()
             }
             val loadedQuestions = flow.firstOrNull() ?: emptyList()
@@ -95,7 +99,8 @@ class QuizViewModel(
 }
 
 data class QuizConfig(
-    val chapterIds: List<Long>,
+    val chapterIds: List<Long> = emptyList(),
+    val topicIds: List<Long> = emptyList(),
     val difficulty: Difficulty,
     val limit: Int
 )

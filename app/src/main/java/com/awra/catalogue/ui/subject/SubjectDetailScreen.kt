@@ -158,13 +158,13 @@ fun SubjectDetailScreen(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(subject.shape.toShape())
-                                    .background(subjectColors.content),
+                                    .background(subjectColors.content.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = getSubjectIcon(subject.name),
+                                    painter = painterResource(id = getSubjectIcon(subject.name)),
                                     contentDescription = null,
-                                    tint = subjectColors.container,
+                                    tint = subjectColors.content,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -172,7 +172,7 @@ fun SubjectDetailScreen(
                             // Colored Progress Tag Pill
                             Surface(
                                 shape = CircleShape,
-                                color = subjectColors.container,
+                                color = subjectColors.container.copy(alpha = 1f),
                                 modifier = Modifier.height(28.dp)
                             ) {
                                 Row(
@@ -254,7 +254,7 @@ fun SubjectDetailScreen(
                     MaterialType.HANDOUT, 
                     "Handouts", 
                     "Study notes and PDF materials.",
-                    Icons.Default.Description, 
+                    com.awra.catalogue.R.drawable.handout, 
                     MaterialTheme.colorScheme.primaryContainer,
                     MaterialTheme.colorScheme.onPrimaryContainer
                 ),
@@ -262,7 +262,7 @@ fun SubjectDetailScreen(
                     MaterialType.QUIZ, 
                     "Quizzes", 
                     "Chapter-wise practice tests.",
-                    Icons.Default.Quiz, 
+                    com.awra.catalogue.R.drawable.quiz, 
                     MaterialTheme.colorScheme.secondaryContainer,
                     MaterialTheme.colorScheme.onSecondaryContainer
                 ),
@@ -270,7 +270,7 @@ fun SubjectDetailScreen(
                     MaterialType.FLASHCARD, 
                     "Flashcards", 
                     "Quick memory aid tools.",
-                    Icons.Default.Style, 
+                    com.awra.catalogue.R.drawable.flashcards, 
                     MaterialTheme.colorScheme.tertiaryContainer,
                     MaterialTheme.colorScheme.onTertiaryContainer
                 ),
@@ -278,7 +278,7 @@ fun SubjectDetailScreen(
                     MaterialType.INFOGRAPHIC, 
                     "Infographics", 
                     "Visual summaries of topics.",
-                    Icons.Default.Image, 
+                    com.awra.catalogue.R.drawable.infographics, 
                     MaterialTheme.colorScheme.errorContainer,
                     MaterialTheme.colorScheme.onErrorContainer
                 ),
@@ -286,7 +286,7 @@ fun SubjectDetailScreen(
                     MaterialType.UTILITY, 
                     "Utilities", 
                     "Calculators, formula sheets, and more.",
-                    Icons.Default.Build, 
+                    com.awra.catalogue.R.drawable.utility, 
                     MaterialTheme.colorScheme.surfaceContainerHigh,
                     MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -310,7 +310,7 @@ private data class CategoryItem(
     val type: MaterialType,
     val title: String,
     val description: String,
-    val icon: ImageVector,
+    val iconRes: Int,
     val containerColor: Color,
     val contentColor: Color
 )
@@ -334,7 +334,7 @@ private fun CategoryCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                imageVector = item.icon,
+                painter = painterResource(id = item.iconRes),
                 contentDescription = null,
                 modifier = Modifier.size(28.dp),
                 tint = item.contentColor

@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +30,8 @@ import com.awra.catalogue.ui.theme.YourAppTheme
 @Composable
 fun InfographicDetailScreen(
     infographic: Infographic,
+    isPinned: Boolean,
+    onTogglePin: () -> Unit,
     onBackClick: () -> Unit,
     onFinish: (Long) -> Unit
 ) {
@@ -59,6 +63,15 @@ fun InfographicDetailScreen(
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onTogglePin) {
+                        Icon(
+                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            contentDescription = if (isPinned) "Unpin" else "Pin",
+                            tint = if (isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             )
@@ -106,6 +119,8 @@ fun InfographicDetailPreview() {
     YourAppTheme {
         InfographicDetailScreen(
             infographic = Infographic(1, 1, "bio.png"),
+            isPinned = false,
+            onTogglePin = {},
             onBackClick = {},
             onFinish = {}
         )

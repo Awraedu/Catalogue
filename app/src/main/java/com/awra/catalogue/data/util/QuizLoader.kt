@@ -24,8 +24,8 @@ object QuizLoader {
     fun loadQuizzes(context: Context, subjectFolderName: String, difficulty: Difficulty): List<JsonQuizQuestion> {
         val fileName = when (difficulty) {
             Difficulty.EASY -> "easy.json"
-            Difficulty.MEDIUM -> "medium.json"
             Difficulty.HARD -> "hard.json"
+            else -> "easy.json" // Default for MIXED
         }
         
         val path = "quizes/$subjectFolderName/$fileName"

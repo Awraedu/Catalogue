@@ -24,7 +24,7 @@ import com.awra.catalogue.data.repository.CatalogueRepository
 import com.awra.catalogue.ui.handout.HandoutListScreen
 import com.awra.catalogue.ui.handout.HandoutDetailScreen
 import com.awra.catalogue.ui.handout.HandoutViewModel
-import com.awra.catalogue.ui.home.HomeScreen
+import com.awra.catalogue.ui.home.HomeScreenTest
 import com.awra.catalogue.ui.home.HomeViewModel
 import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.flashcard.*
@@ -44,14 +44,35 @@ import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.schedule.ScheduleScreen
 import com.awra.catalogue.ui.schedule.ScheduleViewModel
 import com.awra.catalogue.ui.subject.SubjectDetailScreen
+import com.awra.catalogue.ui.onboarding.OnboardingScreen
+import com.awra.catalogue.ui.onboarding.OnboardingViewModel
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.data.model.Topic
 import com.awra.catalogue.data.util.PreferenceManager
+import com.awra.catalogue.data.notification.NotificationScheduler
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        // Permission result handled
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Schedule notifications
+        NotificationScheduler.scheduleAllReminders(this)
+        
+        // Request notification permission for Android 13+
+        requestNotificationPermission()
         
         val database = AppDatabase.getDatabase(this)
         val repository = CatalogueRepository(database.catalogueDao())
@@ -59,11 +80,28 @@ class MainActivity : ComponentActivity() {
         
         val homeViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(application, repository) as T
+                return HomeViewModel(application, repository, preferenceManager) as T
             }
         })[HomeViewModel::class.java]
 
-        val settingsViewModel = SettingsViewModel(preferenceManager)
+        val settingsViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return SettingsViewModel(application, preferenceManager) as T
+            }
+        })[SettingsViewModel::class.java]
+        
+        val onboardingViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return OnboardingViewModel(preferenceManager) as T
+            }
+        })[OnboardingViewModel::class.java]
+
+        val authViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return com.awra.catalogue.ui.auth.AuthViewModel(preferenceManager) as T
+            }
+        })[com.awra.catalogue.ui.auth.AuthViewModel::class.java]
+
         val scheduleViewModel = ScheduleViewModel(repository)
 
         enableEdgeToEdge()
@@ -71,12 +109,29 @@ class MainActivity : ComponentActivity() {
             val darkMode by settingsViewModel.darkMode.collectAsState()
             val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
             val userName by settingsViewModel.userName.collectAsState()
+            val isOnboardingCompleted by preferenceManager.isOnboardingCompleted.collectAsState()
+            var firebaseUser by remember { mutableStateOf(com.google.firebase.auth.FirebaseAuth.getInstance().currentUser) }
 
             YourAppTheme(
                 darkMode = darkMode,
                 selectedTheme = selectedTheme
             ) {
-                var currentSubject by remember { mutableStateOf<Subject?>(null) }
+                if (firebaseUser == null) {
+                    com.awra.catalogue.ui.auth.AuthScreen(
+                        viewModel = authViewModel,
+                        onAuthSuccess = {
+                            firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                        }
+                    )
+                } else if (!isOnboardingCompleted) {
+                    OnboardingScreen(
+                        viewModel = onboardingViewModel,
+                        onComplete = { 
+                            onboardingViewModel.nextStep()
+                        }
+                    )
+                } else {
+                    var currentSubject by remember { mutableStateOf<Subject?>(null) }
                 var currentMaterialType by remember { mutableStateOf<MaterialType?>(null) }
                 var currentQuizTopic by remember { mutableStateOf<Topic?>(null) }
                 var currentUtility by remember { mutableStateOf<Utility?>(null) }
@@ -181,7 +236,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                     state.subject == null && state.materialType != MaterialType.TERM -> {
-                                        HomeScreen(
+                                        HomeScreenTest(
                                             viewModel = homeViewModel,
                                             userName = userName,
                                             onSubjectClick = { currentSubject = it },
@@ -209,7 +264,28 @@ class MainActivity : ComponentActivity() {
                                                 }
                                             },
                                             onSettingsClick = { currentMaterialType = MaterialType.SETTINGS },
-                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL }
+                                            onGoPremiumClick = { currentMaterialType = MaterialType.PAYWALL },
+                                            onStartDailyQuiz = { topicId ->
+                                                lifecycleScope.launch {
+                                                    val studiedTopics = repository.getStudiedTopics().first()
+                                                    val targetTopic = studiedTopics.find { it.id == topicId }
+                                                    
+                                                    if (targetTopic != null) {
+                                                        val topicsInSameSubject = studiedTopics.filter { it.subjectName == targetTopic.subjectName }
+                                                        val subject = repository.getAllSubjects().first().find { it.name == targetTopic.subjectName }
+                                                        
+                                                        if (subject != null) {
+                                                            currentSubject = subject
+                                                            quizConfig = QuizConfig(
+                                                                topicIds = topicsInSameSubject.map { it.id },
+                                                                difficulty = Difficulty.MIXED,
+                                                                limit = 5
+                                                            )
+                                                            currentMaterialType = MaterialType.QUIZ
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         )
                                     }
                                     state.materialType == null -> {
@@ -267,12 +343,19 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onHandoutClick = { 
                                                         currentHandout = it
-                                                        handoutViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.handout.id, MaterialType.HANDOUT).collectAsState(initial = false)
                                                 HandoutDetailScreen(
                                                     handout = state.handout,
+                                                    viewModel = handoutViewModel,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.handout.id, MaterialType.HANDOUT)
+                                                        }
+                                                    },
                                                     onBackClick = { currentHandout = null },
                                                     onFinish = { timeSpent ->
                                                         handoutViewModel.recordStudy(state.handout.topicId, timeSpent)
@@ -294,12 +377,18 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onInfographicClick = {
                                                         currentInfographic = it
-                                                        infographicViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.infographic.id, MaterialType.INFOGRAPHIC).collectAsState(initial = false)
                                                 InfographicDetailScreen(
                                                     infographic = state.infographic,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.infographic.id, MaterialType.INFOGRAPHIC)
+                                                        }
+                                                    },
                                                     onBackClick = { currentInfographic = null },
                                                     onFinish = { timeSpent ->
                                                         lifecycleScope.launch {
@@ -381,12 +470,18 @@ class MainActivity : ComponentActivity() {
                                                     onBackClick = { currentMaterialType = null },
                                                     onUtilityClick = { 
                                                         currentUtility = it
-                                                        utilityViewModel.markRecentlyOpened(it.id)
                                                     }
                                                 )
                                             } else {
+                                                val isPinned by repository.isItemPinned(state.utility.id, MaterialType.UTILITY).collectAsState(initial = false)
                                                 UtilityDetailScreen(
                                                     utility = state.utility,
+                                                    isPinned = isPinned,
+                                                    onTogglePin = {
+                                                        lifecycleScope.launch {
+                                                            repository.togglePin(state.utility.id, MaterialType.UTILITY)
+                                                        }
+                                                    },
                                                     onBackClick = { currentUtility = null }
                                                 )
                                             }
@@ -434,6 +529,16 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != 
+                PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

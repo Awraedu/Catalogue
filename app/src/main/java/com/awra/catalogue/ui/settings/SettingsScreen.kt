@@ -1,5 +1,8 @@
 package com.awra.catalogue.ui.settings
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,10 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.awra.catalogue.data.model.Stream
 import com.kyant.capsule.ContinuousRoundedRectangle
+import androidx.core.net.toUri
 
+@SuppressLint("UseKtx")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsScreen(
@@ -30,12 +37,17 @@ fun SettingsScreen(
     val studyReminders by viewModel.studyReminders.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
     val selectedTheme by viewModel.selectedTheme.collectAsState()
+    val selectedStream by viewModel.selectedStream.collectAsState()
     val userName by viewModel.userName.collectAsState()
+    val cacheSize by viewModel.cacheSize.collectAsState()
+    
+    val context = LocalContext.current
     
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showCustomThemeDialog by remember { mutableStateOf(false) }
     var showNameDialog by remember { mutableStateOf(false) }
+    var showStreamDialog by remember { mutableStateOf(false) }
 
     if (showNameDialog) {
         var nameText by remember { mutableStateOf(userName) }
@@ -59,6 +71,37 @@ fun SettingsScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+            },
+            shape = ContinuousRoundedRectangle(28.dp)
+        )
+    }
+
+    if (showStreamDialog) {
+        AlertDialog(
+            onDismissRequest = { showStreamDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showStreamDialog = false }) { Text("Cancel") }
+            },
+            title = { Text("Change Stream") },
+            text = {
+                Column {
+                    Stream.entries.forEach { stream ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.setSelectedStream(stream.name)
+                                    showStreamDialog = false
+                                }
+                                .padding(vertical = 12.dp)
+                        ) {
+                            RadioButton(selected = selectedStream == stream.name, onClick = null)
+                            Spacer(Modifier.width(12.dp))
+                            Text(stream.name.lowercase().replaceFirstChar { it.uppercase() })
+                        }
+                    }
+                }
             },
             shape = ContinuousRoundedRectangle(28.dp)
         )
@@ -134,6 +177,7 @@ fun SettingsScreen(
                     listOf(
                         "DEFAULT" to "Adaptive (System)",
                         "VIBRANT_ORANGE" to "Vibrant Orange (Brand)",
+                        "OCEAN_BLUE" to "Ocean Blue",
                         "MIDNIGHT_MONO" to "Midnight Mono",
                         "FOREST_SAGE" to "Forest Sage",
                         "EARTH_BROWN" to "Earth Brown",
@@ -191,14 +235,24 @@ fun SettingsScreen(
             // Account Section
             item {
                 SettingsSection(title = "Account") {
-                    SettingsClickableItem(
-                        title = "User Name",
-                        subtitle = userName,
-                        icon = Icons.Default.Person,
-                        onClick = { showNameDialog = true },
-                        index = 0,
-                        count = 1
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        SettingsClickableItem(
+                            title = "User Name",
+                            subtitle = userName,
+                            icon = Icons.Default.Person,
+                            onClick = { showNameDialog = true },
+                            index = 0,
+                            count = 2
+                        )
+                        SettingsClickableItem(
+                            title = "Academic Stream",
+                            subtitle = selectedStream.lowercase().replaceFirstChar { it.uppercase() },
+                            icon = Icons.Default.School,
+                            onClick = { showStreamDialog = true },
+                            index = 1,
+                            count = 2
+                        )
+                    }
                 }
             }
 
@@ -249,6 +303,7 @@ fun SettingsScreen(
                             val themeName = when(selectedTheme) {
                                 "DEFAULT" -> "Adaptive (System)"
                                 "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
+                                "OCEAN_BLUE" -> "Ocean Blue"
                                 "MIDNIGHT_MONO" -> "Midnight Mono"
                                 "FOREST_SAGE" -> "Forest Sage"
                                 "EARTH_BROWN" -> "Earth Brown"
@@ -296,7 +351,7 @@ fun SettingsScreen(
                 SettingsSection(title = "Storage") {
                     SettingsClickableItem(
                         title = "Clear Cache",
-                        subtitle = "Free up some space (42MB)",
+                        subtitle = "Free up some space ($cacheSize)",
                         icon = Icons.Default.DeleteSweep,
                         onClick = { viewModel.clearCache() },
                         index = 0,
@@ -313,15 +368,29 @@ fun SettingsScreen(
                             title = "Help & Feedback",
                             subtitle = "Contact support or report issues",
                             icon = Icons.Default.Help,
-                            onClick = { },
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = Uri.parse("mailto:awra.edu@gmail.com")
+                                    putExtra(Intent.EXTRA_SUBJECT, "Catalogue App Feedback")
+                                }
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    // Handle cases where no email client is installed
+                                }
+                            },
                             index = 0,
                             count = 2
                         )
                         SettingsClickableItem(
                             title = "Visit our website",
-                            subtitle = "www.awra-catalogue.com",
+                            subtitle = "www.AwraDigitals.com",
                             icon = Icons.Default.Language,
-                            onClick = { },
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                    "https://awra-chi.vercel.app/".toUri())
+                                context.startActivity(intent)
+                            },
                             index = 1,
                             count = 2
                         )
@@ -334,7 +403,7 @@ fun SettingsScreen(
                 SettingsSection(title = "About") {
                     SettingsClickableItem(
                         title = "App Version",
-                        subtitle = "1.0.0 (Alpha)",
+                        subtitle = viewModel.appVersion,
                         icon = Icons.Default.Info,
                         onClick = { },
                         index = 0,

@@ -3,6 +3,8 @@ package com.awra.catalogue.ui.utility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import com.awra.catalogue.ui.utility.tools.entrepreneurship.*
 import com.awra.catalogue.ui.utility.tools.fitness.*
 import com.awra.catalogue.ui.utility.tools.geography.*
 import com.awra.catalogue.ui.utility.tools.globaltrends.*
+import com.awra.catalogue.ui.utility.tools.history.*
 import com.awra.catalogue.ui.utility.tools.english.GrammarRulesContent
 import com.awra.catalogue.ui.utility.tools.english.LiteraryDevicesContent
 import com.awra.catalogue.ui.utility.tools.english.PhoneticChart
@@ -40,6 +43,8 @@ import com.awra.catalogue.ui.utility.tools.psychology.*
 @Composable
 fun UtilityDetailScreen(
     utility: Utility,
+    isPinned: Boolean,
+    onTogglePin: () -> Unit,
     onBackClick: () -> Unit
 ) {
     var selectedItem by remember { mutableStateOf<UtilityItemData?>(null) }
@@ -58,6 +63,15 @@ fun UtilityDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onTogglePin) {
+                        Icon(
+                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            contentDescription = if (isPinned) "Unpin" else "Pin",
+                            tint = if (isPinned) MaterialTheme.colorScheme.primary else contentColor
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -145,6 +159,9 @@ fun UtilityDetailScreen(
                 "ECON_FORMULA" -> EconomicFormulasContent(onItemClick)
                 "MARKET_STRUCTURES" -> MarketStructuresContent(onItemClick)
                 "SUPPLY_DEMAND" -> SupplyDemandContent(onItemClick)
+                "HIST_TIMELINE" -> HistoricalTimelineContent()
+                "ANCIENT_CIV" -> AncientCivilizationsContent()
+                "HIST_LEADERS" -> HistoricalLeadersContent()
                 else -> Text("Content for ${utility.name} coming soon.", modifier = Modifier.align(Alignment.Center))
             }
 

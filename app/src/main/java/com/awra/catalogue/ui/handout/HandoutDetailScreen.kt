@@ -4,6 +4,7 @@ import android.text.Layout
 import android.text.method.LinkMovementMethod
 import android.view.MotionEvent
 import android.widget.TextView
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -32,6 +33,8 @@ import io.noties.markwon.ext.tables.TablePlugin
 import io.noties.markwon.ext.tasklist.TaskListPlugin
 import io.noties.markwon.image.coil.CoilImagesPlugin
 import io.noties.markwon.inlineparser.MarkwonInlineParserPlugin
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -44,33 +47,54 @@ fun HandoutDetailScreen(
     onFinish: (Long) -> Unit
 ) {
     val context = LocalContext.current
-    val startTime = remember { System.currentTimeMillis() }
+    val startTime = remember(handout.id) { System.currentTimeMillis() }
+    var hasRecordedSession by remember(handout.id) { mutableStateOf(false) }
 
-    var markdownContent by remember(handout.id) {
-        mutableStateOf(viewModel.getHandoutContent(context, handout))
+    val currentOnFinish by rememberUpdatedState(onFinish)
+
+    // Automatically record study time even if user exits via system Back gesture!
+    DisposableEffect(handout.id) {
+        onDispose {
+            if (!hasRecordedSession) {
+                val timeSpent = System.currentTimeMillis() - startTime
+                if (timeSpent >= 2000L) { // Only record if read for at least 2 seconds
+                    hasRecordedSession = true
+                    currentOnFinish(timeSpent)
+                }
+            }
+        }
     }
+
+    var markdownContent by remember(handout.id) { mutableStateOf<String?>(null) }
+    var isCheckingLocal by remember(handout.id) { mutableStateOf(true) }
 
     val downloadStates by viewModel.downloadStates.collectAsState()
     val downloadState = downloadStates[handout.id]
 
     var showMenu by remember { mutableStateOf(false) }
 
-    // Auto-trigger download if not present locally
+    // 🚀 Decrypt & read on Dispatchers.IO so the screen transition animation NEVER drops a frame!
     LaunchedEffect(handout.id) {
-        if (markdownContent == null && downloadState !is HandoutDownloadState.Downloading) {
+        isCheckingLocal = true
+        val localContent = withContext(Dispatchers.IO) {
+            viewModel.getHandoutContent(context, handout)
+        }
+        markdownContent = localContent
+        isCheckingLocal = false
+
+        if (localContent == null && downloadState !is HandoutDownloadState.Downloading) {
             viewModel.downloadHandout(context, handout)
         }
     }
 
     LaunchedEffect(downloadState) {
         if (downloadState is HandoutDownloadState.Downloaded) {
-            markdownContent = (downloadState as HandoutDownloadState.Downloaded).content
+            markdownContent = downloadState.content
         }
     }
 
     val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
 
-    // Initialize Markwon
     val markwon = remember(context, textColor) {
         Markwon.builder(context)
             .usePlugin(TablePlugin.create(context))
@@ -102,8 +126,13 @@ fun HandoutDetailScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            val timeSpent = System.currentTimeMillis() - startTime
-                            onFinish(timeSpent)
+                            if (!hasRecordedSession) {
+                                val timeSpent = System.currentTimeMillis() - startTime
+                                if (timeSpent >= 2000L) {
+                                    hasRecordedSession = true
+                                    onFinish(timeSpent)
+                                }
+                            }
                             onBackClick()
                         },
                         modifier = Modifier
@@ -265,128 +294,258 @@ fun HandoutDetailScreen(
                             }
                         },
                         update = { textView ->
-                            markwon.setMarkdown(textView, content)
+                            textView.setTextColor(textColor)
+                            // 🚀 Guard against re-parsing Markdown when unrelated UI states (like Pin or Menu) change!
+                            if (textView.tag != content) {
+                                textView.tag = content
+                                markwon.setMarkdown(textView, content)
+                            }
                         }
                     )
                     Spacer(modifier = Modifier.height(100.dp))
                 }
+            } else if (isCheckingLocal) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             } else {
                 when (downloadState) {
                     is HandoutDownloadState.Downloading -> {
-                        val progress = (downloadState as HandoutDownloadState.Downloading).progress
-                        Card(
+                        val rawProgress = downloadState.progress
+                        val animatedProgress by animateFloatAsState(
+                            targetValue = rawProgress,
+                            animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing),
+                            label = "download_progress"
+                        )
+                        val percentage = (animatedProgress * 100).toInt()
+
+                        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+                        val pulseScale by infiniteTransition.animateFloat(
+                            initialValue = 0.96f,
+                            targetValue = 1.04f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(1200, easing = FastOutSlowInEasing),
+                                repeatMode = RepeatMode.Reverse
+                            ),
+                            label = "scale"
+                        )
+
+                        Box(
                             modifier = Modifier
-                                .padding(32.dp)
-                                .fillMaxWidth()
-                                .align(Alignment.Center),
-                            shape = ContinuousRoundedRectangle(32.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            )
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Column(
+                            Card(
                                 modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                shape = ContinuousRoundedRectangle(36.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(72.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primaryContainer),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.CloudDownload,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(36.dp),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                                Text(
-                                    text = "Downloading Handout",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Fetching study materials...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center
-                                )
-                                LinearProgressIndicator(
-                                    progress = { progress },
+                                Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(8.dp)
-                                        .clip(CircleShape),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        .padding(32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(20.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = "AES-256 Encrypted on Device",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
+                                    Box(
+                                        modifier = Modifier.size(120.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size((110 * pulseScale).dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                                        )
+
+                                        CircularProgressIndicator(
+                                            progress = { animatedProgress },
+                                            modifier = Modifier.size(96.dp),
+                                            strokeWidth = 6.dp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                                            strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(64.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.primary),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.CloudDownload,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(32.dp),
+                                                tint = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
+                                    }
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = "Downloading Study Material",
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = "Decrypting & preparing content for offline study",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = "Download Progress",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                            Text(
+                                                text = "$percentage%",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Black,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+
+                                        LinearProgressIndicator(
+                                            progress = { animatedProgress },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(10.dp)
+                                                .clip(CircleShape),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                                            strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
+                                        )
+                                    }
+
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Lock,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(14.dp),
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                            Text(
+                                                text = "AES-256 Encrypted on Device",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                     is HandoutDownloadState.Error -> {
-                        val errorMsg = (downloadState as HandoutDownloadState.Error).message
-                        Card(
+                        val errorMsg = downloadState.message
+                        Box(
                             modifier = Modifier
-                                .padding(32.dp)
-                                .fillMaxWidth()
-                                .align(Alignment.Center),
-                            shape = ContinuousRoundedRectangle(32.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer
-                            )
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Column(
+                            Card(
                                 modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                shape = ContinuousRoundedRectangle(36.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
+                                )
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.CloudOff,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
-                                    tint = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                Text(
-                                    text = "Download Failed",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                Text(
-                                    text = errorMsg,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
-                                    textAlign = TextAlign.Center
-                                )
-                                Button(
-                                    onClick = { viewModel.downloadHandout(context, handout) },
-                                    shape = ContinuousRoundedRectangle(16.dp)
+                                Column(
+                                    modifier = Modifier
+                                        .padding(32.dp)
+                                        .fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(20.dp)
                                 ) {
-                                    Icon(Icons.Default.Refresh, contentDescription = null)
-                                    Spacer(Modifier.width(8.dp))
-                                    Text("Retry Download")
+                                    Box(
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CloudOff,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(40.dp),
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = "Download Failed",
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                        Text(
+                                            text = errorMsg,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.85f),
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+
+                                    Button(
+                                        onClick = { viewModel.downloadHandout(context, handout) },
+                                        shape = ContinuousRoundedRectangle(20.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError
+                                        ),
+                                        modifier = Modifier.height(48.dp)
+                                    ) {
+                                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Retry Download", fontWeight = FontWeight.Bold)
+                                    }
                                 }
                             }
                         }

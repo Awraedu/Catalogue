@@ -4,42 +4,43 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.awra.catalogue.data.model.Subject
-import com.awra.catalogue.data.model.RecentlyOpenedDisplayItem
-import com.awra.catalogue.ui.home.components.SubjectCard
-import com.awra.catalogue.ui.home.components.PinnedItemsSection
-import com.awra.catalogue.ui.home.components.DailyQuizCard
-import com.awra.catalogue.ui.home.components.DailyTermCard
-import com.awra.catalogue.ui.home.components.NextClassCard
-import com.awra.catalogue.ui.home.components.DailyInsightCard
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.ExpressiveShape
-import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.FeaturedItem
-import java.util.Calendar
+import com.awra.catalogue.data.model.RecentlyOpenedDisplayItem
+import com.awra.catalogue.data.model.Stream
+import com.awra.catalogue.data.model.Subject
+import com.awra.catalogue.ui.home.components.DailyInsightCard
+import com.awra.catalogue.ui.home.components.DailyQuizCard
+import com.awra.catalogue.ui.home.components.DailyTermCard
+import com.awra.catalogue.ui.home.components.NextClassCard
+import com.awra.catalogue.ui.home.components.PinnedItemsSection
+import com.awra.catalogue.ui.home.components.SubjectCard
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,11 +53,11 @@ fun HomeScreenTest(
     onGoPremiumClick: () -> Unit,
     onStartDailyQuiz: (Long) -> Unit
 ) {
-    val subjects by viewModel.subjects.collectAsState(initial = emptyList())
+    val subjects by viewModel.subjects.collectAsState()
     val pinnedItems by viewModel.pinnedItems.collectAsState()
     val featuredItems by viewModel.featuredItems.collectAsState()
     val selectedStream by viewModel.selectedStream.collectAsState()
-    
+
     HomeScreenTestContent(
         subjects = subjects,
         pinnedItems = pinnedItems,
@@ -89,13 +90,14 @@ fun HomeScreenTestContent(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showStreamFilter by remember { mutableStateOf(false) }
-    
+
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    
+
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-    var searchBarOffset by remember { mutableStateOf(0f) }
+    // Use plain Float holder inside remember so layout positioning NEVER triggers recomposition!
+    val searchBarOffsetHolder = remember { floatArrayOf(0f) }
 
     val greeting = remember {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -106,42 +108,28 @@ fun HomeScreenTestContent(
         }
     }
 
-    val sortedFeaturedItems = remember(featuredItems) {
-        featuredItems.sortedWith(compareByDescending<FeaturedItem> {
-            when (it) {
-                is FeaturedItem.NextClass -> 100
-                is FeaturedItem.DailyQuiz -> if (!it.isCompleted) 90 else 10
-                is FeaturedItem.DailyTerm -> if (!it.isTried) 80 else 5
-                is FeaturedItem.DailyInsight -> 70
-                is FeaturedItem.EmptyNextClass -> 60
-                is FeaturedItem.EmptyDailyQuiz -> 50
-                is FeaturedItem.EmptyDailyTerm -> 40
-                else -> 0
-            }
-        })
-    }
-
-    val filteredSubjects = remember(subjects, searchQuery) {
-        if (searchQuery.isBlank()) {
+    // Memoize both filtering AND chunked(2) so scrolling never allocates new lists!
+    val chunkedSubjects = remember(subjects, searchQuery) {
+        val filtered = if (searchQuery.isBlank()) {
             subjects
         } else {
-            subjects.filter { 
-                it.name.contains(searchQuery, ignoreCase = true) || 
-                it.description.contains(searchQuery, ignoreCase = true) 
+            subjects.filter {
+                it.name.contains(searchQuery, ignoreCase = true) ||
+                        it.description.contains(searchQuery, ignoreCase = true)
             }
         }
+        filtered.chunked(2)
     }
 
-    // Keep the search bar scrolled up while typing or when query is active
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
-            scrollState.scrollTo(searchBarOffset.toInt())
+            scrollState.scrollTo(searchBarOffsetHolder[0].toInt())
         }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow // Use a lower surface for the page background
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -153,7 +141,6 @@ fun HomeScreenTestContent(
                     .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
-                // Top Content (Header + Featured + Pinned) with theme-aware background
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,8 +176,8 @@ fun HomeScreenTestContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Settings, 
-                                contentDescription = "Settings", 
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -213,18 +200,21 @@ fun HomeScreenTestContent(
                                 .fillMaxWidth()
                                 .height(260.dp)
                         ) {
-                            item {
+                            item(key = "premium_ticket") {
                                 com.awra.catalogue.ui.home.components.PremiumTicketCard(
                                     modifier = Modifier.width(220.dp),
                                     onClick = onGoPremiumClick
                                 )
                             }
-                            items(sortedFeaturedItems) { item ->
+                            itemsIndexed(
+                                items = featuredItems,
+                                key = { index, item -> "${item::class.simpleName}_$index" }
+                            ) { _, item ->
                                 when (item) {
                                     is FeaturedItem.DailyQuiz, is FeaturedItem.EmptyDailyQuiz -> {
                                         DailyQuizCard(
                                             item = item,
-                                            onClick = { 
+                                            onClick = {
                                                 if (item is FeaturedItem.DailyQuiz) {
                                                     onStartDailyQuiz(item.topicId)
                                                 }
@@ -261,17 +251,21 @@ fun HomeScreenTestContent(
                             PinnedItemsSection(
                                 items = pinnedItems,
                                 onItemClick = onRecentItemClick
-                    )
+                            )
+                        }
+                    }
                 }
-            }
-        }
 
                 // The Bottom Card (Search + All Subjects Grid)
-                // Extends infinitely downwards by using a column with theme-aware background
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .onGloballyPositioned { searchBarOffset = it.positionInParent().y }
+                        .onGloballyPositioned {
+                            val newY = it.positionInParent().y
+                            if (abs(newY - searchBarOffsetHolder[0]) > 1f) {
+                                searchBarOffsetHolder[0] = newY
+                            }
+                        }
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHigh,
                             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
@@ -279,13 +273,24 @@ fun HomeScreenTestContent(
                         .padding(top = 24.dp, bottom = 120.dp)
                         .navigationBarsPadding()
                 ) {
-                    // Search Bar inside the container
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("Search subjects...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 15.sp) },
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            placeholder = {
+                                Text(
+                                    "Search subjects...",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 15.sp
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = {
                                 IconButton(onClick = { showStreamFilter = !showStreamFilter }) {
                                     Icon(
@@ -306,10 +311,10 @@ fun HomeScreenTestContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(54.dp)
-                                .onFocusChanged { 
+                                .onFocusChanged {
                                     if (it.isFocused) {
                                         coroutineScope.launch {
-                                            scrollState.animateScrollTo(searchBarOffset.toInt())
+                                            scrollState.animateScrollTo(searchBarOffsetHolder[0].toInt())
                                         }
                                     }
                                 }
@@ -328,11 +333,11 @@ fun HomeScreenTestContent(
                                 FilterChip(
                                     selected = selectedStream == stream,
                                     onClick = { onStreamSelect(stream) },
-                                    label = { 
+                                    label = {
                                         Text(
                                             text = stream.name.lowercase().replaceFirstChar { it.uppercase() },
                                             style = MaterialTheme.typography.labelLarge
-                                        ) 
+                                        )
                                     },
                                     shape = CircleShape,
                                     colors = FilterChipDefaults.filterChipColors(
@@ -347,41 +352,39 @@ fun HomeScreenTestContent(
 
                     Spacer(modifier = Modifier.height(if (showStreamFilter) 12.dp else 24.dp))
 
-                    // Grid of subjects inside white card container manually chunked by 2 columns
-                    val chunks = filteredSubjects.chunked(2)
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        chunks.forEach { pair ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    SubjectCard(
-                                        subject = pair[0],
-                                        onClick = { onSubjectClick(pair[0]) }
-                                    )
-                                }
-                                Box(modifier = Modifier.weight(1f)) {
-                                    if (pair.size > 1) {
+                        chunkedSubjects.forEach { pair ->
+                            key(pair[0].id) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    Box(modifier = Modifier.weight(1f)) {
                                         SubjectCard(
-                                            subject = pair[1],
-                                            onClick = { onSubjectClick(pair[1]) }
+                                            subject = pair[0],
+                                            onClick = { onSubjectClick(pair[0]) }
                                         )
-                                    } else {
-                                        Spacer(modifier = Modifier.fillMaxWidth())
+                                    }
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        if (pair.size > 1) {
+                                            SubjectCard(
+                                                subject = pair[1],
+                                                onClick = { onSubjectClick(pair[1]) }
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.fillMaxWidth())
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    
-                    // Add dynamic spacer at the end of the content when searching 
-                    // to ensure the search bar can stay at the top even with few results
+
                     if (searchQuery.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(screenHeight))
                     }

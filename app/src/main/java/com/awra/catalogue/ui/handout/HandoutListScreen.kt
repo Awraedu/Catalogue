@@ -1,7 +1,5 @@
 package com.awra.catalogue.ui.handout
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -21,7 +19,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -31,10 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.ui.theme.YourAppTheme
-import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
 
@@ -46,13 +41,21 @@ fun HandoutListScreen(
     onBackClick: () -> Unit,
     onHandoutClick: (Handout) -> Unit
 ) {
-    val chapters by viewModel.chapters.collectAsState(initial = emptyList())
+    val chapters by viewModel.chapters.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    
+    val downloadStates by viewModel.downloadStates.collectAsState()
+
     val textFieldState = rememberTextFieldState(searchQuery)
     val searchBarState = rememberSearchBarState()
     val scope = rememberCoroutineScope()
-    
+
+    val isSearchActive by remember {
+        derivedStateOf {
+            searchBarState.currentValue == SearchBarValue.Expanded ||
+                    searchBarState.targetValue == SearchBarValue.Expanded
+        }
+    }
+
     val neutralColor = MaterialTheme.colorScheme.onSurface
 
     LaunchedEffect(textFieldState.text) {
@@ -75,8 +78,7 @@ fun HandoutListScreen(
                         }
                     }) {
                         Icon(
-                            imageVector = if (searchBarState.currentValue == SearchBarValue.Expanded)
-                                Icons.AutoMirrored.Filled.ArrowBack else Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -104,17 +106,15 @@ fun HandoutListScreen(
                 .fillMaxSize()
                 .semantics { isTraversalGroup = true }
         ) {
-            // Main Content
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(72.dp)) // Space for SearchBar
+                item(key = "top_spacer") {
+                    Spacer(modifier = Modifier.height(72.dp))
                 }
-                
-                // Big Subject Title
-                item {
+
+                item(key = "subject_header") {
                     Text(
                         text = subject.name,
                         style = MaterialTheme.typography.headlineLarge,
@@ -128,21 +128,23 @@ fun HandoutListScreen(
                     chapterSection(
                         chapterWithTopics = chapterWithTopics,
                         viewModel = viewModel,
+                        downloadStates = downloadStates,
                         onHandoutClick = onHandoutClick,
                         accentColor = neutralColor
                     )
 
                     if (index < chapters.size - 1) {
-                        item { Spacer(modifier = Modifier.height(24.dp)) }
+                        item(key = "sep_${chapterWithTopics.chapter.id}") {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
                     }
                 }
-                
-                item {
+
+                item(key = "bottom_spacer") {
                     Spacer(modifier = Modifier.height(100.dp))
                 }
             }
 
-            // Search Bar
             SearchBar(
                 state = searchBarState,
                 inputField = inputField,
@@ -156,34 +158,61 @@ fun HandoutListScreen(
                 shape = CircleShape
             )
 
-            // Full Screen Search Overlay
-            ExpandedFullScreenSearchBar(
-                state = searchBarState,
-                inputField = inputField
-            ) {
-                if (chapters.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("No results found", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
+            if (isSearchActive) {
+                ExpandedFullScreenSearchBar(
+                    state = searchBarState,
+                    inputField = inputField
                 ) {
-                    chapters.forEachIndexed { index, chapterWithTopics ->
-                        chapterSection(
-                            chapterWithTopics = chapterWithTopics,
-                            viewModel = viewModel,
-                            onHandoutClick = {
-                                scope.launch { searchBarState.animateToCollapsed() }
-                                onHandoutClick(it)
-                            },
-                            accentColor = neutralColor
-                        )
+                    val query = textFieldState.text.toString().trim()
+                    if (query.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Type to search handouts or chapters",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    } else if (chapters.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No matches found for \"$query\"",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            chapters.forEachIndexed { index, chapterWithTopics ->
+                                chapterSection(
+                                    chapterWithTopics = chapterWithTopics,
+                                    viewModel = viewModel,
+                                    downloadStates = downloadStates,
+                                    onHandoutClick = {
+                                        scope.launch { searchBarState.animateToCollapsed() }
+                                        onHandoutClick(it)
+                                    },
+                                    accentColor = neutralColor
+                                )
 
-                        if (index < chapters.size - 1) {
-                            item { Spacer(modifier = Modifier.height(24.dp)) }
+                                if (index < chapters.size - 1) {
+                                    item(key = "s_sep_${chapterWithTopics.chapter.id}") {
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -196,6 +225,7 @@ fun HandoutListScreen(
 private fun LazyListScope.chapterSection(
     chapterWithTopics: ChapterWithTopics,
     viewModel: HandoutViewModel? = null,
+    downloadStates: Map<Long, HandoutDownloadState> = emptyMap(),
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
@@ -214,8 +244,14 @@ private fun LazyListScope.chapterSection(
         key = { _, topicWithHandout -> "top_${topicWithHandout.topic.id}" }
     ) { index, topicWithHandout ->
         val context = LocalContext.current
-        val isDownloaded = remember(topicWithHandout.handout) {
-            topicWithHandout.handout?.let { viewModel?.isHandoutDownloaded(context, it) } ?: false
+        val handout = topicWithHandout.handout
+        val stateForHandout = handout?.let { downloadStates[it.id] }
+
+        val isDownloaded = remember(handout?.id, stateForHandout) {
+            when (stateForHandout) {
+                is HandoutDownloadState.Downloaded -> true
+                else -> handout?.let { viewModel?.isHandoutDownloaded(context, it) } ?: false
+            }
         }
 
         TopicItem(
@@ -226,7 +262,7 @@ private fun LazyListScope.chapterSection(
             onHandoutClick = onHandoutClick,
             accentColor = accentColor
         )
-        
+
         if (index < chapterWithTopics.topics.size - 1) {
             Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
         }
@@ -243,7 +279,6 @@ private fun TopicItem(
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
-    // High-expressive smooth shapes for segmented items with further increased radius
     val outerRadius = 38.dp
     val innerRadius = 6.dp
     val itemShape = remember(index, count) {
@@ -256,10 +291,9 @@ private fun TopicItem(
     }
 
     SegmentedListItem(
-        onClick = { 
+        onClick = {
             topicWithHandout.handout?.let { onHandoutClick(it) }
         },
-        // Overriding the default shapes with our custom high-radius expressive shapes
         shapes = ListItemDefaults.shapes(shape = itemShape),
         leadingContent = {
             Icon(Icons.Default.Description, contentDescription = null, tint = accentColor)
@@ -308,7 +342,7 @@ fun HandoutListPreview() {
             TopicWithHandout(mockTopic, Handout(id = 1, topicId = 1, content = "Some content"))
         )
     )
-    
+
     YourAppTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             val primaryColor = MaterialTheme.colorScheme.primary

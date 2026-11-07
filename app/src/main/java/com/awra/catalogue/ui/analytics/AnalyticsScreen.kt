@@ -3,7 +3,6 @@ package com.awra.catalogue.ui.analytics
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.*
@@ -12,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.awra.catalogue.ui.analytics.components.*
 import com.awra.catalogue.ui.theme.YourAppTheme
 
@@ -31,6 +30,11 @@ fun AnalyticsScreen(
     val topicPerformance by viewModel.topicPerformance.collectAsState()
     val streak by viewModel.studyStreak.collectAsState()
 
+    // Check if the user has actually recorded any quiz/flashcard attempt or study session
+    val hasStudyActivity = remember(subjectMastery, dailyTime) {
+        subjectMastery.any { it.totalAttempts > 0 } || dailyTime.any { it.totalTimeMs > 0L }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -40,13 +44,31 @@ fun AnalyticsScreen(
             )
         }
     ) { innerPadding ->
-        if (topicPerformance.isEmpty() && dailyTime.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
+        if (!hasStudyActivity) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.QueryStats, null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                    Icon(
+                        Icons.Default.QueryStats,
+                        null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                     Spacer(Modifier.height(16.dp))
-                    Text("No study data yet.", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Start studying to see your performance lab!", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "No study data yet.",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Start studying to see your performance lab!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         } else {
@@ -57,15 +79,18 @@ fun AnalyticsScreen(
                 contentPadding = PaddingValues(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // ... (summary stats and chart)
-                item {
+                item(key = "summary_cards") {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         PerformanceSummaryCard(
                             label = "Overall Accuracy",
-                            value = globalQuiz?.let { if (it.totalAttempts > 0) "${(it.correctAttempts.toFloat() / it.totalAttempts * 100).toInt()}%" else "0%" } ?: "0%",
+                            value = globalQuiz?.let {
+                                if (it.totalAttempts > 0) "${(it.correctAttempts.toFloat() / it.totalAttempts * 100).toInt()}%" else "0%"
+                            } ?: "0%",
                             icon = Icons.Default.QueryStats,
                             modifier = Modifier.weight(1f)
                         )
@@ -78,20 +103,22 @@ fun AnalyticsScreen(
                     }
                 }
 
-                item {
+                item(key = "main_chart") {
                     MainPerformanceChart(dailyStudyTime = dailyTime)
                 }
 
-                item {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        MasteryComparisonCard(
-                            bestSubject = bestSubject,
-                            worstSubject = worstSubject
-                        )
+                if (bestSubject != null || worstSubject != null) {
+                    item(key = "mastery_comparison") {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            MasteryComparisonCard(
+                                bestSubject = bestSubject,
+                                worstSubject = worstSubject
+                            )
+                        }
                     }
                 }
 
-                item {
+                item(key = "detailed_mastery_header") {
                     Text(
                         text = "Detailed Mastery",
                         style = MaterialTheme.typography.titleLarge,
@@ -100,7 +127,7 @@ fun AnalyticsScreen(
                     )
                 }
 
-                item {
+                item(key = "mastery_overview") {
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                         MasteryOverview(
                             subjects = subjectMastery,
@@ -109,7 +136,7 @@ fun AnalyticsScreen(
                     }
                 }
 
-                item { Spacer(Modifier.height(100.dp)) }
+                item(key = "bottom_spacer") { Spacer(Modifier.height(100.dp)) }
             }
         }
     }

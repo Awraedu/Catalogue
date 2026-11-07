@@ -22,9 +22,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.awra.catalogue.data.model.Stream
 import com.kyant.capsule.ContinuousRoundedRectangle
-import androidx.core.net.toUri
+import java.util.Locale
 
 @SuppressLint("UseKtx")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -36,15 +37,17 @@ fun SettingsScreen(
     val darkMode by viewModel.darkMode.collectAsState()
     val studyReminders by viewModel.studyReminders.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
+    val studyGoal by viewModel.studyGoal.collectAsState()
     val selectedTheme by viewModel.selectedTheme.collectAsState()
     val selectedStream by viewModel.selectedStream.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
-    
+
     val context = LocalContext.current
-    
+
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showGoalDialog by remember { mutableStateOf(false) }
     var showCustomThemeDialog by remember { mutableStateOf(false) }
     var showNameDialog by remember { mutableStateOf(false) }
     var showStreamDialog by remember { mutableStateOf(false) }
@@ -55,7 +58,9 @@ fun SettingsScreen(
             onDismissRequest = { showNameDialog = false },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.setUserName(nameText)
+                    if (nameText.isNotBlank()) {
+                        viewModel.setUserName(nameText.trim())
+                    }
                     showNameDialog = false
                 }) { Text("Save") }
             },
@@ -71,6 +76,46 @@ fun SettingsScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+            },
+            shape = ContinuousRoundedRectangle(28.dp)
+        )
+    }
+
+    if (showGoalDialog) {
+        val goals = remember {
+            listOf(
+                5 to "Casual (5 mins / day)",
+                15 to "Regular (15 mins / day)",
+                30 to "Serious (30 mins / day)",
+                45 to "Dedicated (45 mins / day)",
+                60 to "Intense (60 mins / day)"
+            )
+        }
+        AlertDialog(
+            onDismissRequest = { showGoalDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showGoalDialog = false }) { Text("Cancel") }
+            },
+            title = { Text("Daily Study Goal") },
+            text = {
+                Column {
+                    goals.forEach { (mins, label) ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.setStudyGoal(mins)
+                                    showGoalDialog = false
+                                }
+                                .padding(vertical = 12.dp)
+                        ) {
+                            RadioButton(selected = studyGoal == mins, onClick = null)
+                            Spacer(Modifier.width(12.dp))
+                            Text(label)
+                        }
+                    }
+                }
             },
             shape = ContinuousRoundedRectangle(28.dp)
         )
@@ -139,18 +184,33 @@ fun SettingsScreen(
     }
 
     if (showTimePicker) {
-        val currentTime = notificationTime.split(":")
+        val (initHour, initMin) = remember(notificationTime) {
+            try {
+                val cleaned = notificationTime.trim().uppercase(Locale.US)
+                val parts = cleaned.split(" ")
+                val hm = parts[0].split(":")
+                var h = hm[0].toInt()
+                val m = hm[1].toInt()
+                if (parts.size > 1) {
+                    if (parts[1] == "PM" && h < 12) h += 12
+                    if (parts[1] == "AM" && h == 12) h = 0
+                }
+                h.coerceIn(0, 23) to m.coerceIn(0, 59)
+            } catch (e: Exception) {
+                17 to 0
+            }
+        }
         val timePickerState = rememberTimePickerState(
-            initialHour = currentTime[0].toInt(),
-            initialMinute = currentTime[1].toInt(),
+            initialHour = initHour,
+            initialMinute = initMin,
             is24Hour = true
         )
-        
+
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
             confirmButton = {
                 TextButton(onClick = {
-                    val formattedTime = String.format(java.util.Locale.getDefault(), "%02d:%02d", timePickerState.hour, timePickerState.minute)
+                    val formattedTime = String.format(Locale.US, "%02d:%02d", timePickerState.hour, timePickerState.minute)
                     viewModel.setNotificationTime(formattedTime)
                     showTimePicker = false
                 }) { Text("Confirm") }
@@ -232,7 +292,6 @@ fun SettingsScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Account Section
             item {
                 SettingsSection(title = "Account") {
                     Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
@@ -256,7 +315,6 @@ fun SettingsScreen(
                 }
             }
 
-            // Appearance Section
             item {
                 SettingsSection(title = "Appearance") {
                     Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
@@ -272,7 +330,6 @@ fun SettingsScreen(
                 }
             }
 
-            // Customization Section (Redesigned Color Palette)
             item {
                 SettingsSection(title = "Customization") {
                     SegmentedListItem(
@@ -280,7 +337,6 @@ fun SettingsScreen(
                         shapes = ListItemDefaults.shapes(shape = ContinuousRoundedRectangle(32.dp)),
                         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                         trailingContent = {
-                            // Pill-shaped stack of 3 colors representing current selection
                             val colors = listOf(
                                 MaterialTheme.colorScheme.primary,
                                 MaterialTheme.colorScheme.secondary,
@@ -300,7 +356,7 @@ fun SettingsScreen(
                     ) {
                         Column {
                             Text("Color palette", fontWeight = FontWeight.Bold)
-                            val themeName = when(selectedTheme) {
+                            val themeName = when (selectedTheme) {
                                 "DEFAULT" -> "Adaptive (System)"
                                 "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
                                 "OCEAN_BLUE" -> "Ocean Blue"
@@ -321,32 +377,38 @@ fun SettingsScreen(
                 }
             }
 
-            // Notifications Section
             item {
-                SettingsSection(title = "Notifications") {
+                SettingsSection(title = "Notifications & Goals") {
                     Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
                         SettingsToggleItem(
                             title = "Study Reminders",
-                            subtitle = "Get notified to stay on track",
+                            subtitle = "Smart nudges, streak savers & class alerts",
                             icon = Icons.Default.Notifications,
                             checked = studyReminders,
                             onCheckedChange = { viewModel.setStudyReminders(it) },
                             index = 0,
-                            count = 2
+                            count = 3
                         )
                         SettingsClickableItem(
-                            title = "Arrival Time from Class",
+                            title = "Preferred Study Time",
                             subtitle = notificationTime,
                             icon = Icons.Default.Schedule,
                             onClick = { showTimePicker = true },
                             index = 1,
-                            count = 2
+                            count = 3
+                        )
+                        SettingsClickableItem(
+                            title = "Daily Study Goal",
+                            subtitle = "$studyGoal minutes / day",
+                            icon = Icons.Default.Flag,
+                            onClick = { showGoalDialog = true },
+                            index = 2,
+                            count = 3
                         )
                     }
                 }
             }
 
-            // Storage Section
             item {
                 SettingsSection(title = "Storage") {
                     SettingsClickableItem(
@@ -360,7 +422,6 @@ fun SettingsScreen(
                 }
             }
 
-            // Support Section
             item {
                 SettingsSection(title = "Support") {
                     Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
@@ -368,7 +429,7 @@ fun SettingsScreen(
                             title = "Help & Feedback",
                             subtitle = "Contact support or report issues",
                             icon = Icons.Default.Help,
-                            onClick = { 
+                            onClick = {
                                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                                     data = Uri.parse("mailto:awra.edu@gmail.com")
                                     putExtra(Intent.EXTRA_SUBJECT, "Catalogue App Feedback")
@@ -376,7 +437,6 @@ fun SettingsScreen(
                                 try {
                                     context.startActivity(intent)
                                 } catch (e: Exception) {
-                                    // Handle cases where no email client is installed
                                 }
                             },
                             index = 0,
@@ -386,9 +446,11 @@ fun SettingsScreen(
                             title = "Visit our website",
                             subtitle = "www.AwraDigitals.com",
                             icon = Icons.Default.Language,
-                            onClick = { 
-                                val intent = Intent(Intent.ACTION_VIEW,
-                                    "https://awra-chi.vercel.app/".toUri())
+                            onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://awra-chi.vercel.app/".toUri()
+                                )
                                 context.startActivity(intent)
                             },
                             index = 1,
@@ -398,7 +460,6 @@ fun SettingsScreen(
                 }
             }
 
-            // About Section
             item {
                 SettingsSection(title = "About") {
                     SettingsClickableItem(
@@ -460,8 +521,8 @@ private fun SettingsToggleItem(
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         leadingContent = {
             Icon(
-                icon, 
-                null, 
+                icon,
+                null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -504,8 +565,8 @@ private fun SettingsClickableItem(
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         leadingContent = {
             Icon(
-                icon, 
-                null, 
+                icon,
+                null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.primary
             )

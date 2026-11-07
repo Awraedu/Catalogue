@@ -3,6 +3,7 @@ package com.awra.catalogue.data.security
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.LruCache
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -22,30 +23,43 @@ object HandoutEncryptionManager {
     private const val IV_LENGTH_BYTES = 12
     private const val DIR_NAME = "encrypted_handouts"
 
+    // Cache the SecretKey reference in memory so we don't query AndroidKeyStore on every read
+    @Volatile
+    private var cachedSecretKey: SecretKey? = null
+
+    // Cache up to 15 recently decrypted Markdown handouts in RAM for instant 0ms loading
+    private val decryptedMemoryCache = LruCache<String, String>(15)
+
     private fun getSecretKey(): SecretKey {
-        val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
-        if (keyStore.containsAlias(KEY_ALIAS)) {
-            val entry = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
-            if (entry != null) {
-                return entry.secretKey
+        cachedSecretKey?.let { return it }
+        synchronized(this) {
+            cachedSecretKey?.let { return it }
+
+            val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
+            if (keyStore.containsAlias(KEY_ALIAS)) {
+                val entry = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
+                if (entry != null) {
+                    cachedSecretKey = entry.secretKey
+                    return entry.secretKey
+                }
             }
+
+            val keyGenerator = KeyGenerator.getInstance(
+                KeyProperties.KEY_ALGORITHM_AES,
+                KEYSTORE_PROVIDER
+            )
+            val parameterSpec = KeyGenParameterSpec.Builder(
+                KEY_ALIAS,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .build()
+
+            keyGenerator.init(parameterSpec)
+            return keyGenerator.generateKey().also { cachedSecretKey = it }
         }
-
-        val keyGenerator = KeyGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES,
-            KEYSTORE_PROVIDER
-        )
-        val parameterSpec = KeyGenParameterSpec.Builder(
-            KEY_ALIAS,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-        )
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setKeySize(256)
-            .build()
-
-        keyGenerator.init(parameterSpec)
-        return keyGenerator.generateKey()
     }
 
     private fun getEncryptedFile(context: Context, relativePath: String): File {
@@ -62,6 +76,7 @@ object HandoutEncryptionManager {
     }
 
     fun isHandoutDownloaded(context: Context, relativePath: String): Boolean {
+        if (decryptedMemoryCache.get(relativePath) != null) return true
         val file = getEncryptedFile(context, relativePath)
         return file.exists() && file.length() > (4 + IV_LENGTH_BYTES)
     }
@@ -84,6 +99,8 @@ object HandoutEncryptionManager {
                 buffer.put(encryptedBytes)
                 fos.write(buffer.array())
             }
+            // Populate memory cache immediately
+            decryptedMemoryCache.put(relativePath, plainText)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -92,6 +109,9 @@ object HandoutEncryptionManager {
     }
 
     fun decryptAndRead(context: Context, relativePath: String): String? {
+        // 1. Instant RAM hit (0ms, zero crypto overhead)
+        decryptedMemoryCache.get(relativePath)?.let { return it }
+
         val file = getEncryptedFile(context, relativePath)
         if (!file.exists()) return null
 
@@ -115,7 +135,9 @@ object HandoutEncryptionManager {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
 
             val decryptedBytes = cipher.doFinal(encryptedBytes)
-            String(decryptedBytes, Charsets.UTF_8)
+            String(decryptedBytes, Charsets.UTF_8).also {
+                decryptedMemoryCache.put(relativePath, it)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -123,11 +145,13 @@ object HandoutEncryptionManager {
     }
 
     fun deleteHandout(context: Context, relativePath: String): Boolean {
+        decryptedMemoryCache.remove(relativePath)
         val file = getEncryptedFile(context, relativePath)
         return if (file.exists()) file.delete() else true
     }
 
     fun clearAllEncryptedHandouts(context: Context): Boolean {
+        decryptedMemoryCache.evictAll()
         val dir = File(context.filesDir, DIR_NAME)
         return if (dir.exists()) dir.deleteRecursively() else true
     }

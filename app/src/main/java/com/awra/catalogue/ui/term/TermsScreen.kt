@@ -58,8 +58,11 @@ fun TermsScreen(
     val scope = rememberCoroutineScope()
 
     // Determine if we are in search mode to optimize rendering
-    val isSearchExpanded by remember { 
-        derivedStateOf { searchBarState.currentValue == SearchBarValue.Expanded } 
+    val isSearchActive by remember { 
+        derivedStateOf { 
+            searchBarState.currentValue == SearchBarValue.Expanded || 
+            searchBarState.targetValue == SearchBarValue.Expanded 
+        }
     }
 
     LaunchedEffect(textFieldState.text) {
@@ -223,39 +226,41 @@ fun TermsScreen(
                 shape = CircleShape
             )
 
-            // Full Screen Search Overlay
-            ExpandedFullScreenSearchBar(
-                state = searchBarState,
-                inputField = inputField
-            ) {
-                // Only render results in overlay when searching to speed up expansion animation
-                val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
-                
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+            // Full Screen Search Overlay (only rendered when search is active)
+            if (isSearchActive) {
+                ExpandedFullScreenSearchBar(
+                    state = searchBarState,
+                    inputField = inputField
                 ) {
-                    itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
-                        TermListItem(
-                            term = term,
-                            index = index,
-                            count = displayTerms.size,
-                            onBookmarkClick = { viewModel.toggleBookmark(term) }
-                        )
-                    }
+                    // Only render results in overlay when searching to speed up expansion animation
+                    val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
+                    
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                    ) {
+                        itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
+                            TermListItem(
+                                term = term,
+                                index = index,
+                                count = displayTerms.size,
+                                onBookmarkClick = { viewModel.toggleBookmark(term) }
+                            )
+                        }
 
-                    if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillParentMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "No matches found for \"${textFieldState.text}\"",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                        if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "No matches found for \"${textFieldState.text}\"",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -285,8 +290,10 @@ private fun TermListItem(
     }
 
     // Deterministic random shape based on ID
-    val expressiveShapes = remember { ExpressiveShape.entries }
-    val randomShape = expressiveShapes[term.id.toInt() % expressiveShapes.size]
+    val randomShape = remember(term.id) {
+        val expressiveShapes = ExpressiveShape.entries
+        expressiveShapes[(term.id % expressiveShapes.size).toInt()]
+    }
 
     SegmentedListItem(
         onClick = { /* Could show details */ },

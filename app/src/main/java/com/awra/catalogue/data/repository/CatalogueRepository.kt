@@ -1,15 +1,14 @@
 package com.awra.catalogue.data.repository
 
 import android.content.Context
-import com.awra.catalogue.data.database.DatabaseSeeder
+import androidx.compose.ui.graphics.Color
 import com.awra.catalogue.data.dao.CatalogueDao
+import com.awra.catalogue.data.database.DatabaseSeeder
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.security.HandoutEncryptionManager
 import com.awra.catalogue.data.seed.CatalogueMetadata
-import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
@@ -17,13 +16,16 @@ import java.net.URL
 
 class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
-    fun getSubjects(stream: Stream): Flow<List<Subject>> = catalogueDao.getSubjectsByStream(stream)
+    fun getSubjects(stream: Stream): Flow<List<Subject>> =
+        catalogueDao.getSubjectsByStream(stream).distinctUntilChanged()
 
-    fun getAllSubjects(): Flow<List<Subject>> = catalogueDao.getAllSubjects()
+    fun getAllSubjects(): Flow<List<Subject>> =
+        catalogueDao.getAllSubjects().distinctUntilChanged()
 
-    suspend fun getSubjectById(subjectId: Long): Subject? = catalogueDao.getSubjectsById(subjectId)
-    
-    fun getChaptersFromMetadata(subjectName: String): List<Pair<String, List<String>>> = 
+    suspend fun getSubjectById(subjectId: Long): Subject? =
+        catalogueDao.getSubjectsById(subjectId)
+
+    fun getChaptersFromMetadata(subjectName: String): List<Pair<String, List<String>>> =
         CatalogueMetadata.getUnitsForSubject(subjectName)
 
     suspend fun getSubjectCount(): Int = catalogueDao.getSubjectCount()
@@ -32,19 +34,24 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     suspend fun seedSubjects(subjects: List<Subject>) = catalogueDao.insertSubjects(subjects)
 
-    fun getChapters(subjectId: Long): Flow<List<ChapterWithTopics>> = catalogueDao.getChaptersWithHandoutsBySubject(subjectId)
+    fun getChapters(subjectId: Long): Flow<List<ChapterWithTopics>> =
+        catalogueDao.getChaptersWithHandoutsBySubject(subjectId).distinctUntilChanged()
 
-    fun getChaptersWithQuizzes(subjectId: Long): Flow<List<ChapterWithQuizTopics>> = catalogueDao.getChaptersWithQuizzesBySubject(subjectId)
+    fun getChaptersWithQuizzes(subjectId: Long): Flow<List<ChapterWithQuizTopics>> =
+        catalogueDao.getChaptersWithQuizzesBySubject(subjectId).distinctUntilChanged()
 
-    fun getChaptersWithInfographics(subjectId: Long): Flow<List<ChapterWithInfographicTopics>> = catalogueDao.getChaptersWithInfographicsBySubject(subjectId)
+    fun getChaptersWithInfographics(subjectId: Long): Flow<List<ChapterWithInfographicTopics>> =
+        catalogueDao.getChaptersWithInfographicsBySubject(subjectId).distinctUntilChanged()
 
-    fun getTopics(chapterId: Long): Flow<List<Topic>> = catalogueDao.getTopicsByChapter(chapterId)
+    fun getTopics(chapterId: Long): Flow<List<Topic>> =
+        catalogueDao.getTopicsByChapter(chapterId).distinctUntilChanged()
 
     suspend fun getTopicById(id: Long) = catalogueDao.getTopicById(id)
-    
+
     suspend fun getChapterById(id: Long) = catalogueDao.getChapterById(id)
 
-    fun getHandouts(topicId: Long): Flow<List<Handout>> = catalogueDao.getHandoutsByTopic(topicId)
+    fun getHandouts(topicId: Long): Flow<List<Handout>> =
+        catalogueDao.getHandoutsByTopic(topicId).distinctUntilChanged()
 
     suspend fun getHandoutById(id: Long): Handout? = catalogueDao.getHandoutById(id)
 
@@ -53,11 +60,9 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     }
 
     fun getEncryptedHandoutContent(context: Context, handout: Handout): String? {
-        // Try reading decrypted file from encrypted internal storage first
         val decrypted = HandoutEncryptionManager.decryptAndRead(context, handout.content)
         if (decrypted != null) return decrypted
 
-        // Fallback to assets if available (for backwards compatibility)
         return try {
             context.assets.open(handout.content).bufferedReader().use { it.readText() }
         } catch (e: Exception) {
@@ -70,29 +75,32 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         handout: Handout,
         onProgress: ((Float) -> Unit)? = null
     ): Result<String> = withContext(Dispatchers.IO) {
+        var connection: HttpURLConnection? = null
         try {
             val downloadUrl = GITHUB_HANDOUTS_BASE_URL + handout.content
             val url = URL(downloadUrl)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.connectTimeout = 15000
-            connection.readTimeout = 15000
-            connection.requestMethod = "GET"
-            connection.connect()
+            connection = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15000
+                readTimeout = 15000
+                requestMethod = "GET"
+                connect()
+            }
 
             if (connection.responseCode == HttpURLConnection.HTTP_OK) {
                 val contentLength = connection.contentLength
-                val inputStream = connection.inputStream
                 val outputStream = ByteArrayOutputStream()
                 val buffer = ByteArray(8192)
                 var totalRead = 0L
                 var bytesRead: Int
 
-                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    outputStream.write(buffer, 0, bytesRead)
-                    totalRead += bytesRead
-                    if (contentLength > 0) {
-                        val progress = (totalRead.toFloat() / contentLength).coerceIn(0f, 1f)
-                        onProgress?.invoke(progress)
+                connection.inputStream.use { inputStream ->
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                        totalRead += bytesRead
+                        if (contentLength > 0) {
+                            val progress = (totalRead.toFloat() / contentLength).coerceIn(0f, 1f)
+                            onProgress?.invoke(progress)
+                        }
                     }
                 }
 
@@ -108,6 +116,8 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
             }
         } catch (e: Exception) {
             Result.failure(e)
+        } finally {
+            connection?.disconnect()
         }
     }
 
@@ -121,12 +131,14 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
     suspend fun getInfographicById(id: Long): Infographic? = catalogueDao.getInfographicById(id)
 
-    fun getFlashcards(topicId: Long): Flow<List<Flashcard>> = catalogueDao.getFlashcardsByTopic(topicId)
+    fun getFlashcards(topicId: Long): Flow<List<Flashcard>> =
+        catalogueDao.getFlashcardsByTopic(topicId).distinctUntilChanged()
 
     fun getCustomFlashcards(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<Flashcard>> =
         catalogueDao.getCustomFlashcards(chapterIds, difficulty, limit)
 
-    fun getQuizQuestions(topicId: Long): Flow<List<QuizQuestion>> = catalogueDao.getQuizQuestionsByTopic(topicId)
+    fun getQuizQuestions(topicId: Long): Flow<List<QuizQuestion>> =
+        catalogueDao.getQuizQuestionsByTopic(topicId).distinctUntilChanged()
 
     fun getCustomQuizQuestions(chapterIds: List<Long>, difficulty: Difficulty, limit: Int): Flow<List<QuizQuestion>> =
         catalogueDao.getCustomQuizQuestions(chapterIds, difficulty, limit)
@@ -134,23 +146,29 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
     fun getCustomQuizQuestionsFromTopics(topicIds: List<Long>, difficulty: Difficulty, limit: Int) =
         catalogueDao.getCustomQuizQuestionsFromTopics(topicIds, difficulty, limit)
 
-    fun getTerms(topicId: Long): Flow<List<Term>> = catalogueDao.getTermsByTopic(topicId)
+    fun getTerms(topicId: Long): Flow<List<Term>> =
+        catalogueDao.getTermsByTopic(topicId).distinctUntilChanged()
 
-    fun getUtilities(subjectId: Long): Flow<List<Utility>> = catalogueDao.getUtilitiesBySubject(subjectId)
+    fun getUtilities(subjectId: Long): Flow<List<Utility>> =
+        catalogueDao.getUtilitiesBySubject(subjectId).distinctUntilChanged()
 
     suspend fun getUtilityById(id: Long): Utility? = catalogueDao.getUtilityById(id)
 
-    fun getBookmarkedTerms(): Flow<List<Term>> = catalogueDao.getBookmarkedTerms()
+    fun getBookmarkedTerms(): Flow<List<Term>> =
+        catalogueDao.getBookmarkedTerms().distinctUntilChanged()
 
     suspend fun toggleBookmark(term: Term) {
         catalogueDao.updateTerm(term.copy(isBookmarked = !term.isBookmarked))
     }
 
-    fun searchTerms(subjectId: Long, query: String): Flow<List<Term>> = 
-        catalogueDao.searchTermsInSubject(subjectId, query)
+    fun searchTerms(subjectId: Long, query: String): Flow<List<Term>> =
+        catalogueDao.searchTermsInSubject(subjectId, query).distinctUntilChanged()
 
-    fun searchAllTerms(query: String): Flow<List<Term>> = 
-        catalogueDao.searchAllTerms(query)
+    fun searchAllTerms(query: String): Flow<List<Term>> =
+        catalogueDao.searchAllTerms(query).distinctUntilChanged()
+
+    fun getFeaturedTerms(limit: Int = 50): Flow<List<Term>> =
+        catalogueDao.getFeaturedTerms(limit).distinctUntilChanged()
 
     suspend fun recordQuizAttempt(quizQuestionId: Long, isCorrect: Boolean, timeTakenMs: Long) {
         catalogueDao.insertQuizAttempt(
@@ -181,91 +199,98 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         )
     }
 
-    fun getTopicAnalytics(topicId: Long) = catalogueDao.getTopicQuizAnalytics(topicId)
+    fun getTopicAnalytics(topicId: Long) = catalogueDao.getTopicQuizAnalytics(topicId).distinctUntilChanged()
 
-    fun getStudiedTopics() = catalogueDao.getStudiedTopics()
+    fun getStudiedTopics() = catalogueDao.getStudiedTopics().distinctUntilChanged()
 
-    fun getTotalQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) = catalogueDao.getTotalQuizAttemptsForTopicsToday(topicIds, startOfDay)
-    
-    fun getTotalCorrectQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) = catalogueDao.getTotalCorrectQuizAttemptsForTopicsToday(topicIds, startOfDay)
+    fun getTotalQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) =
+        catalogueDao.getTotalQuizAttemptsForTopicsToday(topicIds, startOfDay).distinctUntilChanged()
 
-    fun getGlobalQuizAnalytics() = catalogueDao.getGlobalQuizAnalytics()
+    fun getTotalCorrectQuizAttemptsForTopicsToday(topicIds: List<Long>, startOfDay: Long) =
+        catalogueDao.getTotalCorrectQuizAttemptsForTopicsToday(topicIds, startOfDay).distinctUntilChanged()
 
-    fun getGlobalFlashcardCount() = catalogueDao.getGlobalFlashcardCount()
+    fun getGlobalQuizAnalytics() = catalogueDao.getGlobalQuizAnalytics().distinctUntilChanged()
 
-    fun getUniqueStudyDaysCount() = catalogueDao.getUniqueStudyDaysCount()
+    fun getGlobalFlashcardCount() = catalogueDao.getGlobalFlashcardCount().distinctUntilChanged()
 
-    suspend fun getStudySessionsCountToday(startOfDay: Long) = catalogueDao.getStudySessionsCountToday(startOfDay)
+    fun getUniqueStudyDaysCount() = catalogueDao.getUniqueStudyDaysCount().distinctUntilChanged()
 
-    fun getGlobalHandoutProgress() = catalogueDao.getGlobalHandoutProgress()
+    suspend fun getStudySessionsCountToday(startOfDay: Long) =
+        catalogueDao.getStudySessionsCountToday(startOfDay)
 
-    fun getSubjectMastery() = catalogueDao.getSubjectMastery()
+    fun getGlobalHandoutProgress() = catalogueDao.getGlobalHandoutProgress().distinctUntilChanged()
 
-    fun getAllChaptersPerformance() = catalogueDao.getAllChaptersPerformance()
+    fun getSubjectMastery() = catalogueDao.getSubjectMastery().distinctUntilChanged()
 
-    fun getAllTopicsPerformance() = catalogueDao.getAllTopicsPerformance()
+    fun getAllChaptersPerformance() = catalogueDao.getAllChaptersPerformance().distinctUntilChanged()
 
-    fun getTimePerSubject() = catalogueDao.getTimePerSubject()
+    fun getAllTopicsPerformance() = catalogueDao.getAllTopicsPerformance().distinctUntilChanged()
 
-    fun getDailyStudyTime(since: Long) = catalogueDao.getDailyStudyTime(since)
+    fun getTimePerSubject() = catalogueDao.getTimePerSubject().distinctUntilChanged()
 
-    fun getPinnedItems(): Flow<List<RecentlyOpenedDisplayItem>> = catalogueDao.getPinnedItems().transform { pins ->
-        val resolved = pins.mapNotNull { pin ->
-            when (pin.type) {
-                MaterialType.HANDOUT -> {
-                    val handout = catalogueDao.getHandoutById(pin.targetId)
-                    val topic = handout?.let { catalogueDao.getTopicById(it.topicId) }
-                    val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
-                    topic?.let {
-                        RecentlyOpenedDisplayItem(
-                            id = pin.id,
-                            targetId = pin.targetId,
-                            subjectId = chapter?.subjectId ?: 0,
-                            name = it.title,
-                            type = MaterialType.HANDOUT,
-                            icon = "MenuBook",
-                            color = Color(0xFF795548),
-                            timestamp = pin.timestamp
-                        )
+    fun getDailyStudyTime(since: Long) = catalogueDao.getDailyStudyTime(since).distinctUntilChanged()
+
+    fun getPinnedItems(): Flow<List<RecentlyOpenedDisplayItem>> =
+        catalogueDao.getPinnedItems()
+            .distinctUntilChanged()
+            .map { pins ->
+                pins.mapNotNull { pin ->
+                    when (pin.type) {
+                        MaterialType.HANDOUT -> {
+                            val handout = catalogueDao.getHandoutById(pin.targetId)
+                            val topic = handout?.let { catalogueDao.getTopicById(it.topicId) }
+                            val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
+                            topic?.let {
+                                RecentlyOpenedDisplayItem(
+                                    id = pin.id,
+                                    targetId = pin.targetId,
+                                    subjectId = chapter?.subjectId ?: 0,
+                                    name = it.title,
+                                    type = MaterialType.HANDOUT,
+                                    icon = "MenuBook",
+                                    color = Color(0xFF795548),
+                                    timestamp = pin.timestamp
+                                )
+                            }
+                        }
+                        MaterialType.INFOGRAPHIC -> {
+                            val infographic = catalogueDao.getInfographicById(pin.targetId)
+                            val topic = infographic?.let { catalogueDao.getTopicById(it.topicId) }
+                            val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
+                            topic?.let {
+                                RecentlyOpenedDisplayItem(
+                                    id = pin.id,
+                                    targetId = pin.targetId,
+                                    subjectId = chapter?.subjectId ?: 0,
+                                    name = it.title,
+                                    type = MaterialType.INFOGRAPHIC,
+                                    icon = "BarChart",
+                                    color = Color(0xFF3F51B5),
+                                    timestamp = pin.timestamp
+                                )
+                            }
+                        }
+                        MaterialType.UTILITY -> {
+                            val utility = catalogueDao.getUtilityById(pin.targetId)
+                            utility?.let {
+                                RecentlyOpenedDisplayItem(
+                                    id = pin.id,
+                                    targetId = pin.targetId,
+                                    subjectId = it.subjectId,
+                                    name = it.name,
+                                    type = MaterialType.UTILITY,
+                                    icon = it.icon,
+                                    color = Color(0xFF009688),
+                                    timestamp = pin.timestamp
+                                )
+                            }
+                        }
+                        else -> null
                     }
                 }
-                MaterialType.INFOGRAPHIC -> {
-                    val infographic = catalogueDao.getInfographicById(pin.targetId)
-                    val topic = infographic?.let { catalogueDao.getTopicById(it.topicId) }
-                    val chapter = topic?.let { catalogueDao.getChapterById(it.chapterId) }
-                    topic?.let {
-                        RecentlyOpenedDisplayItem(
-                            id = pin.id,
-                            targetId = pin.targetId,
-                            subjectId = chapter?.subjectId ?: 0,
-                            name = it.title,
-                            type = MaterialType.INFOGRAPHIC,
-                            icon = "BarChart",
-                            color = Color(0xFF3F51B5),
-                            timestamp = pin.timestamp
-                        )
-                    }
-                }
-                MaterialType.UTILITY -> {
-                    val utility = catalogueDao.getUtilityById(pin.targetId)
-                    utility?.let {
-                        RecentlyOpenedDisplayItem(
-                            id = pin.id,
-                            targetId = pin.targetId,
-                            subjectId = it.subjectId,
-                            name = it.name,
-                            type = MaterialType.UTILITY,
-                            icon = it.icon,
-                            color = Color(0xFF009688),
-                            timestamp = pin.timestamp
-                        )
-                    }
-                }
-                else -> null
             }
-        }
-        emit(resolved)
-    }
+            .flowOn(Dispatchers.IO)
+            .distinctUntilChanged()
 
     suspend fun togglePin(targetId: Long, type: MaterialType) {
         val isPinned = catalogueDao.isItemPinned(targetId, type).first()
@@ -276,10 +301,11 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         }
     }
 
-    fun isItemPinned(targetId: Long, type: MaterialType) = catalogueDao.isItemPinned(targetId, type)
+    fun isItemPinned(targetId: Long, type: MaterialType) =
+        catalogueDao.isItemPinned(targetId, type).distinctUntilChanged()
 
     // Schedules
-    fun getAllSchedules() = catalogueDao.getAllSchedules()
+    fun getAllSchedules() = catalogueDao.getAllSchedules().distinctUntilChanged()
     suspend fun addSchedule(schedule: ClassSchedule) = catalogueDao.insertSchedule(schedule)
     suspend fun removeSchedule(schedule: ClassSchedule) = catalogueDao.deleteSchedule(schedule)
 }

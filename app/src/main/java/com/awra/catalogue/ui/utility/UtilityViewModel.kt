@@ -1,19 +1,19 @@
 package com.awra.catalogue.ui.utility
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.model.Utility
 import com.awra.catalogue.data.repository.CatalogueRepository
-import com.awra.catalogue.data.model.MaterialType
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 class UtilityViewModel(
-    private val repository: CatalogueRepository,
+    repository: CatalogueRepository,
     val subjectId: Long
 ) : ViewModel() {
 
-    val utilities: Flow<List<Utility>> = repository.getUtilities(subjectId)
-
+    val utilities: StateFlow<List<Utility>> =
+        repository.getUtilities(subjectId)
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 }
-

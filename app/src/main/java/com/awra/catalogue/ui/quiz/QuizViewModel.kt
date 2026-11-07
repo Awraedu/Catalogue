@@ -3,17 +3,22 @@ package com.awra.catalogue.ui.quiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.model.Difficulty
+import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.model.QuizQuestion
 import com.awra.catalogue.data.repository.CatalogueRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class QuizViewModel(
     private val repository: CatalogueRepository,
     val config: QuizConfig? = null,
     val topicId: Long? = null
 ) : ViewModel() {
+    private val quizSessionStartTime = System.currentTimeMillis()
     private var questionStartTime = System.currentTimeMillis()
+    private var sessionRecorded = false
 
     private val _questions = MutableStateFlow<List<QuizQuestion>>(emptyList())
     val questions: StateFlow<List<QuizQuestion>> = _questions.asStateFlow()
@@ -28,25 +33,29 @@ class QuizViewModel(
     private fun loadQuestions() {
         viewModelScope.launch {
             val flow = when {
-                config != null && config.topicIds.isNotEmpty() -> 
+                config != null && config.topicIds.isNotEmpty() ->
                     repository.getCustomQuizQuestionsFromTopics(config.topicIds, config.difficulty, config.limit)
-                config != null -> 
+                config != null ->
                     repository.getCustomQuizQuestions(config.chapterIds, config.difficulty, config.limit)
-                topicId != null -> 
+                topicId != null ->
                     repository.getQuizQuestions(topicId)
                 else -> emptyFlow()
             }
             val loadedQuestions = flow.firstOrNull() ?: emptyList()
-            _questions.value = loadedQuestions.map { question ->
-                val indexedOptions = question.options.mapIndexed { index, option -> option to index }
-                val shuffledOptions = indexedOptions.shuffled()
-                val newCorrectIndex = shuffledOptions.indexOfFirst { it.second == question.correctOptionIndex }
-                
-                question.copy(
-                    options = shuffledOptions.map { it.first },
-                    correctOptionIndex = newCorrectIndex
-                )
-            }.shuffled()
+            val preparedQuestions = withContext(Dispatchers.Default) {
+                loadedQuestions.map { question ->
+                    val indexedOptions = question.options.mapIndexed { index, option -> option to index }
+                    val shuffledOptions = indexedOptions.shuffled()
+                    val newCorrectIndex = shuffledOptions.indexOfFirst { it.second == question.correctOptionIndex }
+
+                    question.copy(
+                        options = shuffledOptions.map { it.first },
+                        correctOptionIndex = newCorrectIndex
+                    )
+                }.shuffled()
+            }
+            questionStartTime = System.currentTimeMillis()
+            _questions.value = preparedQuestions
         }
     }
 
@@ -56,12 +65,12 @@ class QuizViewModel(
 
     fun submitAnswer() {
         val currentState = _uiState.value
+        if (currentState.isAnswerSubmitted) return
         val currentQuestion = _questions.value.getOrNull(currentState.currentQuestionIndex) ?: return
-        
+
         val isCorrect = currentState.selectedOptionIndex == currentQuestion.correctOptionIndex
         val newScore = if (isCorrect) currentState.score + 1 else currentState.score
-        
-        val timeTaken = System.currentTimeMillis() - questionStartTime
+        val timeTaken = (System.currentTimeMillis() - questionStartTime).coerceAtLeast(500L)
 
         _uiState.update {
             it.copy(
@@ -94,6 +103,21 @@ class QuizViewModel(
             }
         } else {
             _uiState.update { it.copy(isQuizFinished = true) }
+            recordQuizStudySessionIfNeeded()
+        }
+    }
+
+    private fun recordQuizStudySessionIfNeeded() {
+        if (sessionRecorded) return
+        val firstTopicId = topicId ?: _questions.value.firstOrNull()?.topicId ?: return
+        sessionRecorded = true
+        val totalTimeSpent = (System.currentTimeMillis() - quizSessionStartTime).coerceAtLeast(1000L)
+        viewModelScope.launch {
+            repository.recordStudySession(
+                topicId = firstTopicId,
+                materialType = MaterialType.QUIZ,
+                timeSpentMs = totalTimeSpent
+            )
         }
     }
 }

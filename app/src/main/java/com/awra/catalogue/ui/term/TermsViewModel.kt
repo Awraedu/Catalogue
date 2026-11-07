@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class TermsViewModel(
     private val repository: CatalogueRepository,
-    private val initialSubjectId: Long?
+    initialSubjectId: Long?
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -25,34 +25,37 @@ class TermsViewModel(
     private val _selectedSubjectId = MutableStateFlow(initialSubjectId)
     val selectedSubjectId: StateFlow<Long?> = _selectedSubjectId.asStateFlow()
 
-    // Get all unique subjects for filtering
     val subjects: StateFlow<List<Subject>> = repository.getAllSubjects()
         .map { it.distinctBy { sub -> sub.name } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val terms: StateFlow<List<Term>> = combine(
-        _searchQuery.debounce { if (it.isEmpty()) 0L else 300L }, 
-        _showBookmarkedOnly, 
+        _searchQuery.debounce { if (it.isEmpty()) 0L else 250L },
+        _showBookmarkedOnly,
         _selectedSubjectId
     ) { query, bookmarkedOnly, subjectId ->
-        Triple(query, bookmarkedOnly, subjectId)
-    }.distinctUntilChanged()
-    .flatMapLatest { (query, bookmarkedOnly, subjectId) ->
-        if (bookmarkedOnly) {
-            repository.getBookmarkedTerms()
-        } else if (subjectId != null) {
-            repository.searchTerms(subjectId, query)
-        } else {
-            repository.searchAllTerms(query)
+        Triple(query.trim(), bookmarkedOnly, subjectId)
+    }
+        .distinctUntilChanged()
+        .flatMapLatest { (query, bookmarkedOnly, subjectId) ->
+            val baseFlow = if (subjectId != null) {
+                repository.searchTerms(subjectId, query)
+            } else {
+                repository.searchAllTerms(query)
+            }
+
+            if (bookmarkedOnly) {
+                baseFlow.map { list -> list.filter { it.isBookmarked } }
+            } else {
+                baseFlow
+            }
         }
-    }.map { list ->
-        // Ensure UI only shows unique terms (by word and definition)
-        list.distinctBy { term -> 
-            term.word.lowercase().trim() + ":" + term.definition.lowercase().trim()
+        .map { list ->
+            list.distinctBy { term -> term.word to term.definition }
         }
-    }.flowOn(Dispatchers.Default)
-    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query

@@ -7,6 +7,7 @@ import com.awra.catalogue.data.model.ChapterWithTopics
 import com.awra.catalogue.data.model.Handout
 import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.repository.CatalogueRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -30,26 +31,28 @@ class HandoutViewModel(
 
     private val allChapters: Flow<List<ChapterWithTopics>> = repository.getChapters(subjectId)
 
-    val chapters: Flow<List<ChapterWithTopics>> = combine(allChapters, _searchQuery) { chapters, query ->
+    // Cached as a StateFlow and filtered on Dispatchers.Default so returning from HandoutDetailScreen
+    // to HandoutListScreen is instantaneous with 0 recomposition lag!
+    val chapters: StateFlow<List<ChapterWithTopics>> = combine(allChapters, _searchQuery) { chapters, query ->
         if (query.isBlank()) chapters
         else {
             chapters.mapNotNull { chapterWithTopics ->
-                val filteredTopics = chapterWithTopics.topics.filter { 
-                    it.topic.title.contains(query, ignoreCase = true) 
-                }
-                if (filteredTopics.isNotEmpty() || chapterWithTopics.chapter.title.contains(query, ignoreCase = true)) {
-                    val topicsToShow = if (chapterWithTopics.chapter.title.contains(query, ignoreCase = true)) {
-                        chapterWithTopics.topics
-                    } else {
-                        filteredTopics
+                val chapterMatches = chapterWithTopics.chapter.title.contains(query, ignoreCase = true)
+                val topicsToShow = if (chapterMatches) {
+                    chapterWithTopics.topics
+                } else {
+                    chapterWithTopics.topics.filter {
+                        it.topic.title.contains(query, ignoreCase = true)
                     }
-                    if (topicsToShow.isNotEmpty()) {
-                        chapterWithTopics.copy(topics = topicsToShow)
-                    } else null
+                }
+                if (topicsToShow.isNotEmpty()) {
+                    chapterWithTopics.copy(topics = topicsToShow)
                 } else null
             }
         }
     }
+        .flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
@@ -70,16 +73,20 @@ class HandoutViewModel(
                 context = context,
                 handout = handout,
                 onProgress = { progress ->
-                    _downloadStates.update { current ->
-                        current + (handout.id to HandoutDownloadState.Downloading(progress))
+                    // Throttle progress updates to 2% steps so it doesn't spam UI recompositions
+                    val currentProgress = (_downloadStates.value[handout.id] as? HandoutDownloadState.Downloading)?.progress ?: 0f
+                    if (progress - currentProgress >= 0.02f || progress >= 1f) {
+                        _downloadStates.update { current ->
+                            current + (handout.id to HandoutDownloadState.Downloading(progress))
+                        }
                     }
                 }
             )
             result.onSuccess { content ->
                 _downloadStates.update { it + (handout.id to HandoutDownloadState.Downloaded(content)) }
             }.onFailure { error ->
-                _downloadStates.update { 
-                    it + (handout.id to HandoutDownloadState.Error(error.localizedMessage ?: "Download failed")) 
+                _downloadStates.update {
+                    it + (handout.id to HandoutDownloadState.Error(error.localizedMessage ?: "Download failed"))
                 }
             }
         }
@@ -96,4 +103,3 @@ class HandoutViewModel(
         }
     }
 }
-

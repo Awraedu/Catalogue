@@ -6,6 +6,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -213,7 +214,7 @@ fun LottieAsset(type: String, modifier: Modifier = Modifier) {
                     "welcome" -> Icons.Default.AutoAwesome
                     "identity" -> Icons.Default.Person
                     "natural" -> Icons.Default.Science
-                    "soacial" -> Icons.Default.Public
+                    "social" -> Icons.Default.Public
                     "all" -> Icons.Default.AllInclusive
                     "palette" -> Icons.Default.Palette
                     "goal" -> Icons.Default.Timer
@@ -222,13 +223,8 @@ fun LottieAsset(type: String, modifier: Modifier = Modifier) {
                     else -> Icons.Default.Block
                 },
                 contentDescription = null,
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(28.dp),
                 tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Lottie: $type",
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp),
-                style = MaterialTheme.typography.labelSmall
             )
         }
     }
@@ -342,19 +338,25 @@ private fun IdentityStep(name: String, onNameChange: (String) -> Unit, onNext: (
 
 @Composable
 private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit, onNext: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Spacer(modifier = Modifier.height(64.dp))
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(24.dp)
+    ) {
+        Spacer(modifier = Modifier.height(48.dp))
         Text(text = "The Path", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
         Text(text = "Choose your stream", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black)
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 StreamLargeCard(
                     modifier = Modifier
                         .weight(1f)
-                        .height(200.dp),
+                        .height(160.dp),
                     title = "Natural",
                     lottieType = "natural",
                     isSelected = selectedStream == Stream.NATURAL,
@@ -363,17 +365,15 @@ private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit
                 StreamLargeCard(
                     modifier = Modifier
                         .weight(1f)
-                        .height(200.dp),
+                        .height(160.dp),
                     title = "Social",
-                    lottieType = "soacial",
+                    lottieType = "social",
                     isSelected = selectedStream == Stream.SOCIAL,
                     onClick = { onStreamSelect(Stream.SOCIAL) }
                 )
             }
             StreamHorizontalCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(110.dp),
+                modifier = Modifier.fillMaxWidth(),
                 title = "Both (All)",
                 subtitle = "Includes Natural & Social courses",
                 lottieType = "all",
@@ -382,7 +382,7 @@ private fun StreamStep(selectedStream: Stream?, onStreamSelect: (Stream) -> Unit
             )
         }
         
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.heightIn(min = 24.dp).weight(1f, fill = false))
         
         Button(
             onClick = onNext,
@@ -406,7 +406,7 @@ private fun StreamLargeCard(
     Card(
         onClick = onClick,
         modifier = modifier,
-        shape = ContinuousRoundedRectangle(32.dp),
+        shape = ContinuousRoundedRectangle(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
         ),
@@ -415,12 +415,12 @@ private fun StreamLargeCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LottieAsset(lottieType, modifier = Modifier.size(100.dp))
-            Spacer(Modifier.height(12.dp))
+            LottieAsset(lottieType, modifier = Modifier.size(72.dp))
+            Spacer(Modifier.height(8.dp))
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
         }
     }
@@ -438,7 +438,7 @@ private fun StreamHorizontalCard(
     Card(
         onClick = onClick,
         modifier = modifier,
-        shape = ContinuousRoundedRectangle(32.dp),
+        shape = ContinuousRoundedRectangle(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
         ),
@@ -446,19 +446,28 @@ private fun StreamHorizontalCard(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            LottieAsset(lottieType, modifier = Modifier.size(64.dp))
+            LottieAsset(lottieType, modifier = Modifier.size(52.dp))
             Spacer(Modifier.width(16.dp))
-            Column(verticalArrangement = Arrangement.Center) {
-                Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
-                    subtitle,
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                    maxLines = 1
+                )
+                Text(
+                    text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2
                 )
             }
         }

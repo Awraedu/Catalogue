@@ -1,7 +1,9 @@
 package com.awra.catalogue.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +35,8 @@ import com.awra.catalogue.data.model.FeaturedItem
 import com.awra.catalogue.data.model.RecentlyOpenedDisplayItem
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
+import com.awra.catalogue.data.util.PreferenceManager
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.home.components.DailyInsightCard
 import com.awra.catalogue.ui.home.components.DailyQuizCard
 import com.awra.catalogue.ui.home.components.DailyTermCard
@@ -129,22 +134,24 @@ fun HomeScreenTestContent(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        containerColor = Color.Transparent
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier = Modifier.fillMaxSize()
         ) {
+            AmbientMeshBackground(modifier = Modifier.fillMaxSize())
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
+                Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                        .background(Color.Transparent)
                 ) {
                     // Header Section
                     Row(
@@ -154,31 +161,32 @@ fun HomeScreenTestContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                text = "$greeting, ",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text = "$greeting,",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White.copy(alpha = 0.90f)
                             )
                             Text(
                                 text = userName.uppercase(),
-                                style = MaterialTheme.typography.titleLarge,
+                                style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Black,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = Color.White
                             )
                         }
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .background(Color.White.copy(alpha = 0.25f))
                                 .clickable { onSettingsClick() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings",
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = Color.White
                             )
                         }
                     }
@@ -189,7 +197,7 @@ fun HomeScreenTestContent(
                             text = "Daily Quest",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = Color.White,
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                         )
 
@@ -250,7 +258,8 @@ fun HomeScreenTestContent(
                         Box(modifier = Modifier.padding(bottom = 16.dp)) {
                             PinnedItemsSection(
                                 items = pinnedItems,
-                                onItemClick = onRecentItemClick
+                                onItemClick = onRecentItemClick,
+                                titleColor = Color.White
                             )
                         }
                     }

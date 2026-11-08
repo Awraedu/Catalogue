@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +27,7 @@ import com.kyant.capsule.ContinuousRoundedRectangle
 fun PinnedItemsSection(
     items: List<RecentlyOpenedDisplayItem>,
     onItemClick: (RecentlyOpenedDisplayItem) -> Unit,
+    titleColor: Color = MaterialTheme.colorScheme.onBackground
 ) {
     if (items.isEmpty()) return
 
@@ -37,7 +39,7 @@ fun PinnedItemsSection(
             text = "Pinned Items",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = titleColor,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 

@@ -1,13 +1,15 @@
 package com.awra.catalogue.ui.subject
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,7 +28,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,15 +35,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.awra.catalogue.R
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.theme.YourAppTheme
+import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.awra.catalogue.ui.theme.getSubjectBackgroundImage
 import com.awra.catalogue.ui.theme.getSubjectIcon
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
+
+private data class CategoryItem(
+    val type: MaterialType,
+    val title: String,
+    val description: String,
+    val iconRes: Int,
+    val containerColor: Color,
+    val contentColor: Color
+)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -53,267 +66,270 @@ fun SubjectDetailScreen(
     onContinueClick: () -> Unit
 ) {
     val backgroundImage = getSubjectBackgroundImage(subject.name)
-    val subjectColors = com.awra.catalogue.ui.theme.getSubjectAdaptiveColors(subject.id)
-    
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        subject.name, 
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    ) 
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", modifier = Modifier.size(20.dp))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+    val subjectColors = getSubjectAdaptiveColors(subject.id)
+
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer
+    val secondaryContainer = MaterialTheme.colorScheme.secondaryContainer
+    val onSecondaryContainer = MaterialTheme.colorScheme.onSecondaryContainer
+    val tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer
+    val onTertiaryContainer = MaterialTheme.colorScheme.onTertiaryContainer
+    val errorContainer = MaterialTheme.colorScheme.errorContainer
+    val onErrorContainer = MaterialTheme.colorScheme.onErrorContainer
+    val surfaceContainerHigh = MaterialTheme.colorScheme.surfaceContainerHigh
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
+    val categories = remember(
+        primaryContainer,
+        secondaryContainer,
+        tertiaryContainer,
+        errorContainer,
+        surfaceContainerHigh
+    ) {
+        listOf(
+            CategoryItem(
+                MaterialType.HANDOUT,
+                "Handouts",
+                "Study notes and PDF materials.",
+                R.drawable.handout,
+                primaryContainer,
+                onPrimaryContainer
+            ),
+            CategoryItem(
+                MaterialType.QUIZ,
+                "Quizzes",
+                "Chapter-wise practice tests.",
+                R.drawable.quiz,
+                secondaryContainer,
+                onSecondaryContainer
+            ),
+            CategoryItem(
+                MaterialType.FLASHCARD,
+                "Flashcards",
+                "Quick memory aid tools.",
+                R.drawable.flashcards,
+                tertiaryContainer,
+                onTertiaryContainer
+            ),
+            CategoryItem(
+                MaterialType.INFOGRAPHIC,
+                "Infographics",
+                "Visual summaries of topics.",
+                R.drawable.infographics,
+                errorContainer,
+                onErrorContainer
+            ),
+            CategoryItem(
+                MaterialType.UTILITY,
+                "Utilities",
+                "Calculators, formula sheets, and more.",
+                R.drawable.utility,
+                surfaceContainerHigh,
+                onSurfaceVariant
             )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+        )
+    }
+
+    val chunkedCategories = remember(categories) { categories.chunked(2) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Per-Subject Adaptive Mesh Gradient Background using the strongest subject content color
+        AmbientMeshBackground(
+            modifier = Modifier.fillMaxSize(),
+            primaryColor = subjectColors.content
+        )
+
+        // Unified Whole-Screen Scrollable Content
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Hero Card: Redesigned for Maximum Contrast with Black Text
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                shape = ContinuousRoundedRectangle(32.dp),
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    // 1. Base Image
-                    androidx.compose.foundation.Image(
-                        painter = painterResource(id = backgroundImage),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    
-                    // 2. Light Progressive Blur (White-ish for black text contrast)
-                    androidx.compose.foundation.Image(
-                        painter = painterResource(id = backgroundImage),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .blur(70.dp)
-                            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                            .drawWithContent {
-                                drawContent()
-                                drawRect(
-                                    brush = Brush.verticalGradient(
-                                        0.2f to Color.Transparent,
-                                        0.6f to subjectColors.container
-                                    ),
-                                    blendMode = BlendMode.DstIn
-                                )
-                            },
-                        contentScale = ContentScale.FillHeight
-                    )
-                    
-                    // 3. Light Overlay for guaranteed black text readability
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    0.3f to Color.Transparent,
-                                    1f to subjectColors.container.copy(alpha = 0.7f)
-                                )
-                            )
-                    )
+            // Spacer for floating status bar glass pill
+            item {
+                Spacer(modifier = Modifier.statusBarsPadding().height(48.dp))
+            }
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        // Top Section: Metadata
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+            // Hero Card
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    shape = ContinuousRoundedRectangle(32.dp),
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // 1. Base Image
+                        Image(
+                            painter = painterResource(id = backgroundImage),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        // 2. Light Progressive Blur
+                        Image(
+                            painter = painterResource(id = backgroundImage),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(70.dp)
+                                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                                .drawWithContent {
+                                    drawContent()
+                                    drawRect(
+                                        brush = Brush.verticalGradient(
+                                            0.2f to Color.Transparent,
+                                            0.6f to subjectColors.container
+                                        ),
+                                        blendMode = BlendMode.DstIn
+                                    )
+                                },
+                            contentScale = ContentScale.FillHeight
+                        )
+
+                        // 3. Light Overlay
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        0.3f to Color.Transparent,
+                                        1f to subjectColors.container.copy(alpha = 0.7f)
+                                    )
+                                )
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Subject Icon (Themed)
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(subject.shape.toShape())
-                                    .background(subjectColors.content.copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center
+                            // Top Section: Subject Icon
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    painter = painterResource(id = getSubjectIcon(subject.name)),
-                                    contentDescription = null,
-                                    tint = subjectColors.content,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            // Colored Progress Tag Pill
-                            Surface(
-                                shape = CircleShape,
-                                color = subjectColors.container.copy(alpha = 1f),
-                                modifier = Modifier.height(28.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(subject.shape.toShape())
+                                        .background(subjectColors.content.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.TrendingUp,
+                                        painter = painterResource(id = getSubjectIcon(subject.name)),
                                         contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    Text(
-                                        text = "65%",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Black,
-                                        color = Color.White
+                                        tint = subjectColors.content,
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 }
                             }
-                        }
 
-                        // Bottom Section: Title, Description, and Action (Black Text)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = subject.name,
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color(0xFEFEFEFE), // Deep Black 000000
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = "Chapter 3: Quantum Mechanics",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFEFEFEFE), // Deep Black 000000
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            
-                            val interactionSource = remember { MutableInteractionSource() }
-                            val isPressed by interactionSource.collectIsPressedAsState()
-                            val cornerRadius by animateDpAsState(targetValue = if (isPressed) 12.dp else 24.dp)
-                            
-                            Button(
-                                onClick = onContinueClick,
-                                interactionSource = interactionSource,
-                                shape = ContinuousRoundedRectangle(cornerRadius),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = subjectColors.container,
-                                    contentColor = subjectColors.content
-                                ),
-                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                            // Bottom Section: Title, Description, and Action
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Bottom
                             ) {
-                                Text("Resume", fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = subject.name,
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color.White,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = "Chapter 3: Quantum Mechanics",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White.copy(alpha = 0.90f),
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+
+                                val interactionSource = remember { MutableInteractionSource() }
+                                val isPressed by interactionSource.collectIsPressedAsState()
+                                val cornerRadius by animateDpAsState(targetValue = if (isPressed) 12.dp else 24.dp)
+
+                                Button(
+                                    onClick = onContinueClick,
+                                    interactionSource = interactionSource,
+                                    shape = ContinuousRoundedRectangle(cornerRadius),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = subjectColors.container,
+                                        contentColor = subjectColors.content
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                                ) {
+                                    Text("Resume", fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
+                                }
                             }
                         }
                     }
                 }
             }
 
-            Text(
-                text = "Learning Materials",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Categories Grid with diverse adaptive colors
-            val categories = listOf(
-                CategoryItem(
-                    MaterialType.HANDOUT, 
-                    "Handouts", 
-                    "Study notes and PDF materials.",
-                    com.awra.catalogue.R.drawable.handout, 
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                CategoryItem(
-                    MaterialType.QUIZ, 
-                    "Quizzes", 
-                    "Chapter-wise practice tests.",
-                    com.awra.catalogue.R.drawable.quiz, 
-                    MaterialTheme.colorScheme.secondaryContainer,
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                ),
-                CategoryItem(
-                    MaterialType.FLASHCARD, 
-                    "Flashcards", 
-                    "Quick memory aid tools.",
-                    com.awra.catalogue.R.drawable.flashcards, 
-                    MaterialTheme.colorScheme.tertiaryContainer,
-                    MaterialTheme.colorScheme.onTertiaryContainer
-                ),
-                CategoryItem(
-                    MaterialType.INFOGRAPHIC, 
-                    "Infographics", 
-                    "Visual summaries of topics.",
-                    com.awra.catalogue.R.drawable.infographics, 
-                    MaterialTheme.colorScheme.errorContainer,
-                    MaterialTheme.colorScheme.onErrorContainer
-                ),
-                CategoryItem(
-                    MaterialType.UTILITY, 
-                    "Utilities", 
-                    "Calculators, formula sheets, and more.",
-                    com.awra.catalogue.R.drawable.utility, 
-                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                    MaterialTheme.colorScheme.onSurfaceVariant
+            // Section Title
+            item {
+                Text(
+                    text = "Learning Materials",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
-            )
+            }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                items(categories) { item ->
-                    CategoryCard(item, onCategoryClick)
+            // Categories Grid Items
+            items(chunkedCategories) { pair ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        CategoryCard(item = pair[0], onClick = onCategoryClick)
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (pair.size > 1) {
+                            CategoryCard(item = pair[1], onClick = onCategoryClick)
+                        } else {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+
+        // Floating Circular Translucent Glass Back Button
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .size(48.dp)
+                .align(Alignment.TopStart)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.25f))
+                .border(1.dp, Color.White.copy(alpha = 0.35f), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier.size(22.dp)
+            )
         }
     }
 }
-
-private data class CategoryItem(
-    val type: MaterialType,
-    val title: String,
-    val description: String,
-    val iconRes: Int,
-    val containerColor: Color,
-    val contentColor: Color
-)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

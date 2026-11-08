@@ -1,5 +1,7 @@
 package com.awra.catalogue.ui.handout
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -19,6 +21,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -29,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.*
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.theme.YourAppTheme
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
@@ -45,6 +49,9 @@ fun HandoutListScreen(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val downloadStates by viewModel.downloadStates.collectAsState()
 
+    // Handout category card primary color theme
+    val accentColor = MaterialTheme.colorScheme.primary
+
     val textFieldState = rememberTextFieldState(searchQuery)
     val searchBarState = rememberSearchBarState()
     val scope = rememberCoroutineScope()
@@ -55,8 +62,6 @@ fun HandoutListScreen(
                     searchBarState.targetValue == SearchBarValue.Expanded
         }
     }
-
-    val neutralColor = MaterialTheme.colorScheme.onSurface
 
     LaunchedEffect(textFieldState.text) {
         viewModel.onSearchQueryChange(textFieldState.text.toString())
@@ -96,13 +101,15 @@ fun HandoutListScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { innerPadding ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Handout card theme background gradient
+        AmbientMeshBackground(
+            modifier = Modifier.fillMaxSize(),
+            primaryColor = accentColor
+        )
+
         Box(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
                 .semantics { isTraversalGroup = true }
         ) {
@@ -111,17 +118,24 @@ fun HandoutListScreen(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 item(key = "top_spacer") {
-                    Spacer(modifier = Modifier.height(72.dp))
+                    Spacer(modifier = Modifier.statusBarsPadding().height(72.dp))
                 }
 
                 item(key = "subject_header") {
-                    Text(
-                        text = subject.name,
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-                    )
+                    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
+                        Text(
+                            text = subject.name,
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Handouts",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White.copy(alpha = 0.85f)
+                        )
+                    }
                 }
 
                 chapters.forEachIndexed { index, chapterWithTopics ->
@@ -130,7 +144,7 @@ fun HandoutListScreen(
                         viewModel = viewModel,
                         downloadStates = downloadStates,
                         onHandoutClick = onHandoutClick,
-                        accentColor = neutralColor
+                        accentColor = Color.White
                     )
 
                     if (index < chapters.size - 1) {
@@ -150,10 +164,11 @@ fun HandoutListScreen(
                 inputField = inputField,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics { traversalIndex = 0f },
                 colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
                 ),
                 shape = CircleShape
             )
@@ -204,7 +219,7 @@ fun HandoutListScreen(
                                         scope.launch { searchBarState.animateToCollapsed() }
                                         onHandoutClick(it)
                                     },
-                                    accentColor = neutralColor
+                                    accentColor = Color.White
                                 )
 
                                 if (index < chapters.size - 1) {
@@ -319,7 +334,7 @@ private fun TopicItem(
             }
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
         )
     ) {
         Text(

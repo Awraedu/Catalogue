@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -136,7 +137,16 @@ class MainActivity : ComponentActivity() {
         val infographicViewModels = mutableMapOf<Long, InfographicViewModel>()
         val utilityViewModels = mutableMapOf<Long, UtilityViewModel>()
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            )
+        )
         setContent {
             val darkMode by settingsViewModel.darkMode.collectAsState()
             val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
@@ -569,53 +579,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        val topPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.TopCenter)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(topPadding)
-                                    .background(MaterialTheme.colorScheme.background)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(16.dp)
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                MaterialTheme.colorScheme.background,
-                                                MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
-                                                MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
-                                                Color.Transparent
-                                            )
-                                        )
-                                    )
-                            )
-                        }
-
                         if (currentNavDestination != null) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
-                                                MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
-                                                MaterialTheme.colorScheme.background
-                                            )
-                                        )
-                                    )
-                            )
-
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)

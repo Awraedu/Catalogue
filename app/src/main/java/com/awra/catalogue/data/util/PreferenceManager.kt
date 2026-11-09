@@ -2,8 +2,12 @@ package com.awra.catalogue.data.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
+import com.awra.catalogue.ui.pdf.PdfItemModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.Calendar
 
 class PreferenceManager(context: Context) {
@@ -146,6 +150,77 @@ class PreferenceManager(context: Context) {
     fun setUserName(name: String) {
         prefs.edit().putString("user_name", name).apply()
         _userName.value = name
+    }
+
+    fun getCustomPdfs(subjectId: Long): List<PdfItemModel> {
+        val jsonString = prefs.getString("custom_pdfs_$subjectId", null) ?: return emptyList()
+        val list = mutableListOf<PdfItemModel>()
+        try {
+            val array = JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val id = obj.optString("id")
+                val title = obj.optString("title")
+                val subtitle = obj.optString("subtitle")
+                val uriStr = obj.optString("uri")
+                list.add(
+                    PdfItemModel(
+                        id = id,
+                        title = title,
+                        subtitle = subtitle,
+                        uri = if (uriStr.isNotEmpty()) Uri.parse(uriStr) else null
+                    )
+                )
+            }
+        } catch (_: Exception) {}
+        return list
+    }
+
+    fun saveCustomPdf(subjectId: Long, pdf: PdfItemModel) {
+        val current = getCustomPdfs(subjectId).toMutableList()
+        current.removeAll { it.id == pdf.id }
+        current.add(pdf)
+
+        try {
+            val array = JSONArray()
+            for (item in current) {
+                val obj = JSONObject()
+                obj.put("id", item.id)
+                obj.put("title", item.title)
+                obj.put("subtitle", item.subtitle)
+                obj.put("uri", item.uri?.toString() ?: "")
+                array.put(obj)
+            }
+            prefs.edit().putString("custom_pdfs_$subjectId", array.toString()).apply()
+        } catch (_: Exception) {}
+    }
+
+    fun getAllCustomPdfs(): List<PdfItemModel> {
+        val list = mutableListOf<PdfItemModel>()
+        try {
+            val allPrefs = prefs.all
+            for ((key, value) in allPrefs) {
+                if (key.startsWith("custom_pdfs_") && value is String) {
+                    val array = JSONArray(value)
+                    for (i in 0 until array.length()) {
+                        val obj = array.getJSONObject(i)
+                        val id = obj.optString("id")
+                        val title = obj.optString("title")
+                        val subtitle = obj.optString("subtitle")
+                        val uriStr = obj.optString("uri")
+                        list.add(
+                            PdfItemModel(
+                                id = id,
+                                title = title,
+                                subtitle = subtitle,
+                                uri = if (uriStr.isNotEmpty()) Uri.parse(uriStr) else null
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+        return list
     }
 
     fun setOnboardingCompleted(completed: Boolean) {

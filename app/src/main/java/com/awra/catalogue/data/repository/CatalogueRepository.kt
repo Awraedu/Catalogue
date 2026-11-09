@@ -7,6 +7,7 @@ import com.awra.catalogue.data.database.DatabaseSeeder
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.data.security.HandoutEncryptionManager
 import com.awra.catalogue.data.seed.CatalogueMetadata
+import com.awra.catalogue.data.util.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -14,7 +15,10 @@ import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URI
 
-class CatalogueRepository(private val catalogueDao: CatalogueDao) {
+class CatalogueRepository(
+    private val catalogueDao: CatalogueDao,
+    private val preferenceManager: PreferenceManager? = null
+) {
 
     fun getSubjects(stream: Stream): Flow<List<Subject>> =
         catalogueDao.getSubjectsByStream(stream).distinctUntilChanged()
@@ -306,6 +310,19 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
                                     timestamp = pin.timestamp
                                 )
                             }
+                        }
+                        MaterialType.PDF -> {
+                            val customPdf = preferenceManager?.getAllCustomPdfs()?.find { it.id.hashCode().toLong() == pin.targetId }
+                            RecentlyOpenedDisplayItem(
+                                id = pin.id,
+                                targetId = pin.targetId,
+                                subjectId = 1L,
+                                name = customPdf?.title ?: "Course PDF Document",
+                                type = MaterialType.PDF,
+                                icon = "pdfs",
+                                color = Color(0xFF1976D2),
+                                timestamp = pin.timestamp
+                            )
                         }
                         else -> null
                     }

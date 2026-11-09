@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import com.awra.catalogue.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -72,6 +74,7 @@ private fun PinnedItemView(
         when (item.type) {
             MaterialType.HANDOUT -> Icons.AutoMirrored.Filled.MenuBook
             MaterialType.INFOGRAPHIC -> Icons.Default.BarChart
+            MaterialType.PDF -> Icons.Default.PictureAsPdf
             else -> Icons.Default.Category
         }
     }
@@ -94,12 +97,21 @@ private fun PinnedItemView(
                 .background(subjectColors.container),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = subjectColors.content,
-                modifier = Modifier.size(24.dp)
-            )
+            if (item.type == MaterialType.PDF) {
+                Icon(
+                    painter = painterResource(id = R.drawable.pdfs),
+                    contentDescription = null,
+                    tint = subjectColors.content,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = subjectColors.content,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         Column {
             Text(

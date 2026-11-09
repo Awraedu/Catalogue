@@ -86,6 +86,7 @@ fun SubjectDetailScreen(
     val errorContainer = MaterialTheme.colorScheme.errorContainer
     val onErrorContainer = MaterialTheme.colorScheme.onErrorContainer
     val surfaceContainerHigh = MaterialTheme.colorScheme.surfaceContainerHigh
+    val surfaceContainerHighest = MaterialTheme.colorScheme.surfaceContainerHighest
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
 
     val categories = remember(
@@ -93,7 +94,8 @@ fun SubjectDetailScreen(
         secondaryContainer,
         tertiaryContainer,
         errorContainer,
-        surfaceContainerHigh
+        surfaceContainerHigh,
+        surfaceContainerHighest
     ) {
         listOf(
             CategoryItem(
@@ -134,6 +136,14 @@ fun SubjectDetailScreen(
                 "Calculators, formula sheets, and more.",
                 R.drawable.utility,
                 surfaceContainerHigh,
+                onSurfaceVariant
+            ),
+            CategoryItem(
+                MaterialType.PDF,
+                "PDFs",
+                "Imported PDF documents & notes.",
+                R.drawable.pdfs,
+                surfaceContainerHighest,
                 onSurfaceVariant
             )
         )

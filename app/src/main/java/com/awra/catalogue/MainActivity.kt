@@ -48,6 +48,9 @@ import com.awra.catalogue.ui.infographic.InfographicViewModel
 import com.awra.catalogue.ui.onboarding.OnboardingScreen
 import com.awra.catalogue.ui.onboarding.OnboardingViewModel
 import com.awra.catalogue.ui.paywall.PaywallScreen
+import com.awra.catalogue.ui.pdf.PdfItemModel
+import com.awra.catalogue.ui.pdf.PdfListScreen
+import com.awra.catalogue.ui.pdf.PdfViewerScreen
 import com.awra.catalogue.ui.quiz.*
 import com.awra.catalogue.ui.schedule.ScheduleScreen
 import com.awra.catalogue.ui.schedule.ScheduleViewModel
@@ -114,8 +117,8 @@ class MainActivity : ComponentActivity() {
 
     private fun setupComposeContent() {
         val database = AppDatabase.getDatabase(this)
-        val repository = CatalogueRepository(database.catalogueDao())
         val preferenceManager = PreferenceManager(this)
+        val repository = CatalogueRepository(database.catalogueDao(), preferenceManager)
 
         val homeViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -223,6 +226,7 @@ class MainActivity : ComponentActivity() {
                         var currentUtility by remember { mutableStateOf<Utility?>(null) }
                         var currentHandout by remember { mutableStateOf<Handout?>(null) }
                         var currentInfographic by remember { mutableStateOf<Infographic?>(null) }
+                        var currentPdfItem by remember { mutableStateOf<PdfItemModel?>(null) }
                         var quizConfig by remember { mutableStateOf<QuizConfig?>(null) }
                         var showQuizCustomization by remember { mutableStateOf(false) }
 
@@ -265,6 +269,7 @@ class MainActivity : ComponentActivity() {
                                 currentHandout != null -> currentHandout = null
                                 currentInfographic != null -> currentInfographic = null
                                 currentUtility != null -> currentUtility = null
+                                currentPdfItem != null -> currentPdfItem = null
                                 currentMaterialType == MaterialType.QUIZ -> {
                                     currentMaterialType = null
                                     quizConfig = null
@@ -299,7 +304,8 @@ class MainActivity : ComponentActivity() {
                             val subject: Subject?,
                             val handout: Handout?,
                             val utility: Utility?,
-                            val infographic: Infographic?
+                            val infographic: Infographic?,
+                            val pdfItem: PdfItemModel?
                         )
 
                         val screenState = remember(
@@ -308,7 +314,8 @@ class MainActivity : ComponentActivity() {
                             currentSubject,
                             currentHandout,
                             currentUtility,
-                            currentInfographic
+                            currentInfographic,
+                            currentPdfItem
                         ) {
                             ScreenState(
                                 currentNavDestination,
@@ -316,7 +323,8 @@ class MainActivity : ComponentActivity() {
                                 currentSubject,
                                 currentHandout,
                                 currentUtility,
-                                currentInfographic
+                                currentInfographic,
+                                currentPdfItem
                             )
                         }
 
@@ -386,6 +394,16 @@ class MainActivity : ComponentActivity() {
                                                                         MaterialType.INFOGRAPHIC -> {
                                                                             currentMaterialType = MaterialType.INFOGRAPHIC
                                                                             currentInfographic = repository.getInfographicById(recent.targetId)
+                                                                        }
+                                                                        MaterialType.PDF -> {
+                                                                            currentMaterialType = MaterialType.PDF
+                                                                            val pdfs = preferenceManager.getCustomPdfs(sub.id)
+                                                                            val matchedPdf = pdfs.find { it.id.hashCode().toLong() == recent.targetId }
+                                                                            currentPdfItem = matchedPdf ?: PdfItemModel(
+                                                                                id = "def_1",
+                                                                                title = recent.name,
+                                                                                subtitle = "Pinned Course PDF"
+                                                                            )
                                                                         }
                                                                         else -> {}
                                                                     }
@@ -608,6 +626,35 @@ class MainActivity : ComponentActivity() {
                                                                     }
                                                                 },
                                                                 onBackClick = { currentUtility = null }
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                                state.materialType == MaterialType.PDF -> {
+                                                    val subject = state.subject
+                                                    if (subject != null) {
+                                                        if (currentPdfItem == null) {
+                                                            PdfListScreen(
+                                                                subject = subject,
+                                                                onBackClick = { currentMaterialType = null },
+                                                                onPdfClick = { selectedPdf ->
+                                                                    currentPdfItem = selectedPdf
+                                                                }
+                                                            )
+                                                        } else {
+                                                            val isPinnedFlow = remember(currentPdfItem!!.id) {
+                                                                repository.isItemPinned(currentPdfItem!!.id.hashCode().toLong(), MaterialType.PDF)
+                                                            }
+                                                            val isPinned by isPinnedFlow.collectAsState(initial = false)
+                                                            PdfViewerScreen(
+                                                                pdf = currentPdfItem!!,
+                                                                isPinned = isPinned,
+                                                                onTogglePin = {
+                                                                    lifecycleScope.launch {
+                                                                        repository.togglePin(currentPdfItem!!.id.hashCode().toLong(), MaterialType.PDF)
+                                                                    }
+                                                                },
+                                                                onBackClick = { currentPdfItem = null }
                                                             )
                                                         }
                                                     }

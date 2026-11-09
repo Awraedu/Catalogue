@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.ui.theme.SubjectColors
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.awra.catalogue.ui.util.InteractionFeedback
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -89,6 +91,8 @@ fun FlashcardScreen(
         } else if (flashcards.isNotEmpty()) {
             val currentFlashcard = flashcards[uiState.currentIndex]
             
+            val view = LocalView.current
+            
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -114,7 +118,10 @@ fun FlashcardScreen(
                     )
 
                     Surface(
-                        onClick = { viewModel.flipCard() },
+                        onClick = {
+                            InteractionFeedback.playKey(view)
+                            viewModel.flipCard()
+                        },
                         modifier = Modifier
                             .fillMaxSize()
                             .graphicsLayer {
@@ -190,7 +197,10 @@ fun FlashcardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { viewModel.previousCard() },
+                        onClick = {
+                            InteractionFeedback.playClick(view)
+                            viewModel.previousCard()
+                        },
                         enabled = uiState.currentIndex > 0,
                         modifier = Modifier
                             .size(56.dp)
@@ -202,7 +212,10 @@ fun FlashcardScreen(
 
                     // "Missed" Button
                     Button(
-                        onClick = { viewModel.recordAttempt(false) },
+                        onClick = {
+                            InteractionFeedback.playClick(view)
+                            viewModel.recordAttempt(false)
+                        },
                         modifier = Modifier
                             .height(56.dp)
                             .weight(1f),
@@ -217,7 +230,10 @@ fun FlashcardScreen(
 
                     // "Got it" Button
                     Button(
-                        onClick = { viewModel.recordAttempt(true) },
+                        onClick = {
+                            InteractionFeedback.playConfirm(view)
+                            viewModel.recordAttempt(true)
+                        },
                         modifier = Modifier
                             .height(56.dp)
                             .weight(1f),

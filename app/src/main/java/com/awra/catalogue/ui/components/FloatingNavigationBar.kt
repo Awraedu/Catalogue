@@ -20,12 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.awra.catalogue.R
+import com.awra.catalogue.ui.util.InteractionFeedback
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 enum class NavDestination {
@@ -122,6 +124,7 @@ private fun NavTab(
     label: String,
     onClick: () -> Unit
 ) {
+    val view = LocalView.current
     val backgroundColor by animateColorAsState(
         targetValue = if (selected) MaterialTheme.colorScheme.surface else Color.Transparent,
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
@@ -138,7 +141,10 @@ private fun NavTab(
             .fillMaxHeight()
             .clip(ContinuousRoundedRectangle(32.dp))
             .background(backgroundColor)
-            .clickable(onClick = onClick)
+            .clickable {
+                InteractionFeedback.playClick(view)
+                onClick()
+            }
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,

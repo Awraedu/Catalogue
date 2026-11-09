@@ -86,9 +86,7 @@ fun OnboardingScreen(
                         )
                         OnboardingStep.CUSTOMIZATION -> CustomizationStep(
                             selectedPalette = selectedPalette,
-                            darkMode = darkMode,
                             onPaletteSelect = viewModel::setPalette,
-                            onDarkModeSelect = viewModel::setDarkMode,
                             onNext = viewModel::nextStep
                         )
                         OnboardingStep.GOALS -> GoalStep(
@@ -477,9 +475,7 @@ private fun StreamHorizontalCard(
 @Composable
 private fun CustomizationStep(
     selectedPalette: String,
-    darkMode: String,
     onPaletteSelect: (String) -> Unit,
-    onDarkModeSelect: (String) -> Unit,
     onNext: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
@@ -569,20 +565,6 @@ private fun CustomizationStep(
                         Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[2]))
                     }
                 }
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Text("Theme Mode", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            listOf("LIGHT", "SYSTEM", "DARK").forEachIndexed { index, mode ->
-                SegmentedButton(
-                    selected = darkMode == mode,
-                    onClick = { onDarkModeSelect(mode) },
-                    shape = SegmentedButtonDefaults.itemShape(index, 3),
-                    label = { Text(mode.lowercase().capitalize()) }
-                )
             }
         }
         

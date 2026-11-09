@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.ui.theme.SubjectColors
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.awra.catalogue.ui.util.InteractionFeedback
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -91,6 +93,7 @@ fun QuizScreen(
             )
         } else if (questions.isNotEmpty()) {
             val currentQuestion = questions[uiState.currentQuestionIndex]
+            val view = LocalView.current
             
             Column(
                 modifier = Modifier
@@ -125,7 +128,10 @@ fun QuizScreen(
                             index = index,
                             count = currentQuestion.options.size,
                             enabled = !uiState.isAnswerSubmitted,
-                            onClick = { viewModel.selectOption(index) }
+                            onClick = {
+                                InteractionFeedback.playClick(view)
+                                viewModel.selectOption(index)
+                            }
                         )
                     }
                 }
@@ -137,7 +143,10 @@ fun QuizScreen(
                 ) {
                     // Hint / Why? Button
                     TextButton(
-                        onClick = { showExplanationSheet = true },
+                        onClick = {
+                            InteractionFeedback.playClick(view)
+                            showExplanationSheet = true
+                        },
                         colors = ButtonDefaults.textButtonColors(contentColor = subjectColors.content)
                     ) {
                         val label = if (uiState.isAnswerSubmitted) "Why?" else "Hint"
@@ -151,8 +160,15 @@ fun QuizScreen(
                     Button(
                         onClick = {
                             if (uiState.isAnswerSubmitted) {
+                                InteractionFeedback.playKey(view)
                                 viewModel.nextQuestion()
                             } else {
+                                val isUserCorrect = uiState.selectedOptionIndex == currentQuestion.correctOptionIndex
+                                if (isUserCorrect) {
+                                    InteractionFeedback.playConfirm(view)
+                                } else {
+                                    InteractionFeedback.playReject(view)
+                                }
                                 viewModel.submitAnswer()
                             }
                         },

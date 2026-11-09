@@ -1,5 +1,6 @@
 package com.awra.catalogue.ui.term
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,10 +22,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -78,15 +79,22 @@ fun TermsScreen(
         viewModel.onSearchQueryChange(textFieldState.text.toString())
     }
 
+    val view = LocalView.current
     val inputField = remember(textFieldState, searchBarState, showBookmarkedOnly) {
         @Composable {
             SearchBarDefaults.InputField(
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text("Search dictionary...") },
+                placeholder = {
+                    Text(
+                        "Search dictionary...",
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
+                    )
+                },
                 leadingIcon = {
                     IconButton(onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         if (searchBarState.currentValue == SearchBarValue.Expanded) {
                             scope.launch { searchBarState.animateToCollapsed() }
                         } else {
@@ -95,27 +103,48 @@ fun TermsScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 },
                 trailingIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (textFieldState.text.isNotEmpty()) {
-                            IconButton(onClick = { textFieldState.clearText() }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            IconButton(onClick = {
+                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                textFieldState.clearText()
+                            }) {
+                                Icon(
+                                    Icons.Default.Clear,
+                                    contentDescription = "Clear",
+                                    tint = MaterialTheme.colorScheme.surface
+                                )
                             }
                         }
-                        IconButton(onClick = { viewModel.toggleBookmarkedOnly() }) {
+                        IconButton(onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            viewModel.toggleBookmarkedOnly()
+                        }) {
                             Icon(
                                 imageVector = if (showBookmarkedOnly) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                                 contentDescription = "Bookmarks",
-                                tint = if (showBookmarkedOnly) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                tint = if (showBookmarkedOnly) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
                     }
-                }
+                },
+                colors = SearchBarDefaults.inputFieldColors(
+                    focusedTextColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.surface,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     }
@@ -176,19 +205,19 @@ fun TermsScreen(
             Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .height(135.dp)
+                .height(230.dp)
                 .drawPlainBackdrop(
                     backdrop = backdrop,
                     shape = { RectangleShape },
                     effects = {
-                        blur(16f.dp.toPx())
+                        blur(48f.dp.toPx())
                         runtimeShaderEffect(
                             "ProgressiveBlur",
                             """
                             uniform shader content;
                             uniform float2 size;
                             half4 main(float2 coord) {
-                                float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                float alpha = 1.0 - smoothstep(size.y * 0.2, size.y, coord.y);
                                 return content.eval(coord) * alpha;
                             }
                             """,
@@ -249,17 +278,16 @@ fun TermsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
-                            .shadow(6.dp, CircleShape)
                             .semantics { traversalIndex = 0f },
                         colors = SearchBarDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            containerColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = CircleShape
                     )
 
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -267,8 +295,10 @@ fun TermsScreen(
                             val isSelected = selectedSubjectId == null
                             FilterChip(
                                 selected = isSelected,
-                                onClick = { viewModel.selectSubject(null) },
-                                modifier = Modifier.shadow(4.dp, CircleShape),
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    viewModel.selectSubject(null)
+                                },
                                 label = {
                                     Text(
                                         "All",
@@ -278,16 +308,16 @@ fun TermsScreen(
                                 },
                                 shape = CircleShape,
                                 colors = FilterChipDefaults.filterChipColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    labelColor = MaterialTheme.colorScheme.onSurface,
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    containerColor = MaterialTheme.colorScheme.onSurface,
+                                    labelColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                                    selectedContainerColor = MaterialTheme.colorScheme.surface,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onSurface
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
                                     selected = isSelected,
-                                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                    selectedBorderColor = MaterialTheme.colorScheme.primary
+                                    borderColor = Color.Transparent,
+                                    selectedBorderColor = Color.Transparent
                                 )
                             )
                         }
@@ -313,8 +343,10 @@ fun TermsScreen(
                             }
                             FilterChip(
                                 selected = isSelected,
-                                onClick = { viewModel.selectSubject(sub.id) },
-                                modifier = Modifier.shadow(4.dp, CircleShape),
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    viewModel.selectSubject(sub.id)
+                                },
                                 label = {
                                     Text(
                                         shortName,
@@ -324,16 +356,16 @@ fun TermsScreen(
                                 },
                                 shape = CircleShape,
                                 colors = FilterChipDefaults.filterChipColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    labelColor = MaterialTheme.colorScheme.onSurface,
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    containerColor = MaterialTheme.colorScheme.onSurface,
+                                    labelColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                                    selectedContainerColor = MaterialTheme.colorScheme.surface,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onSurface
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
                                     selected = isSelected,
-                                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                    selectedBorderColor = MaterialTheme.colorScheme.primary
+                                    borderColor = Color.Transparent,
+                                    selectedBorderColor = Color.Transparent
                                 )
                             )
                         }
@@ -344,7 +376,10 @@ fun TermsScreen(
                 if (isSearchActive) {
                     ExpandedFullScreenSearchBar(
                         state = searchBarState,
-                        inputField = inputField
+                        inputField = inputField,
+                        colors = SearchBarDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
                         
@@ -371,7 +406,7 @@ fun TermsScreen(
                                         Text(
                                             text = "No matches found for \"${textFieldState.text}\"",
                                             style = MaterialTheme.typography.bodyLarge,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                                         )
                                     }
                                 }

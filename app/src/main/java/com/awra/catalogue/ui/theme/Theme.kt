@@ -3,7 +3,6 @@ package com.awra.catalogue.ui.theme
 import android.app.Activity
 import android.graphics.Color
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -14,15 +13,14 @@ import androidx.core.view.WindowCompat
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun YourAppTheme(
-    darkMode: String = "SYSTEM",
+    darkMode: String = "LIGHT",
     selectedTheme: String = "VIBRANT_ORANGE",
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val isDark = when (darkMode) {
-        "LIGHT" -> false
         "DARK" -> true
-        else -> isSystemInDarkTheme()
+        else -> false
     }
     
     // Using Material 3 Expressive Color Schemes

@@ -324,7 +324,7 @@ fun HomeScreenTestContent(
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent
                                 ),
-                                shape = RoundedCornerShape(24.dp),
+                                shape = CircleShape,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(54.dp)

@@ -79,7 +79,12 @@ fun HandoutListScreen(
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text("Search handouts or chapters...") },
+                placeholder = {
+                    Text(
+                        "Search handouts or chapters...",
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
+                    )
+                },
                 leadingIcon = {
                     IconButton(onClick = {
                         if (searchBarState.currentValue == SearchBarValue.Expanded) {
@@ -90,19 +95,39 @@ fun HandoutListScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 },
                 trailingIcon = {
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(onClick = { textFieldState.clearText() }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = "Clear",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                     } else if (searchBarState.currentValue == SearchBarValue.Collapsed) {
-                        Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.padding(end = 12.dp))
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
                     }
-                }
+                },
+                colors = SearchBarDefaults.inputFieldColors(
+                    focusedTextColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.surface,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     }
@@ -238,7 +263,7 @@ fun HandoutListScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics { traversalIndex = 0f },
                 colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
+                    containerColor = MaterialTheme.colorScheme.onSurface
                 ),
                 shape = CircleShape
             )
@@ -246,7 +271,10 @@ fun HandoutListScreen(
             if (isSearchActive) {
                 ExpandedFullScreenSearchBar(
                     state = searchBarState,
-                    inputField = inputField
+                    inputField = inputField,
+                    colors = SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     val query = textFieldState.text.toString().trim()
                     if (query.isEmpty()) {
@@ -259,7 +287,7 @@ fun HandoutListScreen(
                             Text(
                                 text = "Type to search handouts or chapters",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                             )
                         }
                     } else if (chapters.isEmpty()) {
@@ -272,7 +300,7 @@ fun HandoutListScreen(
                             Text(
                                 text = "No matches found for \"$query\"",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                             )
                         }
                     } else {

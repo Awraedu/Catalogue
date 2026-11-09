@@ -41,7 +41,6 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBackClick: () -> Unit
 ) {
-    val darkMode by viewModel.darkMode.collectAsState()
     val studyReminders by viewModel.studyReminders.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
     val studyGoal by viewModel.studyGoal.collectAsState()
@@ -52,7 +51,6 @@ fun SettingsScreen(
 
     val context = LocalContext.current
 
-    var showThemeDialog by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showGoalDialog by remember { mutableStateOf(false) }
     var showCustomThemeDialog by remember { mutableStateOf(false) }
@@ -151,37 +149,6 @@ fun SettingsScreen(
                             RadioButton(selected = selectedStream == stream.name, onClick = null)
                             Spacer(Modifier.width(12.dp))
                             Text(stream.name.lowercase().replaceFirstChar { it.uppercase() })
-                        }
-                    }
-                }
-            },
-            shape = ContinuousRoundedRectangle(28.dp)
-        )
-    }
-
-    if (showThemeDialog) {
-        AlertDialog(
-            onDismissRequest = { showThemeDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showThemeDialog = false }) { Text("Cancel") }
-            },
-            title = { Text("Choose Theme") },
-            text = {
-                Column {
-                    listOf("SYSTEM", "LIGHT", "DARK").forEach { mode ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.setDarkMode(mode)
-                                    showThemeDialog = false
-                                }
-                                .padding(vertical = 12.dp)
-                        ) {
-                            RadioButton(selected = darkMode == mode, onClick = null)
-                            Spacer(Modifier.width(12.dp))
-                            Text(mode.lowercase().replaceFirstChar { it.uppercase() })
                         }
                     }
                 }
@@ -326,21 +293,6 @@ fun SettingsScreen(
                                     onClick = { showStreamDialog = true },
                                     index = 1,
                                     count = 2
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        SettingsSection(title = "Appearance") {
-                            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                                SettingsClickableItem(
-                                    title = "Theme Mode",
-                                    subtitle = darkMode.lowercase().replaceFirstChar { it.uppercase() },
-                                    icon = Icons.Default.DarkMode,
-                                    onClick = { showThemeDialog = true },
-                                    index = 0,
-                                    count = 1
                                 )
                             }
                         }

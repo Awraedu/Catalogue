@@ -1,6 +1,7 @@
 package com.awra.catalogue
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -60,6 +61,7 @@ import com.awra.catalogue.ui.theme.YourAppTheme
 import com.awra.catalogue.ui.utility.*
 import com.skydoves.cloudy.rememberSky
 import com.skydoves.cloudy.sky
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -68,15 +70,31 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { _: Boolean -> }
 
+    private val pendingShortcutDestination = MutableStateFlow<String?>(null)
+
     override fun onResume() {
         super.onResume()
         // Record activity on every app resume for smart Duolingo habit-learning & streak tracking
         PreferenceManager(this).recordUserActivity()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleShortcutIntent(intent)
+    }
+
+    private fun handleShortcutIntent(intent: Intent?) {
+        val destination = intent?.getStringExtra("shortcut_destination")
+        if (!destination.isNullOrEmpty()) {
+            pendingShortcutDestination.value = destination
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        handleShortcutIntent(intent)
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
@@ -179,9 +197,10 @@ class MainActivity : ComponentActivity() {
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     // =========================================================================
-                    // 1. UNDERLYING APP CONTENT (Pre-warms & renders behind the Splash Overlay)
+                    // 1. UNDERLYING APP CONTENT (Pre-warmed, fully edge-to-edge, zero weird scale-in)
                     // =========================================================================
-                    if (firebaseUser == null) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (firebaseUser == null) {
                         com.awra.catalogue.ui.auth.AuthScreen(
                             viewModel = authViewModel,
                             onAuthSuccess = {
@@ -209,6 +228,33 @@ class MainActivity : ComponentActivity() {
 
                         var flashcardConfig by remember { mutableStateOf<FlashcardConfig?>(null) }
                         var showFlashcardCustomization by remember { mutableStateOf(false) }
+
+                        val shortcutDestination by pendingShortcutDestination.collectAsState()
+
+                        LaunchedEffect(shortcutDestination) {
+                            shortcutDestination?.let { dest ->
+                                when (dest) {
+                                    "SCHEDULE" -> {
+                                        currentSubject = null
+                                        currentMaterialType = MaterialType.SCHEDULE
+                                    }
+                                    "TERMS" -> {
+                                        currentSubject = null
+                                        currentMaterialType = MaterialType.TERM
+                                    }
+                                    "ANALYTICS" -> {
+                                        currentSubject = null
+                                        currentMaterialType = MaterialType.ANALYTICS
+                                    }
+                                    "DAILY_QUIZ", "QUIZ" -> {
+                                        currentSubject = null
+                                        currentMaterialType = MaterialType.QUIZ
+                                        showQuizCustomization = true
+                                    }
+                                }
+                                pendingShortcutDestination.value = null
+                            }
+                        }
 
                         BackHandler(
                             enabled = !showSplashOverlay && (currentSubject != null || currentMaterialType != null || showQuizCustomization || showFlashcardCustomization)
@@ -650,7 +696,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // =========================================================================
-                    // 2. COMPOSE SPLASH SCREEN OVERLAY (Slides up & fades out smoothly)
+                    // 2. COMPOSE SPLASH SCREEN OVERLAY (Fades out smoothly)
                     // =========================================================================
                     if (showSplashOverlay) {
                         SplashScreen(
@@ -660,6 +706,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+                }
                 }
             }
         }

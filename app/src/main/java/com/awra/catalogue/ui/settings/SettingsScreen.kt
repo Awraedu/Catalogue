@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,10 +21,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.awra.catalogue.data.model.Stream
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 import java.util.Locale
 
@@ -264,6 +271,9 @@ fun SettingsScreen(
         )
     }
 
+    val backdrop = rememberLayerBackdrop()
+    val scrollState = rememberLazyListState()
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -285,193 +295,259 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item {
-                SettingsSection(title = "Account") {
-                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                        SettingsClickableItem(
-                            title = "User Name",
-                            subtitle = userName,
-                            icon = Icons.Default.Person,
-                            onClick = { showNameDialog = true },
-                            index = 0,
-                            count = 2
-                        )
-                        SettingsClickableItem(
-                            title = "Academic Stream",
-                            subtitle = selectedStream.lowercase().replaceFirstChar { it.uppercase() },
-                            icon = Icons.Default.School,
-                            onClick = { showStreamDialog = true },
-                            index = 1,
-                            count = 2
-                        )
-                    }
-                }
-            }
-
-            item {
-                SettingsSection(title = "Appearance") {
-                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                        SettingsClickableItem(
-                            title = "Theme Mode",
-                            subtitle = darkMode.lowercase().replaceFirstChar { it.uppercase() },
-                            icon = Icons.Default.DarkMode,
-                            onClick = { showThemeDialog = true },
-                            index = 0,
-                            count = 1
-                        )
-                    }
-                }
-            }
-
-            item {
-                SettingsSection(title = "Customization") {
-                    SegmentedListItem(
-                        onClick = { showCustomThemeDialog = true },
-                        shapes = ListItemDefaults.shapes(shape = ContinuousRoundedRectangle(32.dp)),
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                        trailingContent = {
-                            val colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary,
-                                MaterialTheme.colorScheme.tertiary
-                            )
-                            Column(
-                                modifier = Modifier
-                                    .width(24.dp)
-                                    .height(48.dp)
-                                    .clip(CircleShape)
-                            ) {
-                                Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[0]))
-                                Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[1]))
-                                Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[2]))
-                            }
-                        }
-                    ) {
-                        Column {
-                            Text("Color palette", fontWeight = FontWeight.Bold)
-                            val themeName = when (selectedTheme) {
-                                "DEFAULT" -> "Adaptive (System)"
-                                "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
-                                "OCEAN_BLUE" -> "Ocean Blue"
-                                "MIDNIGHT_MONO" -> "Midnight Mono"
-                                "FOREST_SAGE" -> "Forest Sage"
-                                "EARTH_BROWN" -> "Earth Brown"
-                                "TWILIGHT_LAVENDER" -> "Twilight Lavender"
-                                else -> selectedTheme
-                            }
-                            Text(
-                                if (selectedTheme == "DEFAULT") "Choose a palette based on colors from your wallpaper."
-                                else "Current: $themeName",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
-                SettingsSection(title = "Notifications & Goals") {
-                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                        SettingsToggleItem(
-                            title = "Study Reminders",
-                            subtitle = "Smart nudges, streak savers & class alerts",
-                            icon = Icons.Default.Notifications,
-                            checked = studyReminders,
-                            onCheckedChange = { viewModel.setStudyReminders(it) },
-                            index = 0,
-                            count = 3
-                        )
-                        SettingsClickableItem(
-                            title = "Preferred Study Time",
-                            subtitle = notificationTime,
-                            icon = Icons.Default.Schedule,
-                            onClick = { showTimePicker = true },
-                            index = 1,
-                            count = 3
-                        )
-                        SettingsClickableItem(
-                            title = "Daily Study Goal",
-                            subtitle = "$studyGoal minutes / day",
-                            icon = Icons.Default.Flag,
-                            onClick = { showGoalDialog = true },
-                            index = 2,
-                            count = 3
-                        )
-                    }
-                }
-            }
-
-            item {
-                SettingsSection(title = "Storage") {
-                    SettingsClickableItem(
-                        title = "Clear Cache",
-                        subtitle = "Free up some space ($cacheSize)",
-                        icon = Icons.Default.DeleteSweep,
-                        onClick = { viewModel.clearCache() },
-                        index = 0,
-                        count = 1
-                    )
-                }
-            }
-
-            item {
-                SettingsSection(title = "Support") {
-                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                        SettingsClickableItem(
-                            title = "Help & Feedback",
-                            subtitle = "Contact support or report issues",
-                            icon = Icons.Default.Help,
-                            onClick = {
-                                val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                    data = Uri.parse("mailto:awra.edu@gmail.com")
-                                    putExtra(Intent.EXTRA_SUBJECT, "Catalogue App Feedback")
-                                }
-                                try {
-                                    context.startActivity(intent)
-                                } catch (e: Exception) {
-                                }
-                            },
-                            index = 0,
-                            count = 2
-                        )
-                        SettingsClickableItem(
-                            title = "Visit our website",
-                            subtitle = "www.AwraDigitals.com",
-                            icon = Icons.Default.Language,
-                            onClick = {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    "https://awra-chi.vercel.app/".toUri()
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+                LazyColumn(
+                    state = scrollState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = innerPadding.calculateTopPadding() + 16.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 140.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    item {
+                        SettingsSection(title = "Account") {
+                            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                                SettingsClickableItem(
+                                    title = "User Name",
+                                    subtitle = userName,
+                                    icon = Icons.Default.Person,
+                                    onClick = { showNameDialog = true },
+                                    index = 0,
+                                    count = 2
                                 )
-                                context.startActivity(intent)
-                            },
-                            index = 1,
-                            count = 2
-                        )
+                                SettingsClickableItem(
+                                    title = "Academic Stream",
+                                    subtitle = selectedStream.lowercase().replaceFirstChar { it.uppercase() },
+                                    icon = Icons.Default.School,
+                                    onClick = { showStreamDialog = true },
+                                    index = 1,
+                                    count = 2
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "Appearance") {
+                            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                                SettingsClickableItem(
+                                    title = "Theme Mode",
+                                    subtitle = darkMode.lowercase().replaceFirstChar { it.uppercase() },
+                                    icon = Icons.Default.DarkMode,
+                                    onClick = { showThemeDialog = true },
+                                    index = 0,
+                                    count = 1
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "Customization") {
+                            SegmentedListItem(
+                                onClick = { showCustomThemeDialog = true },
+                                shapes = ListItemDefaults.shapes(shape = ContinuousRoundedRectangle(32.dp)),
+                                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                                trailingContent = {
+                                    val colors = listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.secondary,
+                                        MaterialTheme.colorScheme.tertiary
+                                    )
+                                    Column(
+                                        modifier = Modifier
+                                            .width(24.dp)
+                                            .height(48.dp)
+                                            .clip(CircleShape)
+                                    ) {
+                                        Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[0]))
+                                        Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[1]))
+                                        Box(modifier = Modifier.weight(1f).fillMaxWidth().background(colors[2]))
+                                    }
+                                }
+                            ) {
+                                Column {
+                                    Text("Color palette", fontWeight = FontWeight.Bold)
+                                    val themeName = when (selectedTheme) {
+                                        "DEFAULT" -> "Adaptive (System)"
+                                        "VIBRANT_ORANGE" -> "Vibrant Orange (Brand)"
+                                        "OCEAN_BLUE" -> "Ocean Blue"
+                                        "MIDNIGHT_MONO" -> "Midnight Mono"
+                                        "FOREST_SAGE" -> "Forest Sage"
+                                        "EARTH_BROWN" -> "Earth Brown"
+                                        "TWILIGHT_LAVENDER" -> "Twilight Lavender"
+                                        else -> selectedTheme
+                                    }
+                                    Text(
+                                        if (selectedTheme == "DEFAULT") "Choose a palette based on colors from your wallpaper."
+                                        else "Current: $themeName",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "Notifications & Goals") {
+                            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                                SettingsToggleItem(
+                                    title = "Study Reminders",
+                                    subtitle = "Smart nudges, streak savers & class alerts",
+                                    icon = Icons.Default.Notifications,
+                                    checked = studyReminders,
+                                    onCheckedChange = { viewModel.setStudyReminders(it) },
+                                    index = 0,
+                                    count = 3
+                                )
+                                SettingsClickableItem(
+                                    title = "Preferred Study Time",
+                                    subtitle = notificationTime,
+                                    icon = Icons.Default.Schedule,
+                                    onClick = { showTimePicker = true },
+                                    index = 1,
+                                    count = 3
+                                )
+                                SettingsClickableItem(
+                                    title = "Daily Study Goal",
+                                    subtitle = "$studyGoal minutes / day",
+                                    icon = Icons.Default.Flag,
+                                    onClick = { showGoalDialog = true },
+                                    index = 2,
+                                    count = 3
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "Storage") {
+                            SettingsClickableItem(
+                                title = "Clear Cache",
+                                subtitle = "Free up some space ($cacheSize)",
+                                icon = Icons.Default.DeleteSweep,
+                                onClick = { viewModel.clearCache() },
+                                index = 0,
+                                count = 1
+                            )
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "Support") {
+                            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                                SettingsClickableItem(
+                                    title = "Help & Feedback",
+                                    subtitle = "Contact support or report issues",
+                                    icon = Icons.Default.Help,
+                                    onClick = {
+                                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                            data = Uri.parse("mailto:awra.edu@gmail.com")
+                                            putExtra(Intent.EXTRA_SUBJECT, "Catalogue App Feedback")
+                                        }
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                        }
+                                    },
+                                    index = 0,
+                                    count = 2
+                                )
+                                SettingsClickableItem(
+                                    title = "Visit our website",
+                                    subtitle = "www.AwraDigitals.com",
+                                    icon = Icons.Default.Language,
+                                    onClick = {
+                                        val intent = Intent(
+                                            Intent.ACTION_VIEW,
+                                            "https://awra-chi.vercel.app/".toUri()
+                                        )
+                                        context.startActivity(intent)
+                                    },
+                                    index = 1,
+                                    count = 2
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        SettingsSection(title = "About") {
+                            SettingsClickableItem(
+                                title = "App Version",
+                                subtitle = viewModel.appVersion,
+                                icon = Icons.Default.Info,
+                                onClick = { },
+                                index = 0,
+                                count = 1
+                            )
+                        }
                     }
                 }
             }
 
-            item {
-                SettingsSection(title = "About") {
-                    SettingsClickableItem(
-                        title = "App Version",
-                        subtitle = viewModel.appVersion,
-                        icon = Icons.Default.Info,
-                        onClick = { },
-                        index = 0,
-                        count = 1
+            // Top Bar Progressive Blur
+            Box(
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(innerPadding.calculateTopPadding() + 90.dp)
+                    .drawPlainBackdrop(
+                        backdrop = backdrop,
+                        shape = { RectangleShape },
+                        effects = {
+                            blur(16f.dp.toPx())
+                            runtimeShaderEffect(
+                                "ProgressiveBlur",
+                                """
+                                uniform shader content;
+                                uniform float2 size;
+                                half4 main(float2 coord) {
+                                    float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                    return content.eval(coord) * alpha;
+                                }
+                                """,
+                                "content"
+                            ) {
+                                setFloatUniform("size", size.width, size.height)
+                            }
+                        }
                     )
-                }
-            }
+            )
+
+            // Bottom Bar Progressive Blur
+            Box(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .drawPlainBackdrop(
+                        backdrop = backdrop,
+                        shape = { RectangleShape },
+                        effects = {
+                            blur(16f.dp.toPx())
+                            runtimeShaderEffect(
+                                "ProgressiveBlur",
+                                """
+                                uniform shader content;
+                                uniform float2 size;
+                                half4 main(float2 coord) {
+                                    float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                    return content.eval(coord) * alpha;
+                                }
+                                """,
+                                "content"
+                            ) {
+                                setFloatUniform("size", size.width, size.height)
+                            }
+                        }
+                    )
+            )
         }
     }
 }

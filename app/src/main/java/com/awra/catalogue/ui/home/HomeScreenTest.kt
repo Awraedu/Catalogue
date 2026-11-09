@@ -1,9 +1,7 @@
 package com.awra.catalogue.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,10 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,14 +33,19 @@ import com.awra.catalogue.data.model.FeaturedItem
 import com.awra.catalogue.data.model.RecentlyOpenedDisplayItem
 import com.awra.catalogue.data.model.Stream
 import com.awra.catalogue.data.model.Subject
-import com.awra.catalogue.data.util.PreferenceManager
 import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.home.components.DailyInsightCard
 import com.awra.catalogue.ui.home.components.DailyQuizCard
 import com.awra.catalogue.ui.home.components.DailyTermCard
 import com.awra.catalogue.ui.home.components.NextClassCard
 import com.awra.catalogue.ui.home.components.PinnedItemsSection
+import com.awra.catalogue.ui.home.components.PremiumTicketCard
 import com.awra.catalogue.ui.home.components.SubjectCard
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
@@ -101,7 +104,6 @@ fun HomeScreenTestContent(
 
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-    // Use plain Float holder inside remember so layout positioning NEVER triggers recomposition!
     val searchBarOffsetHolder = remember { floatArrayOf(0f) }
 
     val greeting = remember {
@@ -113,7 +115,6 @@ fun HomeScreenTestContent(
         }
     }
 
-    // Memoize both filtering AND chunked(2) so scrolling never allocates new lists!
     val chunkedSubjects = remember(subjects, searchQuery) {
         val filtered = if (searchQuery.isBlank()) {
             subjects
@@ -125,6 +126,8 @@ fun HomeScreenTestContent(
         }
         filtered.chunked(2)
     }
+
+    val backdrop = rememberLayerBackdrop()
 
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
@@ -139,266 +142,330 @@ fun HomeScreenTestContent(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            AmbientMeshBackground(modifier = Modifier.fillMaxSize())
-
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
+                    .layerBackdrop(backdrop)
             ) {
-                Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
+                AmbientMeshBackground(modifier = Modifier.fillMaxSize())
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
                 ) {
-                    // Header Section
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text(
-                                text = "$greeting,",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White.copy(alpha = 0.90f)
-                            )
-                            Text(
-                                text = userName.uppercase(),
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.25f))
-                                .clickable { onSettingsClick() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings",
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    // Featured (Edge to Edge Slider)
-                    Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                        Text(
-                            text = "Daily Quest",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
-                        )
-
-                        LazyRow(
-                            contentPadding = PaddingValues(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(260.dp)
-                        ) {
-                            item(key = "premium_ticket") {
-                                com.awra.catalogue.ui.home.components.PremiumTicketCard(
-                                    modifier = Modifier.width(220.dp),
-                                    onClick = onGoPremiumClick
-                                )
-                            }
-                            itemsIndexed(
-                                items = featuredItems,
-                                key = { index, item -> "${item::class.simpleName}_$index" }
-                            ) { _, item ->
-                                when (item) {
-                                    is FeaturedItem.DailyQuiz, is FeaturedItem.EmptyDailyQuiz -> {
-                                        DailyQuizCard(
-                                            item = item,
-                                            onClick = {
-                                                if (item is FeaturedItem.DailyQuiz) {
-                                                    onStartDailyQuiz(item.topicId)
-                                                }
-                                            },
-                                            modifier = Modifier.width(220.dp)
-                                        )
-                                    }
-                                    is FeaturedItem.DailyTerm, is FeaturedItem.EmptyDailyTerm -> {
-                                        DailyTermCard(
-                                            item = item,
-                                            modifier = Modifier.width(220.dp)
-                                        )
-                                    }
-                                    is FeaturedItem.NextClass, is FeaturedItem.EmptyNextClass -> {
-                                        NextClassCard(
-                                            item = item,
-                                            modifier = Modifier.width(220.dp)
-                                        )
-                                    }
-                                    is FeaturedItem.DailyInsight -> {
-                                        DailyInsightCard(
-                                            item = item,
-                                            modifier = Modifier.width(220.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Pinned Tools Section
-                    if (pinnedItems.isNotEmpty()) {
-                        Box(modifier = Modifier.padding(bottom = 16.dp)) {
-                            PinnedItemsSection(
-                                items = pinnedItems,
-                                onItemClick = onRecentItemClick,
-                                titleColor = Color.White
-                            )
-                        }
-                    }
-                }
-
-                // The Bottom Card (Search + All Subjects Grid)
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onGloballyPositioned {
-                            val newY = it.positionInParent().y
-                            if (abs(newY - searchBarOffsetHolder[0]) > 1f) {
-                                searchBarOffsetHolder[0] = newY
-                            }
-                        }
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-                        )
-                        .padding(top = 24.dp, bottom = 120.dp)
-                        .navigationBarsPadding()
-                ) {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            placeholder = {
-                                Text(
-                                    "Search subjects...",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 15.sp
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Search,
-                                    null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            trailingIcon = {
-                                IconButton(onClick = { showStreamFilter = !showStreamFilter }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Tune,
-                                        contentDescription = "Filter",
-                                        tint = if (showStreamFilter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            },
-                            singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            shape = RoundedCornerShape(24.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(54.dp)
-                                .onFocusChanged {
-                                    if (it.isFocused) {
-                                        coroutineScope.launch {
-                                            scrollState.animateScrollTo(searchBarOffsetHolder[0].toInt())
-                                        }
-                                    }
-                                }
-                        )
-                    }
-
-                    if (showStreamFilter) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Stream.entries.forEach { stream ->
-                                FilterChip(
-                                    selected = selectedStream == stream,
-                                    onClick = { onStreamSelect(stream) },
-                                    label = {
-                                        Text(
-                                            text = stream.name.lowercase().replaceFirstChar { it.uppercase() },
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                    },
-                                    shape = CircleShape,
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                    border = null
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(if (showStreamFilter) 12.dp else 24.dp))
+                    Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .background(Color.Transparent)
                     ) {
-                        chunkedSubjects.forEach { pair ->
-                            key(pair[0].id) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    Box(modifier = Modifier.weight(1f)) {
-                                        SubjectCard(
-                                            subject = pair[0],
-                                            onClick = { onSubjectClick(pair[0]) }
-                                        )
-                                    }
-                                    Box(modifier = Modifier.weight(1f)) {
-                                        if (pair.size > 1) {
-                                            SubjectCard(
-                                                subject = pair[1],
-                                                onClick = { onSubjectClick(pair[1]) }
+                        // Header Section
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = "$greeting,",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White.copy(alpha = 0.90f)
+                                )
+                                Text(
+                                    text = userName.uppercase(),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.25f))
+                                    .clickable { onSettingsClick() },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+
+                        // Featured (Edge to Edge Slider)
+                        Column(modifier = Modifier.padding(bottom = 16.dp)) {
+                            Text(
+                                text = "Daily Quest",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+                            )
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(260.dp)
+                            ) {
+                                item(key = "premium_ticket") {
+                                    PremiumTicketCard(
+                                        modifier = Modifier.width(220.dp),
+                                        onClick = onGoPremiumClick
+                                    )
+                                }
+                                itemsIndexed(
+                                    items = featuredItems,
+                                    key = { index, item -> "${item::class.simpleName}_$index" }
+                                ) { _, item ->
+                                    when (item) {
+                                        is FeaturedItem.DailyQuiz, is FeaturedItem.EmptyDailyQuiz -> {
+                                            DailyQuizCard(
+                                                item = item,
+                                                onClick = {
+                                                    if (item is FeaturedItem.DailyQuiz) {
+                                                        onStartDailyQuiz(item.topicId)
+                                                    }
+                                                },
+                                                modifier = Modifier.width(220.dp)
                                             )
-                                        } else {
-                                            Spacer(modifier = Modifier.fillMaxWidth())
+                                        }
+                                        is FeaturedItem.DailyTerm, is FeaturedItem.EmptyDailyTerm -> {
+                                            DailyTermCard(
+                                                item = item,
+                                                modifier = Modifier.width(220.dp)
+                                            )
+                                        }
+                                        is FeaturedItem.NextClass, is FeaturedItem.EmptyNextClass -> {
+                                            NextClassCard(
+                                                item = item,
+                                                modifier = Modifier.width(220.dp)
+                                            )
+                                        }
+                                        is FeaturedItem.DailyInsight -> {
+                                            DailyInsightCard(
+                                                item = item,
+                                                modifier = Modifier.width(220.dp)
+                                            )
                                         }
                                     }
                                 }
                             }
                         }
+
+                        // Pinned Tools Section
+                        if (pinnedItems.isNotEmpty()) {
+                            Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                                PinnedItemsSection(
+                                    items = pinnedItems,
+                                    onItemClick = onRecentItemClick,
+                                    titleColor = Color.White
+                                )
+                            }
+                        }
                     }
 
-                    if (searchQuery.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(screenHeight))
+                    // The Bottom Card (Search + All Subjects Grid)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onGloballyPositioned {
+                                val newY = it.positionInParent().y
+                                if (abs(newY - searchBarOffsetHolder[0]) > 1f) {
+                                    searchBarOffsetHolder[0] = newY
+                                }
+                            }
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                            )
+                            .padding(top = 24.dp, bottom = 120.dp)
+                            .navigationBarsPadding()
+                    ) {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            TextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                placeholder = {
+                                    Text(
+                                        "Search subjects...",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 15.sp
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = { showStreamFilter = !showStreamFilter }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Tune,
+                                            contentDescription = "Filter",
+                                            tint = if (showStreamFilter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                },
+                                singleLine = true,
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent
+                                ),
+                                shape = RoundedCornerShape(24.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(54.dp)
+                                    .onFocusChanged {
+                                        if (it.isFocused) {
+                                            coroutineScope.launch {
+                                                scrollState.animateScrollTo(searchBarOffsetHolder[0].toInt())
+                                            }
+                                        }
+                                    }
+                            )
+                        }
+
+                        if (showStreamFilter) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Stream.entries.forEach { stream ->
+                                    FilterChip(
+                                        selected = selectedStream == stream,
+                                        onClick = { onStreamSelect(stream) },
+                                        label = {
+                                            Text(
+                                                text = stream.name.lowercase().replaceFirstChar { it.uppercase() },
+                                                style = MaterialTheme.typography.labelLarge
+                                            )
+                                        },
+                                        shape = CircleShape,
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        border = null
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(if (showStreamFilter) 12.dp else 24.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            chunkedSubjects.forEach { pair ->
+                                key(pair[0].id) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            SubjectCard(
+                                                subject = pair[0],
+                                                onClick = { onSubjectClick(pair[0]) }
+                                            )
+                                        }
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            if (pair.size > 1) {
+                                                SubjectCard(
+                                                    subject = pair[1],
+                                                    onClick = { onSubjectClick(pair[1]) }
+                                                )
+                                            } else {
+                                                Spacer(modifier = Modifier.fillMaxWidth())
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (searchQuery.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(screenHeight))
+                        }
                     }
                 }
             }
+
+            // Top Bar Progressive Blur
+            Box(
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(innerPadding.calculateTopPadding() + 90.dp)
+                    .drawPlainBackdrop(
+                        backdrop = backdrop,
+                        shape = { RectangleShape },
+                        effects = {
+                            blur(40f.dp.toPx())
+                            runtimeShaderEffect(
+                                "ProgressiveBlur",
+                                """
+                                uniform shader content;
+                                uniform float2 size;
+                                half4 main(float2 coord) {
+                                    float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                    return content.eval(coord) * alpha;
+                                }
+                                """,
+                                "content"
+                            ) {
+                                setFloatUniform("size", size.width, size.height)
+                            }
+                        }
+                    )
+            )
+
+            // Bottom Bar Progressive Blur
+            Box(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .drawPlainBackdrop(
+                        backdrop = backdrop,
+                        shape = { RectangleShape },
+                        effects = {
+                            blur(40f.dp.toPx())
+                            runtimeShaderEffect(
+                                "ProgressiveBlur",
+                                """
+                                uniform shader content;
+                                uniform float2 size;
+                                half4 main(float2 coord) {
+                                    float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                    return content.eval(coord) * alpha;
+                                }
+                                """,
+                                "content"
+                            ) {
+                                setFloatUniform("size", size.width, size.height)
+                            }
+                        }
+                    )
+            )
         }
     }
 }

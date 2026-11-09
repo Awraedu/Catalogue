@@ -1,6 +1,10 @@
 package com.awra.catalogue.ui.quiz
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,11 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.awra.catalogue.data.model.ChapterWithTopics
 import com.awra.catalogue.data.model.Difficulty
 import com.awra.catalogue.data.model.Subject
 import com.kyant.capsule.ContinuousRoundedRectangle
+import com.skydoves.cloudy.Sky
+import com.skydoves.cloudy.cloudy
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -30,6 +35,7 @@ import kotlin.math.roundToInt
 fun QuizCustomizationPopup(
     subject: Subject,
     chapters: List<ChapterWithTopics>,
+    sky: Sky,
     onDismiss: () -> Unit,
     onStartQuiz: (QuizConfig) -> Unit
 ) {
@@ -47,15 +53,42 @@ fun QuizCustomizationPopup(
     }
     var showUnitGrid by remember { mutableStateOf(false) } // Collapsed by default
 
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
+    val popupShape = ContinuousRoundedRectangle(32.dp)
+
+    // Outer Scrim
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        // Frosted Glass Popup Container
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = ContinuousRoundedRectangle(32.dp),
-            color = containerColor,
-            contentColor = accentColor,
-            tonalElevation = 6.dp
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {}
+                )
+                .cloudy(
+                    sky = sky,
+                    radius = 35,
+                    tint = containerColor.copy(alpha = 0.72f),
+                    shape = popupShape
+                )
+                .clip(popupShape)
+                .border(
+                    width = 1.dp,
+                    color = accentColor.copy(alpha = 0.35f),
+                    shape = popupShape
+                )
         ) {
             Column(
                 modifier = Modifier
@@ -220,7 +253,7 @@ fun QuizCustomizationPopup(
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = accentColor
                         ),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
+                        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
                     ) {
                         Text("Cancel")
                     }

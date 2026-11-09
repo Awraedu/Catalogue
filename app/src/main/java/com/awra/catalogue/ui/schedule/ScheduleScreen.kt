@@ -1,7 +1,11 @@
 package com.awra.catalogue.ui.schedule
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,9 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.ClassSchedule
 import com.awra.catalogue.data.model.Subject
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.awra.catalogue.ui.theme.toShape
 import com.kyant.capsule.ContinuousRoundedRectangle
+import com.skydoves.cloudy.Sky
+import com.skydoves.cloudy.cloudy
+import com.skydoves.cloudy.rememberSky
+import com.skydoves.cloudy.sky
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -110,169 +119,190 @@ fun ScheduleScreen(
         }
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surface)
-                    .statusBarsPadding()
-            ) {
-                TopAppBar(
-                    title = { Text("Schedule", fontWeight = FontWeight.Black) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-                )
+    val scheduleSky = rememberSky()
 
-                PrimaryTabRow(
-                    selectedTabIndex = (selectedDay - 1).coerceIn(0, days.lastIndex),
-                    containerColor = Color.Transparent,
-                    divider = {}
-                ) {
-                    days.forEachIndexed { index, day ->
-                        val selected = selectedDay == index + 1
-                        Tab(
-                            selected = selected,
-                            onClick = { selectedDay = index + 1 },
-                            text = {
-                                Text(
-                                    day.take(3),
-                                    style = if (selected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-        },
-        floatingActionButton = {
-            val inverseSurface = MaterialTheme.colorScheme.inverseSurface
-            val inverseOnSurface = MaterialTheme.colorScheme.inverseOnSurface
+    Box(modifier = Modifier.fillMaxSize()) {
+        AmbientMeshBackground(
+            modifier = Modifier
+                .fillMaxSize()
+                .sky(scheduleSky)
+        )
+        Scaffold(
+            containerColor = Color.Transparent,
+            floatingActionButton = {
+                val inverseSurface = MaterialTheme.colorScheme.inverseSurface
+                val inverseOnSurface = MaterialTheme.colorScheme.inverseOnSurface
 
-            FloatingActionButtonMenu(
-                expanded = fabExpanded,
-                button = {
-                    ToggleFloatingActionButton(
-                        checked = fabExpanded,
-                        onCheckedChange = { fabExpanded = it },
-                        containerColor = { _ -> inverseSurface }
-                    ) {
-                        Icon(
-                            imageVector = if (checkedProgress > 0.5f) Icons.Default.Close else Icons.Default.Add,
-                            contentDescription = "Add Menu",
-                            tint = inverseOnSurface
-                        )
-                    }
-                },
-                modifier = Modifier.padding(bottom = 80.dp)
-            ) {
-                FloatingActionButtonMenuItem(
-                    onClick = {
-                        fabExpanded = false
-                        editingSchedule = null
-                        showAddTestDialog = true
+                FloatingActionButtonMenu(
+                    expanded = fabExpanded,
+                    button = {
+                        ToggleFloatingActionButton(
+                            checked = fabExpanded,
+                            onCheckedChange = { fabExpanded = it },
+                            containerColor = { _ -> inverseSurface }
+                        ) {
+                            Icon(
+                                imageVector = if (checkedProgress > 0.5f) Icons.Default.Close else Icons.Default.Add,
+                                contentDescription = "Add Menu",
+                                tint = inverseOnSurface
+                            )
+                        }
                     },
-                    icon = { Icon(Icons.AutoMirrored.Filled.Assignment, null, tint = inverseOnSurface) },
-                    text = { Text("Add Exam", color = inverseOnSurface) },
-                    containerColor = inverseSurface
-                )
-                FloatingActionButtonMenuItem(
-                    onClick = {
-                        fabExpanded = false
-                        editingSchedule = null
-                        showAddClassDialog = true
-                    },
-                    icon = { Icon(Icons.Default.School, null, tint = inverseOnSurface) },
-                    text = { Text("Add Class", color = inverseOnSurface) },
-                    containerColor = inverseSurface
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End
-    ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (filteredSchedules.isEmpty()) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.padding(bottom = 80.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.EventNote,
-                            null,
-                            modifier = Modifier.size(80.dp),
-                            tint = MaterialTheme.colorScheme.outlineVariant
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            "Nothing scheduled for ${days[(selectedDay - 1).coerceIn(0, days.lastIndex)]}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    }
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            fabExpanded = false
+                            editingSchedule = null
+                            showAddTestDialog = true
+                        },
+                        icon = { Icon(Icons.AutoMirrored.Filled.Assignment, null, tint = inverseOnSurface) },
+                        text = { Text("Add Exam", color = inverseOnSurface) },
+                        containerColor = inverseSurface
+                    )
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            fabExpanded = false
+                            editingSchedule = null
+                            showAddClassDialog = true
+                        },
+                        icon = { Icon(Icons.Default.School, null, tint = inverseOnSurface) },
+                        text = { Text("Add Class", color = inverseOnSurface) },
+                        containerColor = inverseSurface
+                    )
                 }
-            } else {
+            },
+            floatingActionButtonPosition = FabPosition.End
+        ) { innerPadding ->
+            Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 120.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    itemsIndexed(filteredSchedules, key = { _, item -> item.id }) { index, schedule ->
-                        val subject = schedule.subjectId?.let { subjectById[it] }
-                        ScheduleItemWrapper(
-                            schedule = schedule,
-                            subject = subject,
-                            index = index,
-                            count = filteredSchedules.size,
-                            onDelete = {
-                                // ScheduleViewModel now reschedules notifications AFTER the DB delete completes!
-                                viewModel.removeSchedule(it)
-                            },
-                            onEdit = {
-                                editingSchedule = it
-                                if (it.isTest) showAddTestDialog = true else showAddClassDialog = true
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .statusBarsPadding()
+                        ) {
+                            Text(
+                                "Schedule",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            ScrollableTabRow(
+                                selectedTabIndex = (selectedDay - 1).coerceIn(0, days.lastIndex),
+                                containerColor = Color.Transparent,
+                                edgePadding = 0.dp,
+                                divider = {}
+                            ) {
+                                days.forEachIndexed { index, day ->
+                                    val selected = selectedDay == index + 1
+                                    Tab(
+                                        selected = selected,
+                                        onClick = { selectedDay = index + 1 },
+                                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                                        unselectedContentColor = MaterialTheme.colorScheme.onSurface,
+                                        text = {
+                                            Text(
+                                                day,
+                                                style = if (selected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
+                                                fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Bold,
+                                                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                    )
+                                }
                             }
-                        )
+                            Spacer(Modifier.height(16.dp))
+                        }
+                    }
+
+                    if (filteredSchedules.isEmpty()) {
+                        item {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.EventNote,
+                                        null,
+                                        modifier = Modifier.size(80.dp),
+                                        tint = MaterialTheme.colorScheme.outlineVariant
+                                    )
+                                    Spacer(Modifier.height(16.dp))
+                                    Text(
+                                        "Nothing scheduled for ${days[(selectedDay - 1).coerceIn(0, days.lastIndex)]}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        itemsIndexed(filteredSchedules, key = { _, item -> item.id }) { index, schedule ->
+                            val subject = schedule.subjectId?.let { subjectById[it] }
+                            ScheduleItemWrapper(
+                                schedule = schedule,
+                                subject = subject,
+                                index = index,
+                                count = filteredSchedules.size,
+                                onDelete = {
+                                    viewModel.removeSchedule(it)
+                                },
+                                onEdit = {
+                                    editingSchedule = it
+                                    if (it.isTest) showAddTestDialog = true else showAddClassDialog = true
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
-    if (showAddClassDialog) {
-        AddClassDialog(
-            subjects = subjects,
-            selectedDay = selectedDay,
-            editingSchedule = editingSchedule,
-            onDismiss = {
-                showAddClassDialog = false
-                editingSchedule = null
-            },
-            onConfirm = { schedule ->
-                viewModel.addSchedule(schedule)
-                showAddClassDialog = false
-                editingSchedule = null
-            }
-        )
-    }
+        if (showAddClassDialog) {
+            AddClassDialog(
+                subjects = subjects,
+                selectedDay = selectedDay,
+                editingSchedule = editingSchedule,
+                sky = scheduleSky,
+                onDismiss = {
+                    showAddClassDialog = false
+                    editingSchedule = null
+                },
+                onConfirm = { schedule ->
+                    viewModel.addSchedule(schedule)
+                    showAddClassDialog = false
+                    editingSchedule = null
+                }
+            )
+        }
 
-    if (showAddTestDialog) {
-        AddTestDialog(
-            editingSchedule = editingSchedule,
-            onDismiss = {
-                showAddTestDialog = false
-                editingSchedule = null
-            },
-            onConfirm = { schedule ->
-                viewModel.addSchedule(schedule)
-                showAddTestDialog = false
-                editingSchedule = null
-            }
-        )
+        if (showAddTestDialog) {
+            AddTestDialog(
+                editingSchedule = editingSchedule,
+                sky = scheduleSky,
+                onDismiss = {
+                    showAddTestDialog = false
+                    editingSchedule = null
+                },
+                onConfirm = { schedule ->
+                    viewModel.addSchedule(schedule)
+                    showAddTestDialog = false
+                    editingSchedule = null
+                }
+            )
+        }
     }
 }
 
@@ -408,6 +438,7 @@ private fun AddClassDialog(
     subjects: List<Subject>,
     selectedDay: Int,
     editingSchedule: ClassSchedule? = null,
+    sky: Sky,
     onDismiss: () -> Unit,
     onConfirm: (ClassSchedule) -> Unit
 ) {
@@ -421,37 +452,57 @@ private fun AddClassDialog(
     var showEndTimePicker by remember { mutableStateOf(false) }
     var expandedSubjects by remember { mutableStateOf(false) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            val isTimeValid = isTimeAfter(startTime, endTime)
-            Button(
-                onClick = {
-                    if (selectedSubject != null && isTimeValid) {
-                        onConfirm(
-                            ClassSchedule(
-                                id = editingSchedule?.id ?: 0,
-                                subjectId = selectedSubject!!.id,
-                                subjectName = selectedSubject!!.name,
-                                dayOfWeek = dayOfWeek,
-                                startTime = startTime,
-                                endTime = endTime,
-                                room = room.trim(),
-                                isTest = false
-                            )
-                        )
-                    }
-                },
-                enabled = selectedSubject != null && isTimeValid,
-                shape = CircleShape
-            ) { Text(if (editingSchedule != null) "Save Changes" else "Add Class") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        },
-        title = { Text(if (editingSchedule != null) "Edit Class" else "Add Class") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    val popupShape = ContinuousRoundedRectangle(32.dp)
+    val containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    val contentColor = MaterialTheme.colorScheme.onSurface
+    val isTimeValid = remember(startTime, endTime) { isTimeAfter(startTime, endTime) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {}
+                )
+                .cloudy(
+                    sky = sky,
+                    radius = 35,
+                    tint = containerColor.copy(alpha = 0.85f),
+                    shape = popupShape
+                )
+                .clip(popupShape)
+                .border(
+                    width = 1.dp,
+                    color = contentColor.copy(alpha = 0.25f),
+                    shape = popupShape
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = if (editingSchedule != null) "Edit Class" else "Add Class",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black,
+                    color = contentColor
+                )
+
                 ExposedDropdownMenuBox(
                     expanded = expandedSubjects,
                     onExpandedChange = { expandedSubjects = it }
@@ -491,11 +542,15 @@ private fun AddClassDialog(
                         Surface(
                             onClick = { dayOfWeek = index + 1 },
                             shape = CircleShape,
-                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest,
                             modifier = Modifier.size(34.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(day, color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    text = day,
+                                    color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
@@ -530,7 +585,7 @@ private fun AddClassDialog(
                             }
                         }
                     }
-                    if (!isTimeAfter(startTime, endTime)) {
+                    if (!isTimeValid) {
                         Text(
                             "End time must be after start time",
                             style = MaterialTheme.typography.labelSmall,
@@ -548,10 +603,49 @@ private fun AddClassDialog(
                     shape = CircleShape,
                     singleLine = true
                 )
+
+                // Actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = contentColor),
+                        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.3f))
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            if (selectedSubject != null && isTimeValid) {
+                                onConfirm(
+                                    ClassSchedule(
+                                        id = editingSchedule?.id ?: 0,
+                                        subjectId = selectedSubject!!.id,
+                                        subjectName = selectedSubject!!.name,
+                                        dayOfWeek = dayOfWeek,
+                                        startTime = startTime,
+                                        endTime = endTime,
+                                        room = room.trim(),
+                                        isTest = false
+                                    )
+                                )
+                            }
+                        },
+                        enabled = selectedSubject != null && isTimeValid,
+                        modifier = Modifier.weight(1f),
+                        shape = CircleShape
+                    ) {
+                        Text(if (editingSchedule != null) "Save" else "Add Class", fontWeight = FontWeight.Bold)
+                    }
+                }
             }
-        },
-        shape = ContinuousRoundedRectangle(28.dp)
-    )
+        }
+    }
 
     if (showStartTimePicker) {
         val (initH, initM) = parseHourMinute(startTime, 8, 0)
@@ -590,6 +684,7 @@ private fun AddClassDialog(
 @Composable
 private fun AddTestDialog(
     editingSchedule: ClassSchedule? = null,
+    sky: Sky,
     onDismiss: () -> Unit,
     onConfirm: (ClassSchedule) -> Unit
 ) {
@@ -621,39 +716,56 @@ private fun AddTestDialog(
         SimpleDateFormat("MMM dd", locale).format(Date(selectedDate))
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (testName.isNotBlank()) {
-                        val cal = Calendar.getInstance().apply { timeInMillis = selectedDate }
-                        val day = if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 7 else cal.get(Calendar.DAY_OF_WEEK) - 1
+    val popupShape = ContinuousRoundedRectangle(32.dp)
+    val containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    val contentColor = MaterialTheme.colorScheme.onSurface
 
-                        onConfirm(
-                            ClassSchedule(
-                                id = editingSchedule?.id ?: 0,
-                                subjectName = testName.trim(),
-                                testType = selectedType,
-                                dayOfWeek = day,
-                                startTime = startTime,
-                                room = room.trim(),
-                                date = selectedDate,
-                                isTest = true
-                            )
-                        )
-                    }
-                },
-                enabled = testName.isNotBlank(),
-                shape = CircleShape
-            ) { Text(if (editingSchedule != null) "Save Changes" else "Add Exam") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        },
-        title = { Text(if (editingSchedule != null) "Edit Exam/Test" else "Add Exam/Test") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {}
+                )
+                .cloudy(
+                    sky = sky,
+                    radius = 35,
+                    tint = containerColor.copy(alpha = 0.85f),
+                    shape = popupShape
+                )
+                .clip(popupShape)
+                .border(
+                    width = 1.dp,
+                    color = contentColor.copy(alpha = 0.25f),
+                    shape = popupShape
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    text = if (editingSchedule != null) "Edit Exam/Test" else "Add Exam/Test",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black,
+                    color = contentColor
+                )
+
                 OutlinedTextField(
                     value = testName,
                     onValueChange = { testName = it },
@@ -731,10 +843,52 @@ private fun AddTestDialog(
                     shape = CircleShape,
                     singleLine = true
                 )
+
+                // Actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = contentColor),
+                        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.3f))
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            if (testName.isNotBlank()) {
+                                val cal = Calendar.getInstance().apply { timeInMillis = selectedDate }
+                                val day = if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 7 else cal.get(Calendar.DAY_OF_WEEK) - 1
+
+                                onConfirm(
+                                    ClassSchedule(
+                                        id = editingSchedule?.id ?: 0,
+                                        subjectName = testName.trim(),
+                                        testType = selectedType,
+                                        dayOfWeek = day,
+                                        startTime = startTime,
+                                        room = room.trim(),
+                                        date = selectedDate,
+                                        isTest = true
+                                    )
+                                )
+                            }
+                        },
+                        enabled = testName.isNotBlank(),
+                        modifier = Modifier.weight(1f),
+                        shape = CircleShape
+                    ) {
+                        Text(if (editingSchedule != null) "Save" else "Add Exam", fontWeight = FontWeight.Bold)
+                    }
+                }
             }
-        },
-        shape = ContinuousRoundedRectangle(28.dp)
-    )
+        }
+    }
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(

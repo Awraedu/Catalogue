@@ -1,6 +1,10 @@
 package com.awra.catalogue.ui.flashcard
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,44 +22,75 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.awra.catalogue.data.model.ChapterWithTopics
 import com.awra.catalogue.data.model.Difficulty
 import com.awra.catalogue.data.model.Subject
 import com.kyant.capsule.ContinuousRoundedRectangle
+import com.skydoves.cloudy.Sky
+import com.skydoves.cloudy.cloudy
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun FlashcardCustomizationPopup(
     subject: Subject,
     chapters: List<ChapterWithTopics>,
+    sky: Sky,
     onDismiss: () -> Unit,
     onStartSession: (FlashcardConfig) -> Unit
 ) {
-    // Theming: Follows the "Flashcards" category card colors (Tertiary)
     val accentColor = MaterialTheme.colorScheme.onTertiaryContainer
     val containerColor = MaterialTheme.colorScheme.tertiaryContainer
+    val popupShape = ContinuousRoundedRectangle(32.dp)
 
     val counts = listOf(10, 20, 30, 40, 50, 100)
-    var sliderPosition by remember { mutableFloatStateOf(1f) } // Default to 20
+    var sliderPosition by remember { mutableFloatStateOf(1f) }
     val selectedCount = counts[sliderPosition.roundToInt()]
 
     var selectedDifficulty by remember { mutableStateOf(Difficulty.MIXED) }
-    var selectedChapterIds by remember(chapters) { 
-        mutableStateOf(chapters.map { it.chapter.id }.toSet()) 
+    var selectedChapterIds by remember(chapters) {
+        mutableStateOf(chapters.map { it.chapter.id }.toSet())
     }
-    var showUnitGrid by remember { mutableStateOf(false) } // Collapsed by default
+    var showUnitGrid by remember { mutableStateOf(false) }
 
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
+    // Outer Scrim
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        // Frosted Glass Popup Container
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = ContinuousRoundedRectangle(32.dp),
-            color = containerColor,
-            contentColor = accentColor,
-            tonalElevation = 6.dp
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight()
+                // Consume clicks inside the card without ripple so they don't dismiss the popup
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {}
+                )
+                .cloudy(
+                    sky = sky,
+                    radius = 35,
+                    tint = containerColor.copy(alpha = 0.72f), // Tinted with Flashcard parent card color
+                    shape = popupShape
+                )
+                .clip(popupShape)
+                .border(
+                    width = 1.dp,
+                    color = accentColor.copy(alpha = 0.35f),
+                    shape = popupShape
+                )
         ) {
             Column(
                 modifier = Modifier
@@ -63,6 +98,7 @@ fun FlashcardCustomizationPopup(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
+                // Title
                 Text(
                     text = "Flashcard Settings",
                     style = MaterialTheme.typography.headlineSmall,
@@ -71,7 +107,9 @@ fun FlashcardCustomizationPopup(
                 )
 
                 // Number of Cards Slider
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -83,6 +121,7 @@ fun FlashcardCustomizationPopup(
                             fontWeight = FontWeight.Bold,
                             color = accentColor
                         )
+
                         Surface(
                             shape = CircleShape,
                             color = accentColor,
@@ -92,11 +131,14 @@ fun FlashcardCustomizationPopup(
                                 text = selectedCount.toString(),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Black,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(
+                                    horizontal = 12.dp,
+                                    vertical = 4.dp
+                                )
                             )
                         }
                     }
-                    
+
                     Slider(
                         value = sliderPosition,
                         onValueChange = { sliderPosition = it },
@@ -110,13 +152,14 @@ fun FlashcardCustomizationPopup(
                             inactiveTickColor = Color.Transparent
                         )
                     )
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         counts.forEachIndexed { index, count ->
                             val isSelected = index == sliderPosition.roundToInt()
+
                             Text(
                                 text = count.toString(),
                                 style = MaterialTheme.typography.labelSmall,
@@ -128,20 +171,25 @@ fun FlashcardCustomizationPopup(
                 }
 
                 // Difficulty
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
                         text = "Difficulty",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = accentColor
                     )
-                    
+
                     SingleChoiceSegmentedButtonRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Difficulty.entries.forEachIndexed { index, difficulty ->
                             SegmentedButton(
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = Difficulty.entries.size),
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = Difficulty.entries.size
+                                ),
                                 onClick = { selectedDifficulty = difficulty },
                                 selected = selectedDifficulty == difficulty,
                                 colors = SegmentedButtonDefaults.colors(
@@ -151,14 +199,20 @@ fun FlashcardCustomizationPopup(
                                     inactiveContentColor = accentColor
                                 )
                             ) {
-                                Text(difficulty.name.lowercase().replaceFirstChar { it.uppercase() })
+                                Text(
+                                    difficulty.name
+                                        .lowercase()
+                                        .replaceFirstChar { it.uppercase() }
+                                )
                             }
                         }
                     }
                 }
 
-                // Unit Selector
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                // Chapter Selector
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
                         text = "Select Chapters",
                         style = MaterialTheme.typography.titleMedium,
@@ -168,11 +222,12 @@ fun FlashcardCustomizationPopup(
 
                     SplitButtonLayout(
                         onToggleAll = {
-                            selectedChapterIds = if (selectedChapterIds.size == chapters.size) {
-                                emptySet()
-                            } else {
-                                chapters.map { it.chapter.id }.toSet()
-                            }
+                            selectedChapterIds =
+                                if (selectedChapterIds.size == chapters.size) {
+                                    emptySet()
+                                } else {
+                                    chapters.map { it.chapter.id }.toSet()
+                                }
                         },
                         onToggleGrid = { showUnitGrid = !showUnitGrid },
                         isAllSelected = selectedChapterIds.size == chapters.size,
@@ -190,6 +245,7 @@ fun FlashcardCustomizationPopup(
                         ) {
                             items(chapters) { chapterWithTopics ->
                                 val isSelected = selectedChapterIds.contains(chapterWithTopics.chapter.id)
+
                                 FlashcardChapterChip(
                                     title = "Ch ${chapterWithTopics.chapter.number}",
                                     isSelected = isSelected,
@@ -217,13 +273,12 @@ fun FlashcardCustomizationPopup(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f),
                         shape = ContinuousRoundedRectangle(20.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = accentColor
-                        ),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = accentColor),
+                        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
                     ) {
                         Text("Cancel")
                     }
+
                     Button(
                         onClick = {
                             if (selectedChapterIds.isNotEmpty()) {
@@ -277,10 +332,19 @@ private fun SplitButtonLayout(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     if (isAllSelected) {
-                        Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
+
                     Text(
-                        text = if (isAllSelected) "All Units Selected" else "$selectedCount Units Selected",
+                        text = if (isAllSelected) {
+                            "All Units Selected"
+                        } else {
+                            "$selectedCount Units Selected"
+                        },
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -295,7 +359,11 @@ private fun SplitButtonLayout(
                 )
             ) {
                 Icon(
-                    imageVector = if (showUnitGrid) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    imageVector = if (showUnitGrid) {
+                        Icons.Default.KeyboardArrowUp
+                    } else {
+                        Icons.Default.KeyboardArrowDown
+                    },
                     contentDescription = "Toggle Grid",
                     modifier = Modifier.size(24.dp)
                 )
@@ -317,11 +385,15 @@ private fun FlashcardChapterChip(
     FilterChip(
         selected = isSelected,
         onClick = onClick,
-        label = { 
+        label = {
             Text(
                 text = title,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-            ) 
+                fontWeight = if (isSelected) {
+                    FontWeight.Bold
+                } else {
+                    FontWeight.Medium
+                }
+            )
         },
         leadingIcon = if (isSelected) {
             {

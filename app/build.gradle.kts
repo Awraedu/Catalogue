@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    implementation("com.github.skydoves:cloudy:0.7.1")
+    implementation("io.github.kyant0:backdrop:2.0.1")
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

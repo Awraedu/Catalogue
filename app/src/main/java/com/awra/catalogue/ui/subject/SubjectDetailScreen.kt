@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -46,7 +47,15 @@ import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.awra.catalogue.ui.theme.getSubjectBackgroundImage
 import com.awra.catalogue.ui.theme.getSubjectIcon
 import com.awra.catalogue.ui.theme.toShape
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
+import com.skydoves.cloudy.rememberSky
+import com.skydoves.cloudy.sky
+import com.skydoves.cloudy.cloudy
 
 private data class CategoryItem(
     val type: MaterialType,
@@ -132,182 +141,247 @@ fun SubjectDetailScreen(
 
     val chunkedCategories = remember(categories) { categories.chunked(2) }
 
+    val subjectSky = rememberSky()
+    val backdrop = rememberLayerBackdrop()
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // Per-Subject Adaptive Mesh Gradient Background using the strongest subject content color
-        AmbientMeshBackground(
-            modifier = Modifier.fillMaxSize(),
-            primaryColor = subjectColors.content
-        )
+        Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+            // Static Adaptive Mesh Gradient Background attached to .sky() for 0-lag GPU sampling
+            AmbientMeshBackground(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .sky(subjectSky),
+                primaryColor = subjectColors.content
+            )
 
-        // Unified Whole-Screen Scrollable Content
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            // Spacer for floating status bar glass pill
-            item {
-                Spacer(modifier = Modifier.statusBarsPadding().height(48.dp))
-            }
+            // Unified Whole-Screen Scrollable Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Spacer for floating status bar glass pill
+                item {
+                    Spacer(modifier = Modifier.statusBarsPadding().height(48.dp))
+                }
 
-            // Hero Card
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    shape = ContinuousRoundedRectangle(32.dp),
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // 1. Base Image
-                        Image(
-                            painter = painterResource(id = backgroundImage),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                // Hero Card
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        shape = ContinuousRoundedRectangle(32.dp),
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            // 1. Base Image
+                            Image(
+                                painter = painterResource(id = backgroundImage),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
 
-                        // 2. Light Progressive Blur
-                        Image(
-                            painter = painterResource(id = backgroundImage),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .blur(70.dp)
-                                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                                .drawWithContent {
-                                    drawContent()
-                                    drawRect(
-                                        brush = Brush.verticalGradient(
-                                            0.2f to Color.Transparent,
-                                            0.6f to subjectColors.container
+                            // 2. Light Progressive Blur
+                            Image(
+                                painter = painterResource(id = backgroundImage),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .blur(70.dp)
+                                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                                    .drawWithContent {
+                                        drawContent()
+                                        drawRect(
+                                            brush = Brush.verticalGradient(
+                                                0.2f to Color.Transparent,
+                                                0.6f to subjectColors.container
+                                            ),
+                                            blendMode = BlendMode.DstIn
+                                        )
+                                    },
+                                contentScale = ContentScale.FillHeight
+                            )
+
+                            // 3. Light Overlay
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Brush.verticalGradient(
+                                            0.3f to Color.Transparent,
+                                            1f to subjectColors.container.copy(alpha = 0.7f)
+                                        )
+                                    )
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(24.dp),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                // Top Section: Subject Icon
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(subject.shape.toShape())
+                                            .background(subjectColors.content.copy(alpha = 0.15f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = getSubjectIcon(subject.name)),
+                                            contentDescription = null,
+                                            tint = subjectColors.content,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                }
+
+                                // Bottom Section: Title, Description, and Action
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = subject.name,
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = Color.White,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = "Chapter 3: Quantum Mechanics",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.90f),
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+
+                                    val interactionSource = remember { MutableInteractionSource() }
+                                    val isPressed by interactionSource.collectIsPressedAsState()
+                                    val cornerRadius by animateDpAsState(targetValue = if (isPressed) 12.dp else 24.dp)
+
+                                    Button(
+                                        onClick = onContinueClick,
+                                        interactionSource = interactionSource,
+                                        shape = ContinuousRoundedRectangle(cornerRadius),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = subjectColors.container,
+                                            contentColor = subjectColors.content
                                         ),
-                                        blendMode = BlendMode.DstIn
-                                    )
-                                },
-                            contentScale = ContentScale.FillHeight
-                        )
-
-                        // 3. Light Overlay
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.verticalGradient(
-                                        0.3f to Color.Transparent,
-                                        1f to subjectColors.container.copy(alpha = 0.7f)
-                                    )
-                                )
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(24.dp),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            // Top Section: Subject Icon
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(subject.shape.toShape())
-                                        .background(subjectColors.content.copy(alpha = 0.15f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = getSubjectIcon(subject.name)),
-                                        contentDescription = null,
-                                        tint = subjectColors.content,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-
-                            // Bottom Section: Title, Description, and Action
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Bottom
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = subject.name,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = Color.White,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        text = "Chapter 3: Quantum Mechanics",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.90f),
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-
-                                val interactionSource = remember { MutableInteractionSource() }
-                                val isPressed by interactionSource.collectIsPressedAsState()
-                                val cornerRadius by animateDpAsState(targetValue = if (isPressed) 12.dp else 24.dp)
-
-                                Button(
-                                    onClick = onContinueClick,
-                                    interactionSource = interactionSource,
-                                    shape = ContinuousRoundedRectangle(cornerRadius),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = subjectColors.container,
-                                        contentColor = subjectColors.content
-                                    ),
-                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
-                                ) {
-                                    Text("Resume", fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
+                                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                                    ) {
+                                        Text("Resume", fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // Section Title
-            item {
-                Text(
-                    text = "Learning Materials",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
+                // Section Title
+                item {
+                    Text(
+                        text = "Learning Materials",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
 
-            // Categories Grid Items
-            items(chunkedCategories) { pair ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        CategoryCard(item = pair[0], onClick = onCategoryClick)
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        if (pair.size > 1) {
-                            CategoryCard(item = pair[1], onClick = onCategoryClick)
-                        } else {
-                            Spacer(modifier = Modifier.fillMaxWidth())
+                // Categories Grid Items
+                items(chunkedCategories) { pair ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            CategoryCard(item = pair[0], onClick = onCategoryClick)
+                        }
+                        Box(modifier = Modifier.weight(1f)) {
+                            if (pair.size > 1) {
+                                CategoryCard(item = pair[1], onClick = onCategoryClick)
+                            } else {
+                                Spacer(modifier = Modifier.fillMaxWidth())
+                            }
                         }
                     }
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(32.dp))
+                item {
+                    Spacer(modifier = Modifier.height(130.dp))
+                }
             }
         }
+
+        // Top Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(135.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
+        // Bottom Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(140.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
 
         // Floating Circular Translucent Glass Back Button
         IconButton(
@@ -317,8 +391,13 @@ fun SubjectDetailScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .size(48.dp)
                 .align(Alignment.TopStart)
+                .cloudy(
+                    sky = subjectSky,
+                    radius = 30,
+                    tint = Color.White.copy(alpha = 0.2f),
+                    shape = CircleShape
+                )
                 .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.25f))
                 .border(1.dp, Color.White.copy(alpha = 0.35f), CircleShape)
         ) {
             Icon(

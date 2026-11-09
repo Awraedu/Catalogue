@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 
 class CatalogueRepository(private val catalogueDao: CatalogueDao) {
 
@@ -75,50 +75,72 @@ class CatalogueRepository(private val catalogueDao: CatalogueDao) {
         handout: Handout,
         onProgress: ((Float) -> Unit)? = null
     ): Result<String> = withContext(Dispatchers.IO) {
-        var connection: HttpURLConnection? = null
-        try {
-            val downloadUrl = GITHUB_HANDOUTS_BASE_URL + handout.content
-            val url = URL(downloadUrl)
-            connection = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 15000
-                readTimeout = 15000
-                requestMethod = "GET"
-                connect()
-            }
+        val cleanPath = handout.content.removePrefix("handouts/").removePrefix("/")
+        val rawPath = handout.content.removePrefix("/")
 
-            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                val contentLength = connection.contentLength
-                val outputStream = ByteArrayOutputStream()
-                val buffer = ByteArray(8192)
-                var totalRead = 0L
-                var bytesRead: Int
+        val baseUrl = GITHUB_HANDOUTS_BASE_URL.removePrefix("https://").removePrefix("http://")
+        val domain = baseUrl.substringBefore("/")
+        val baseUriPath = "/" + baseUrl.substringAfter("/", "").trimEnd('/')
 
-                connection.inputStream.use { inputStream ->
-                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                        outputStream.write(buffer, 0, bytesRead)
-                        totalRead += bytesRead
-                        if (contentLength > 0) {
-                            val progress = (totalRead.toFloat() / contentLength).coerceIn(0f, 1f)
-                            onProgress?.invoke(progress)
+        val candidatePaths = listOf(
+            "$baseUriPath/$cleanPath",
+            "$baseUriPath/$rawPath"
+        ).distinct()
+
+        var lastError: Exception? = null
+
+        for (path in candidatePaths) {
+            var connection: HttpURLConnection? = null
+            try {
+                val uri = URI("https", domain, path, null)
+                val url = uri.toURL()
+
+                connection = (url.openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 15000
+                    readTimeout = 15000
+                    requestMethod = "GET"
+                    instanceFollowRedirects = true
+                    setRequestProperty("User-Agent", "Mozilla/5.0")
+                    connect()
+                }
+
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val contentLength = connection.contentLength
+                    val outputStream = ByteArrayOutputStream()
+                    val buffer = ByteArray(8192)
+                    var totalRead = 0L
+                    var bytesRead: Int
+
+                    connection.inputStream.use { inputStream ->
+                        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                            outputStream.write(buffer, 0, bytesRead)
+                            totalRead += bytesRead
+                            if (contentLength > 0) {
+                                val progress = (totalRead.toFloat() / contentLength).coerceIn(0f, 1f)
+                                onProgress?.invoke(progress)
+                            }
                         }
                     }
-                }
 
-                val content = outputStream.toString("UTF-8")
-                val saved = HandoutEncryptionManager.encryptAndSave(context, handout.content, content)
-                if (saved) {
-                    Result.success(content)
+                    val content = outputStream.toString("UTF-8")
+                    val saved = HandoutEncryptionManager.encryptAndSave(context, handout.content, content)
+                    if (saved) {
+                        return@withContext Result.success(content)
+                    } else {
+                        return@withContext Result.failure(Exception("Failed to encrypt and save handout locally."))
+                    }
                 } else {
-                    Result.failure(Exception("Failed to encrypt and save handout locally."))
+                    lastError = Exception("Server returned HTTP $responseCode: ${connection.responseMessage}")
                 }
-            } else {
-                Result.failure(Exception("Server returned HTTP ${connection.responseCode}: ${connection.responseMessage}"))
+            } catch (e: Exception) {
+                lastError = e
+            } finally {
+                connection?.disconnect()
             }
-        } catch (e: Exception) {
-            Result.failure(e)
-        } finally {
-            connection?.disconnect()
         }
+
+        Result.failure(lastError ?: Exception("Failed to download handout."))
     }
 
     fun deleteDownloadedHandout(context: Context, handout: Handout): Boolean {

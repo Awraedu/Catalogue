@@ -21,11 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.*
 import com.awra.catalogue.ui.home.components.AmbientMeshBackground
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -37,20 +43,20 @@ fun InfographicListScreen(
     onInfographicClick: (Infographic) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState(initial = emptyList())
-    // Infographic category card color theme (error / red-pink container color)
     val accentColor = MaterialTheme.colorScheme.error
+    val backdrop = rememberLayerBackdrop()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Infographic card theme background gradient
-        AmbientMeshBackground(
-            modifier = Modifier.fillMaxSize(),
-            primaryColor = accentColor
-        )
+        Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+            AmbientMeshBackground(
+                modifier = Modifier.fillMaxSize(),
+                primaryColor = accentColor
+            )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
-        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
+            ) {
             item(key = "top_spacer") {
                 Spacer(modifier = Modifier.statusBarsPadding().height(72.dp))
             }
@@ -92,6 +98,65 @@ fun InfographicListScreen(
                 Spacer(modifier = Modifier.height(100.dp))
             }
         }
+        }
+
+        // Top Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(135.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
+        // Bottom Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(140.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
 
         // Floating Circular Translucent Glass Back Button
         IconButton(

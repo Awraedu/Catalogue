@@ -21,7 +21,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -33,8 +35,14 @@ import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.data.model.Subject
 import com.awra.catalogue.data.model.Term
 import com.awra.catalogue.ui.components.FloatingNavigationBar
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.components.NavDestination
 import com.awra.catalogue.ui.theme.toShape
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
 
@@ -111,41 +119,175 @@ fun TermsScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { innerPadding ->
+    val backdrop = rememberLayerBackdrop()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+            AmbientMeshBackground(modifier = Modifier.fillMaxSize())
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                containerColor = Color.Transparent,
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .semantics { isTraversalGroup = true }
+                ) {
+                    // 1. Terms Scrolling List underneath
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 135.dp, bottom = 140.dp, start = 20.dp, end = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                    ) {
+                        itemsIndexed(terms, key = { _, term -> term.id }) { index, term ->
+                            TermListItem(
+                                term = term,
+                                index = index,
+                                count = terms.size,
+                                onBookmarkClick = { viewModel.toggleBookmark(term) }
+                            )
+                        }
+
+                        if (terms.isEmpty()) {
+                            item(key = "empty_state") {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(250.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (searchQuery.isEmpty()) "No terms found." else "No matches found for \"$searchQuery\"",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Top Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(135.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(16f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
+        // Bottom Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(140.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(16f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
         Box(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
                 .semantics { isTraversalGroup = true }
         ) {
-            // Main Content
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Search Bar and Chips Container
-                Column(
+            // 2. Floating Search Bar & Filter Chips at Top
+            Column(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(bottom = 8.dp)
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(72.dp)) // Space for floating SearchBar
+                    SearchBar(
+                        state = searchBarState,
+                        inputField = inputField,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { traversalIndex = 0f },
+                        colors = SearchBarDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        ),
+                        shape = CircleShape
+                    )
 
-                    // Subject Filter Chips
                     LazyRow(
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         item {
+                            val isSelected = selectedSubjectId == null
                             FilterChip(
-                                selected = selectedSubjectId == null,
+                                selected = isSelected,
                                 onClick = { viewModel.selectSubject(null) },
-                                label = { Text("All", modifier = Modifier.padding(horizontal = 4.dp)) },
-                                shape = CircleShape
+                                label = {
+                                    Text(
+                                        "All",
+                                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 4.dp)
+                                    )
+                                },
+                                shape = CircleShape,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    labelColor = MaterialTheme.colorScheme.onSurface,
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = isSelected,
+                                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                    selectedBorderColor = MaterialTheme.colorScheme.primary
+                                )
                             )
                         }
                         items(subjects, key = { it.id }) { sub ->
+                            val isSelected = selectedSubjectId == sub.id
                             val shortName = remember(sub.name) {
                                 when {
                                     sub.name.contains("English") -> if (sub.name.contains("I")) "Eng I" else "Eng II"
@@ -165,101 +307,67 @@ fun TermsScreen(
                                 }
                             }
                             FilterChip(
-                                selected = selectedSubjectId == sub.id,
+                                selected = isSelected,
                                 onClick = { viewModel.selectSubject(sub.id) },
-                                label = { Text(shortName, modifier = Modifier.padding(horizontal = 4.dp)) },
-                                shape = CircleShape
+                                label = {
+                                    Text(
+                                        shortName,
+                                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 4.dp)
+                                    )
+                                },
+                                shape = CircleShape,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    labelColor = MaterialTheme.colorScheme.onSurface,
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = isSelected,
+                                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                    selectedBorderColor = MaterialTheme.colorScheme.primary
+                                )
                             )
                         }
                     }
                 }
 
-                // Terms List (Visible when not searching or as background)
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
-                ) {
-                    itemsIndexed(terms, key = { _, term -> term.id }) { index, term ->
-                        TermListItem(
-                            term = term,
-                            index = index,
-                            count = terms.size,
-                            onBookmarkClick = { viewModel.toggleBookmark(term) }
-                        )
-                    }
-
-                    if (terms.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillParentMaxSize()
-                                    .padding(bottom = 100.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = if (searchQuery.isEmpty()) "No terms found." else "No matches found for \"$searchQuery\"",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                // Full Screen Search Overlay (only rendered when search is active)
+                if (isSearchActive) {
+                    ExpandedFullScreenSearchBar(
+                        state = searchBarState,
+                        inputField = inputField
+                    ) {
+                        val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
+                        
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                        ) {
+                            itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
+                                TermListItem(
+                                    term = term,
+                                    index = index,
+                                    count = displayTerms.size,
+                                    onBookmarkClick = { viewModel.toggleBookmark(term) }
                                 )
                             }
-                        }
-                    }
 
-                    item {
-                        Spacer(modifier = Modifier.height(80.dp))
-                    }
-                }
-            }
-
-            // Floating Search Bar
-            SearchBar(
-                state = searchBarState,
-                inputField = inputField,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .semantics { traversalIndex = 0f },
-                colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                ),
-                shape = CircleShape
-            )
-
-            // Full Screen Search Overlay (only rendered when search is active)
-            if (isSearchActive) {
-                ExpandedFullScreenSearchBar(
-                    state = searchBarState,
-                    inputField = inputField
-                ) {
-                    // Only render results in overlay when searching to speed up expansion animation
-                    val displayTerms = if (textFieldState.text.isEmpty()) emptyList() else terms
-                    
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
-                    ) {
-                        itemsIndexed(displayTerms, key = { _, term -> term.id }) { index, term ->
-                            TermListItem(
-                                term = term,
-                                index = index,
-                                count = displayTerms.size,
-                                onBookmarkClick = { viewModel.toggleBookmark(term) }
-                            )
-                        }
-
-                        if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {
-                            item {
-                                Box(
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "No matches found for \"${textFieldState.text}\"",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
+                            if (textFieldState.text.isNotEmpty() && displayTerms.isEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillParentMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "No matches found for \"${textFieldState.text}\"",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -268,7 +376,6 @@ fun TermsScreen(
             }
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

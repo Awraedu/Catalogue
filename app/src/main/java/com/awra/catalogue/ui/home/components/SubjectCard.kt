@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -56,7 +56,7 @@ fun SubjectCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getSubjectIcon(subject.name),
+                    painter = painterResource(id = getSubjectIcon(subject.name)),
                     contentDescription = null,
                     tint = colorRoles.content,
                     modifier = Modifier.size(24.dp)

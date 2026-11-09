@@ -1,10 +1,12 @@
 package com.awra.catalogue.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.awra.catalogue.data.dao.CatalogueDao
 import com.awra.catalogue.data.model.*
@@ -26,11 +28,17 @@ import kotlinx.coroutines.launch
         FlashcardAttempt::class,
         StudySession::class,
         Utility::class,
-        RecentItem::class,
+        PinnedItem::class,
         ClassSchedule::class
     ],
-    version = 50,
-    exportSchema = false
+    version = 56,
+    autoMigrations = [
+        AutoMigration(from = 51, to = 52),
+        AutoMigration(from = 52, to = 53),
+        AutoMigration(from = 53, to = 54),
+        AutoMigration(from = 54, to = 56)
+    ],
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -40,6 +48,18 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        /**
+         * List of manual migrations. Add new migration objects here when changing schema.
+         */
+        private val ALL_MIGRATIONS = arrayOf<Migration>(
+            // Example Migration from 51 to 52:
+            // object : Migration(51, 52) {
+            //     override fun migrate(db: SupportSQLiteDatabase) {
+            //         // Add migration logic here
+            //     }
+            // }
+        )
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -47,8 +67,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "catalogue_database"
                 )
-                .fallbackToDestructiveMigration()
-                .build()
+                    .addMigrations(*ALL_MIGRATIONS)
+                    .build()
                 INSTANCE = instance
                 instance
             }

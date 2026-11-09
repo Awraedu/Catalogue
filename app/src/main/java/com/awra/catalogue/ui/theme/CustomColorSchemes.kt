@@ -7,75 +7,81 @@ import androidx.compose.ui.graphics.Color
 
 object CustomColorSchemes {
 
-    // --- MIDNIGHT MONO ---
+    // --- BRAND EXTRAS (Used for subjects in Vibrant Orange theme) ---
+    val BrandBlueLight = Color(0xFF007AFF)
+    val BrandBlueDark = Color(0xFF0A84FF)
+    val BrandYellowLight = Color(0xFFFFD600)
+    val BrandYellowDark = Color(0xFFFFEA00)
+
+    // --- MIDNIGHT MONO (Pure Monochrome) ---
     val MidnightMonoDark = darkColorScheme(
-        primary = Color(0xFFF9F9F9),
-        onPrimary = Color(0xFF5F5F5F),
-        primaryContainer = Color(0xFFA0A0A0),
-        onPrimaryContainer = Color(0xFF232323),
-        inversePrimary = Color(0xFF5F5F5F),
-        secondary = Color(0xFFC6C6C6),
-        onSecondary = Color(0xFF404040),
-        secondaryContainer = Color(0xFF3B3B3B),
-        onSecondaryContainer = Color(0xFFBFBFBF),
-        tertiary = Color(0xFFF9F9F9),
-        onTertiary = Color(0xFF5F5F5F),
-        tertiaryContainer = Color(0xFFEBEBEB),
-        onTertiaryContainer = Color(0xFF575757),
-        surface = Color(0xFF0E0E0E),
-        surfaceDim = Color(0xFF0E0E0E),
+        primary = Color(0xFFFFFFFF),
+        onPrimary = Color(0xFF000000),
+        primaryContainer = Color(0xFF212121),
+        onPrimaryContainer = Color(0xFFFFFFFF),
+        inversePrimary = Color(0xFF000000),
+        secondary = Color(0xFFBDBDBD),
+        onSecondary = Color(0xFF212121),
+        secondaryContainer = Color(0xFF333333),
+        onSecondaryContainer = Color(0xFFEEEEEE),
+        tertiary = Color(0xFFE0E0E0),
+        onTertiary = Color(0xFF000000),
+        tertiaryContainer = Color(0xFF424242),
+        onTertiaryContainer = Color(0xFFF5F5F5),
+        surface = Color(0xFF000000),
+        surfaceDim = Color(0xFF000000),
         surfaceBright = Color(0xFF2C2C2C),
         surfaceContainerLowest = Color(0xFF000000),
-        surfaceContainerLow = Color(0xFF131313),
-        surfaceContainer = Color(0xFF191919),
-        surfaceContainerHigh = Color(0xFF1F1F1F),
-        surfaceContainerHighest = Color(0xFF262626),
-        surfaceVariant = Color(0xFF262626),
-        onSurface = Color(0xFFE5E5E5),
-        onSurfaceVariant = Color(0xFFABABAB),
-        surfaceTint = Color(0xFFF9F9F9),
-        background = Color(0xFF0E0E0E),
-        onBackground = Color(0xFFE5E5E5),
-        error = Color(0xFFFFB4AB), // Starker Red-Peach
-        onError = Color(0xFF690005),
-        errorContainer = Color(0xFF93000A),
-        onErrorContainer = Color(0xFFFFDAD6),
+        surfaceContainerLow = Color(0xFF0A0A0A),
+        surfaceContainer = Color(0xFF121212),
+        surfaceContainerHigh = Color(0xFF1E1E1E),
+        surfaceContainerHighest = Color(0xFF2C2C2C),
+        surfaceVariant = Color(0xFF2C2C2C),
+        onSurface = Color(0xFFF5F5F5),
+        onSurfaceVariant = Color(0xFFBDBDBD),
+        surfaceTint = Color(0xFFFFFFFF),
+        background = Color(0xFF000000),
+        onBackground = Color(0xFFF5F5F5),
+        error = Color(0xFFCF6679),
+        onError = Color(0xFF000000),
+        errorContainer = Color(0xFFB00020),
+        onErrorContainer = Color(0xFFFFFFFF),
         outline = Color(0xFF757575),
-        outlineVariant = Color(0xFF484848),
-        inverseSurface = Color(0xFFF9F9F9),
-        inverseOnSurface = Color(0xFF323232),
+        outlineVariant = Color(0xFF424242),
+        inverseSurface = Color(0xFFF5F5F5),
+        inverseOnSurface = Color(0xFF000000),
         scrim = Color(0xFF000000)
     )
 
     val MidnightMonoLight = lightColorScheme(
         primary = Color(0xFF000000),
         onPrimary = Color(0xFFFFFFFF),
-        primaryContainer = Color(0xFFE0E0E0),
+        primaryContainer = Color(0xFFF5F5F5),
         onPrimaryContainer = Color(0xFF000000),
         secondary = Color(0xFF424242),
         onSecondary = Color(0xFFFFFFFF),
-        secondaryContainer = Color(0xFFEEEEEE),
+        secondaryContainer = Color(0xFFF0F0F0),
         onSecondaryContainer = Color(0xFF212121),
         tertiary = Color(0xFF616161),
         onTertiary = Color(0xFFFFFFFF),
-        tertiaryContainer = Color(0xFFD1D1D1),
+        tertiaryContainer = Color(0xFFE0E0E0),
         onTertiaryContainer = Color(0xFF000000),
         surface = Color(0xFFFFFFFF),
-        onSurface = Color(0xFF1A1A1A),
-        onSurfaceVariant = Color(0xFF474747),
+        onSurface = Color(0xFF000000),
+        onSurfaceVariant = Color(0xFF424242),
         background = Color(0xFFFFFFFF),
-        onBackground = Color(0xFF1A1A1A),
-        outline = Color(0xFF797979),
-        outlineVariant = Color(0xFFC4C4C4),
+        onBackground = Color(0xFF000000),
+        outline = Color(0xFF757575),
+        outlineVariant = Color(0xFFBDBDBD),
         surfaceContainerLowest = Color(0xFFFFFFFF),
-        surfaceContainerLow = Color(0xFFF7F7F7),
-        surfaceContainer = Color(0xFFF2F2F2),
-        surfaceContainerHigh = Color(0xFFECECEC),
-        surfaceContainerHighest = Color(0xFFE6E6E6),
-        error = Color(0xFFBA1A1A),
+        surfaceContainerLow = Color(0xFFFAFAFA),
+        surfaceContainer = Color(0xFFF5F5F5),
+        surfaceContainerHigh = Color(0xFFEEEEEE),
+        surfaceContainerHighest = Color(0xFFE0E0E0),
+        error = Color(0xFFB00020),
         onError = Color(0xFFFFFFFF),
-        errorContainer = Color(0xFFFFDAD6),
-        onErrorContainer = Color(0xFF410002)
+        errorContainer = Color(0xFFFCDDDF),
+        onErrorContainer = Color(0xFFB00020)
     )
 
     // --- FOREST SAGE ---
@@ -325,18 +331,96 @@ object CustomColorSchemes {
         onSurfaceVariant = Color(0xFF4B5563),
         
         outline = Color(0xFF9CA3AF),
-        outlineVariant = Color(0xFFE5E7EB),
+        outlineVariant = Color(0xFFF1F1F3),
         
         surfaceContainerLowest = Color(0xFFFFFFFF),
-        surfaceContainerLow = Color(0xFFFAFAFA),
-        surfaceContainer = Color(0xFFF4F4F5),
-        surfaceContainerHigh = Color(0xFFE4E4E7),
-        surfaceContainerHighest = Color(0xFFD4D4D8),
+        surfaceContainerLow = Color(0xFFFAFAFB),
+        surfaceContainer = Color(0xFFF7F7F9),
+        surfaceContainerHigh = Color(0xFFF1F1F3),
+        surfaceContainerHighest = Color(0xFFE5E7EB),
         
         error = Color(0xFFDC2626),
         onError = Color(0xFFFFFFFF),
         errorContainer = Color(0xFFFEE2E2),
         onErrorContainer = Color(0xFF7F1D1D)
+    )
+
+    // --- OCEAN BLUE (Pacific Slate & Ice Cyan) ---
+    // A cohesive, atmospheric oceanic theme inspired by Forest Sage & Earth Brown.
+    // Uses Pacific Blue, Seafoam Cyan, and Periwinkle Mist over soft oceanic slate surfaces.
+    val OceanBlueDark = darkColorScheme(
+        primary = Color(0xFF90CDF4), // Soft Ice Pacific Blue
+        onPrimary = Color(0xFF0F2B48),
+        primaryContainer = Color(0xFF1E4976),
+        onPrimaryContainer = Color(0xFFD0E8FF),
+        
+        secondary = Color(0xFF90E0EF), // Soft Seafoam Azure
+        onSecondary = Color(0xFF0A3440),
+        secondaryContainer = Color(0xFF1B4D5C),
+        onSecondaryContainer = Color(0xFFC8F3FA),
+        
+        tertiary = Color(0xFFA3BFFA), // Soft Periwinkle Mist
+        onTertiary = Color(0xFF1A264F),
+        tertiaryContainer = Color(0xFF2E3D75),
+        onTertiaryContainer = Color(0xFFDEE6FF),
+        
+        surface = Color(0xFF090E17), // Deep Oceanic Midnight Surface
+        background = Color(0xFF090E17),
+        onSurface = Color(0xFFE2E8F0),
+        onSurfaceVariant = Color(0xFFA0AEC0),
+        
+        outline = Color(0xFF64748B),
+        outlineVariant = Color(0xFF334155),
+        
+        surfaceContainerLowest = Color(0xFF04070D),
+        surfaceContainerLow = Color(0xFF0E1624),
+        surfaceContainer = Color(0xFF141F30),
+        surfaceContainerHigh = Color(0xFF1B283D),
+        surfaceContainerHighest = Color(0xFF23324B),
+        
+        inverseSurface = Color(0xFFE2E8F0),
+        inverseOnSurface = Color(0xFF090E17),
+        
+        error = Color(0xFFFFB4AB),
+        onError = Color(0xFF690005),
+        errorContainer = Color(0xFF93000A),
+        onErrorContainer = Color(0xFFFFDAD6)
+    )
+
+    val OceanBlueLight = lightColorScheme(
+        primary = Color(0xFF1D5C96), // Rich Pacific Blue
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFD4E8FF),
+        onPrimaryContainer = Color(0xFF001D38),
+        
+        secondary = Color(0xFF2B7A8C), // Muted Cyan Slate
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFC7F0F8),
+        onSecondaryContainer = Color(0xFF002027),
+        
+        tertiary = Color(0xFF3B4D80), // Deep Periwinkle Slate
+        onTertiary = Color(0xFFFFFFFF),
+        tertiaryContainer = Color(0xFFDCE2FF),
+        onTertiaryContainer = Color(0xFF001548),
+        
+        surface = Color(0xFFF4F7FA), // Cool Porcelain Frost
+        background = Color(0xFFF4F4F4),
+        onSurface = Color(0xFF0F172A),
+        onSurfaceVariant = Color(0xFF475569),
+        
+        outline = Color(0xFF78889B),
+        outlineVariant = Color(0xFFD1DBE5),
+        
+        surfaceContainerLowest = Color(0xFFFFFFFF),
+        surfaceContainerLow = Color(0xFFEDF2F7),
+        surfaceContainer = Color(0xFFE2E8F0),
+        surfaceContainerHigh = Color(0xFFD5DFEB),
+        surfaceContainerHighest = Color(0xFFC8D5E3),
+        
+        error = Color(0xFFBA1A1A),
+        onError = Color(0xFFFFFFFF),
+        errorContainer = Color(0xFFFFDAD6),
+        onErrorContainer = Color(0xFF410002)
     )
 
     val Schemes = mapOf(
@@ -345,7 +429,8 @@ object CustomColorSchemes {
         "FOREST_SAGE" to (ForestSageLight to ForestSageDark),
         "EARTH_BROWN" to (EarthBrownLight to EarthBrownDark),
         "TWILIGHT_LAVENDER" to (TwilightLavenderLight to TwilightLavenderDark),
-        "VIBRANT_ORANGE" to (VibrantOrangeLight to VibrantOrangeDark)
+        "VIBRANT_ORANGE" to (VibrantOrangeLight to VibrantOrangeDark),
+        "OCEAN_BLUE" to (OceanBlueLight to OceanBlueDark)
     )
 
     fun getScheme(id: String, isDark: Boolean): ColorScheme? {

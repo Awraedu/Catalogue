@@ -1,10 +1,8 @@
 package com.awra.catalogue.ui.analytics.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,26 +22,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.awra.catalogue.data.dao.TopicPerformance
 import com.awra.catalogue.data.dao.SubjectMastery
+import com.awra.catalogue.data.dao.TopicPerformance
 import com.kyant.capsule.ContinuousRoundedRectangle
+import java.util.Calendar
+import java.util.Locale
+import kotlin.math.ceil
 
 enum class MasteryTab { Strong, Weak }
 
 private fun abbreviateSubject(name: String): String {
-    return when (name.lowercase()) {
-        "mathematics" -> "MATH"
+    return when (name.lowercase(Locale.US)) {
+        "mathematics", "natural math", "social math" -> "MATH"
         "physics" -> "PHYS"
         "chemistry" -> "CHEM"
         "biology" -> "BIO"
-        "english" -> "ENG"
+        "english", "english i", "english ii" -> "ENG"
         "civics" -> "CIV"
         "geography" -> "GEOG"
         "history" -> "HIST"
         "economics" -> "ECON"
-        "business" -> "BSNS"
-        "information technology" -> "IT"
-        else -> if (name.length > 4) name.take(4).uppercase() else name.uppercase()
+        "business", "entrepreneurship" -> "ENT"
+        "information technology", "emerging tech" -> "TECH"
+        else -> if (name.length > 4) name.take(4).uppercase(Locale.US) else name.uppercase(Locale.US)
     }
 }
 
@@ -81,18 +82,19 @@ fun PerformanceSummaryCard(
             }
             Spacer(Modifier.height(12.dp))
             Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, color = colorScheme.onSurface)
-            
+
             if (trend.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val trendColor = if (isUp) colorScheme.primary else colorScheme.error
+                    val hasDigit = remember(trend) { trend.any { it.isDigit() } }
                     Text(
-                        text = if (trend.any { it.isDigit() }) (if (isUp) "+$trend%" else "-$trend%") else trend,
+                        text = if (hasDigit) (if (isUp) "+$trend%" else "-$trend%") else trend,
                         color = trendColor,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold
                     )
-                    if (trend.any { it.isDigit() }) {
+                    if (hasDigit) {
                         Icon(
                             imageVector = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
                             contentDescription = null,
@@ -112,48 +114,60 @@ fun MainPerformanceChart(
     modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    
-    // Process real data: Map each day of the week to its total hours
-    val calendar = java.util.Calendar.getInstance()
-    val timeStudied = remember(dailyStudyTime) {
-        val hoursPerDay = MutableList(7) { 0f }
+    val days = remember { listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") }
+
+    // Memoize today's index and week number once per composition
+    val (todayIdx, weekNumber) = remember {
+        val cal = Calendar.getInstance()
+        val idx = when (cal.get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> 0
+            Calendar.TUESDAY -> 1
+            Calendar.WEDNESDAY -> 2
+            Calendar.THURSDAY -> 3
+            Calendar.FRIDAY -> 4
+            Calendar.SATURDAY -> 5
+            Calendar.SUNDAY -> 6
+            else -> 6
+        }
+        idx to cal.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    // Process real data & dynamically scale the Y-Axis so 15m-2h study sessions look rewarding!
+    val (timeStudied, maxTime, timeLabels) = remember(dailyStudyTime) {
+        val hoursPerDay = FloatArray(7) { 0f }
+        val cal = Calendar.getInstance()
         dailyStudyTime.forEach { daily ->
-            calendar.timeInMillis = daily.date
-            val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
-            // Calendar.MONDAY is 2, SUNDAY is 1. Convert to index 0..6 (Mon..Sun)
-            val index = when (dayOfWeek) {
-                java.util.Calendar.MONDAY -> 0
-                java.util.Calendar.TUESDAY -> 1
-                java.util.Calendar.WEDNESDAY -> 2
-                java.util.Calendar.THURSDAY -> 3
-                java.util.Calendar.FRIDAY -> 4
-                java.util.Calendar.SATURDAY -> 5
-                java.util.Calendar.SUNDAY -> 6
+            cal.timeInMillis = daily.date
+            val index = when (cal.get(Calendar.DAY_OF_WEEK)) {
+                Calendar.MONDAY -> 0
+                Calendar.TUESDAY -> 1
+                Calendar.WEDNESDAY -> 2
+                Calendar.THURSDAY -> 3
+                Calendar.FRIDAY -> 4
+                Calendar.SATURDAY -> 5
+                Calendar.SUNDAY -> 6
                 else -> 0
             }
-            hoursPerDay[index] = daily.totalTimeMs.toFloat() / (1000 * 60 * 60)
+            hoursPerDay[index] += daily.totalTimeMs.toFloat() / (1000f * 60f * 60f)
         }
-        hoursPerDay
+
+        val peakHours = hoursPerDay.maxOrNull() ?: 0f
+        // Pick a clean ceiling (2h, 4h, 8h, 12h, or 24h) based on user's peak study day
+        val dynamicMax = when {
+            peakHours <= 1.5f -> 2f
+            peakHours <= 3.5f -> 4f
+            peakHours <= 7.5f -> 8f
+            peakHours <= 11.5f -> 12f
+            else -> 24f
+        }
+
+        val labels = (4 downTo 0).map { step ->
+            val v = (dynamicMax / 4f) * step
+            if (v % 1f == 0f) "${v.toInt()}h" else String.format(Locale.US, "%.1fh", v)
+        }
+
+        Triple(hoursPerDay.toList(), dynamicMax, labels)
     }
-
-    val maxTime = 24f
-    val timeLabels = listOf("24h", "18h", "12h", "6h", "0h")
-
-    // Determine today's index
-    calendar.timeInMillis = System.currentTimeMillis()
-    val todayIdx = when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
-        java.util.Calendar.MONDAY -> 0
-        java.util.Calendar.TUESDAY -> 1
-        java.util.Calendar.WEDNESDAY -> 2
-        java.util.Calendar.THURSDAY -> 3
-        java.util.Calendar.FRIDAY -> 4
-        java.util.Calendar.SATURDAY -> 5
-        java.util.Calendar.SUNDAY -> 6
-        else -> 6
-    }
-
-    val weekNumber = calendar.get(java.util.Calendar.WEEK_OF_YEAR)
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -162,7 +176,9 @@ fun MainPerformanceChart(
     ) {
         Column(modifier = Modifier.padding(vertical = 24.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -170,7 +186,7 @@ fun MainPerformanceChart(
                     Text("Performance", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text("Time spent in hours", style = MaterialTheme.typography.labelSmall, color = colorScheme.onSurfaceVariant)
                 }
-                
+
                 Surface(
                     color = colorScheme.primaryContainer.copy(alpha = 0.4f),
                     shape = CircleShape
@@ -196,7 +212,7 @@ fun MainPerformanceChart(
                 // Y-Axis Labels
                 Column(
                     modifier = Modifier
-                        .width(32.dp)
+                        .width(36.dp)
                         .fillMaxHeight()
                         .padding(bottom = 4.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
@@ -219,22 +235,22 @@ fun MainPerformanceChart(
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    // 1. Grid Pattern
+                    val gridColor = colorScheme.outlineVariant.copy(alpha = 0.5f)
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val gridLines = 4
                         val sectionHeight = size.height / gridLines
+                        val strokePx = 1.dp.toPx()
                         for (i in 0..gridLines) {
                             val y = size.height - (i * sectionHeight)
                             drawLine(
-                                color = colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                color = gridColor,
                                 start = androidx.compose.ui.geometry.Offset(0f, y),
                                 end = androidx.compose.ui.geometry.Offset(size.width, y),
-                                strokeWidth = 1.dp.toPx()
+                                strokeWidth = strokePx
                             )
                         }
                     }
 
-                    // 2. Bar Graph with wider Pill Shaped Bars
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -242,15 +258,15 @@ fun MainPerformanceChart(
                     ) {
                         timeStudied.forEachIndexed { index, time ->
                             val isToday = index == todayIdx
-                            val barHeightFactor = (time / maxTime).coerceIn(0.02f, 1f)
+                            val barHeightFactor = (time / maxTime).coerceIn(0.03f, 1f)
                             Box(
                                 modifier = Modifier
                                     .width(32.dp)
                                     .fillMaxHeight(barHeightFactor)
                                     .clip(CircleShape)
                                     .background(
-                                        if (isToday) colorScheme.primary 
-                                        else colorScheme.primaryContainer // Lower shade instead of opacity
+                                        if (isToday) colorScheme.primary
+                                        else colorScheme.primaryContainer
                                     )
                             )
                         }
@@ -260,11 +276,10 @@ fun MainPerformanceChart(
 
             Spacer(Modifier.height(16.dp))
 
-            // 3. Days Labels
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 60.dp, end = 16.dp),
+                    .padding(start = 64.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 days.forEachIndexed { index, day ->
@@ -280,18 +295,6 @@ fun MainPerformanceChart(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PerformanceBarGroup(label: String, heights: List<Float> = listOf(0.4f, 0.8f, 0.6f)) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            PerformanceBar(heights.getOrElse(0) { 0.4f }, MaterialTheme.colorScheme.onSurface)
-            PerformanceBar(heights.getOrElse(1) { 0.8f }, MaterialTheme.colorScheme.surfaceVariant)
-            PerformanceBar(heights.getOrElse(2) { 0.6f }, Color(0xFFC5CAE9))
-        }
-        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -315,16 +318,13 @@ fun LegendItem(label: String, color: Color) {
 }
 
 @Composable
-private fun PerformanceBar(heightFactor: Float, color: Color) {
-    Box(modifier = Modifier.width(14.dp).fillMaxHeight(heightFactor).clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)).background(color))
-}
-
-@Composable
 fun MasteryComparisonCard(
     bestSubject: SubjectMastery?,
     worstSubject: SubjectMastery?,
     modifier: Modifier = Modifier
 ) {
+    if (bestSubject == null && worstSubject == null) return
+
     val colorScheme = MaterialTheme.colorScheme
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -333,7 +333,7 @@ fun MasteryComparisonCard(
     ) {
         Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             Text("Subject Proficiency", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            
+
             bestSubject?.let {
                 MasteryItem(
                     title = "Strongest Subject",
@@ -344,11 +344,12 @@ fun MasteryComparisonCard(
                 )
             }
 
-            worstSubject?.let {
+            // Only show worstSubject if it is different from bestSubject (or if bestSubject is null)
+            if (worstSubject != null && worstSubject.subjectId != bestSubject?.subjectId) {
                 MasteryItem(
                     title = "Needs Focus",
-                    name = it.subjectName,
-                    accuracy = (it.correctAttempts.toFloat() / it.totalAttempts.coerceAtLeast(1) * 100).toInt(),
+                    name = worstSubject.subjectName,
+                    accuracy = (worstSubject.correctAttempts.toFloat() / worstSubject.totalAttempts.coerceAtLeast(1) * 100).toInt(),
                     color = colorScheme.error,
                     icon = Icons.Default.Warning
                 )
@@ -360,7 +361,13 @@ fun MasteryComparisonCard(
 @Composable
 private fun MasteryItem(title: String, name: String, accuracy: Int, color: Color, icon: ImageVector) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.size(48.dp).clip(CircleShape).background(color.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(color.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(icon, null, tint = color, modifier = Modifier.size(24.dp))
         }
         Spacer(Modifier.width(16.dp))
@@ -381,19 +388,28 @@ fun MasteryOverview(
 ) {
     var selectedTab by remember { mutableStateOf(MasteryTab.Strong) }
     var expandedSubjectId by remember { mutableStateOf<Long?>(null) }
-    
+
+    // 🚀 O(1) Pre-group attempted topics by subjectName once so expanding/collapsing a card
+    // NEVER scans all 500 topics on every animation frame!
+    val topicsBySubject = remember(allTopics) {
+        allTopics
+            .filter { it.totalAttempts > 0 }
+            .groupBy { it.subjectName }
+    }
+
+    // Only include subjects the student has actually attempted (totalAttempts > 0)
     val filteredSubjects = remember(subjects, selectedTab) {
+        val attempted = subjects.filter { it.totalAttempts > 0 }
         if (selectedTab == MasteryTab.Strong) {
-            subjects.filter { (it.correctAttempts.toFloat() / it.totalAttempts.coerceAtLeast(1)) >= 0.7f }
-                .sortedByDescending { it.correctAttempts.toFloat() / it.totalAttempts.coerceAtLeast(1) }
+            attempted.filter { (it.correctAttempts.toFloat() / it.totalAttempts) >= 0.7f }
+                .sortedByDescending { it.correctAttempts.toFloat() / it.totalAttempts }
         } else {
-            subjects.filter { (it.correctAttempts.toFloat() / it.totalAttempts.coerceAtLeast(1)) < 0.7f }
-                .sortedBy { it.correctAttempts.toFloat() / it.totalAttempts.coerceAtLeast(1) }
+            attempted.filter { (it.correctAttempts.toFloat() / it.totalAttempts) < 0.7f }
+                .sortedBy { it.correctAttempts.toFloat() / it.totalAttempts }
         }
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        // Tab Switcher using Home Screen style (SegmentedButton)
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -404,11 +420,11 @@ fun MasteryOverview(
                     selected = selectedTab == tab,
                     onClick = { selectedTab = tab },
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = MasteryTab.entries.size),
-                    label = { 
+                    label = {
                         Text(
                             text = tab.name,
                             style = MaterialTheme.typography.labelLarge
-                        ) 
+                        )
                     }
                 )
             }
@@ -416,19 +432,45 @@ fun MasteryOverview(
 
         Spacer(Modifier.height(16.dp))
 
-        // Subject List with Segmented Design
-        Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-            filteredSubjects.forEachIndexed { index, subject ->
-                ExpandableSubjectCard(
-                    subject = subject,
-                    topics = allTopics.filter { it.subjectName == subject.subjectName },
-                    index = index,
-                    count = filteredSubjects.size,
-                    isExpanded = expandedSubjectId == subject.subjectId,
-                    onExpandChange = { expanded ->
-                        expandedSubjectId = if (expanded) subject.subjectId else null
+        if (filteredSubjects.isEmpty()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (selectedTab == MasteryTab.Strong)
+                            "Complete more quizzes with 70%+ accuracy to unlock Strong subjects!"
+                        else
+                            "No weak subjects right now—keep up the great work!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                filteredSubjects.forEachIndexed { index, subject ->
+                    key(subject.subjectId) {
+                        val subjectTopics = topicsBySubject[subject.subjectName] ?: emptyList()
+                        ExpandableSubjectCard(
+                            subject = subject,
+                            topics = subjectTopics,
+                            index = index,
+                            count = filteredSubjects.size,
+                            isExpanded = expandedSubjectId == subject.subjectId,
+                            onExpandChange = { expanded ->
+                                expandedSubjectId = if (expanded) subject.subjectId else null
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }
@@ -446,7 +488,7 @@ private fun ExpandableSubjectCard(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val mastery = (subject.correctAttempts.toFloat() / subject.totalAttempts.coerceAtLeast(1) * 100).toInt()
-    
+
     val outerRadius = 38.dp
     val innerRadius = 8.dp
     val itemShape = remember(index, count) {
@@ -472,7 +514,7 @@ private fun ExpandableSubjectCard(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(colorScheme.primary.copy(alpha = 0.1f)), 
+                        .background(colorScheme.primary.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(Icons.AutoMirrored.Filled.MenuBook, null, tint = colorScheme.primary)
@@ -480,50 +522,51 @@ private fun ExpandableSubjectCard(
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = abbreviateSubject(subject.subjectName), 
-                        style = MaterialTheme.typography.titleMedium, 
+                        text = abbreviateSubject(subject.subjectName),
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold
                     )
                     Text(
-                        text = "${subject.totalAttempts} total attempts", 
-                        style = MaterialTheme.typography.labelSmall, 
+                        text = "${subject.totalAttempts} total attempts",
+                        style = MaterialTheme.typography.labelSmall,
                         color = colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 Column(horizontalAlignment = Alignment.End) {
-                    TrendTag(isUp = true, trend = "4.2")
+                    TrendTag(isUp = mastery >= 70, trend = if (mastery >= 70) "4.2" else "2.1")
                     Text(
-                        text = "$mastery%", 
-                        style = MaterialTheme.typography.titleLarge, 
-                        fontWeight = FontWeight.Black, 
+                        text = "$mastery%",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Black,
                         color = colorScheme.primary
                     )
                 }
             }
 
-            if (isExpanded) {
+            if (isExpanded && topics.isNotEmpty()) {
                 Spacer(Modifier.height(24.dp))
-                
-                // Show max 4 topics at a time, scrollable if more
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = if (topics.size > 4) 280.dp else 600.dp) // Estimate height for 4 items
+                        .heightIn(max = if (topics.size > 4) 280.dp else 600.dp)
                         .clip(ContinuousRoundedRectangle(24.dp))
                 ) {
                     Column(
                         modifier = Modifier
                             .verticalScroll(rememberScrollState())
-                            .padding(end = 4.dp), // Space for potential scrollbar indicator feel
+                            .padding(end = 4.dp),
                         verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
                     ) {
                         topics.forEachIndexed { tIndex, topic ->
-                            TopicMasteryItem(
-                                topic = topic,
-                                index = tIndex,
-                                count = topics.size
-                            )
+                            key(topic.topicId) {
+                                TopicMasteryItem(
+                                    topic = topic,
+                                    index = tIndex,
+                                    count = topics.size
+                                )
+                            }
                         }
                     }
                 }
@@ -571,7 +614,7 @@ private fun TopicMasteryItem(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val progress = topic.correctAttempts.toFloat() / topic.totalAttempts.coerceAtLeast(1)
-    
+
     val outerRadius = 24.dp
     val innerRadius = 4.dp
     val itemShape = remember(index, count) {
@@ -589,13 +632,13 @@ private fun TopicMasteryItem(
         colors = ListItemDefaults.colors(containerColor = colorScheme.surface),
         trailingContent = {
             Text(
-                text = "${(progress * 100).toInt()}%", 
-                style = MaterialTheme.typography.labelMedium, 
+                text = "${(progress * 100).toInt()}%",
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Black
             )
         },
         supportingContent = {
-             LinearProgressIndicator(
+            LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()

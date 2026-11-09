@@ -1,6 +1,10 @@
 package com.awra.catalogue.ui.quiz
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,11 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.awra.catalogue.data.model.ChapterWithTopics
 import com.awra.catalogue.data.model.Difficulty
 import com.awra.catalogue.data.model.Subject
 import com.kyant.capsule.ContinuousRoundedRectangle
+import com.skydoves.cloudy.Sky
+import com.skydoves.cloudy.cloudy
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -30,27 +35,60 @@ import kotlin.math.roundToInt
 fun QuizCustomizationPopup(
     subject: Subject,
     chapters: List<ChapterWithTopics>,
+    sky: Sky,
     onDismiss: () -> Unit,
     onStartQuiz: (QuizConfig) -> Unit
 ) {
+    // Theming: Follows the "Quiz" category card colors (Secondary)
+    val accentColor = MaterialTheme.colorScheme.onSecondaryContainer
+    val containerColor = MaterialTheme.colorScheme.secondaryContainer
+
     val counts = listOf(5, 15, 25, 30, 50, 100)
     var sliderPosition by remember { mutableFloatStateOf(1f) } // Default to 15 (index 1)
     val selectedCount = counts[sliderPosition.roundToInt()]
 
-    var selectedDifficulty by remember { mutableStateOf(Difficulty.MEDIUM) }
+    var selectedDifficulty by remember { mutableStateOf(Difficulty.MIXED) }
     var selectedChapterIds by remember(chapters) { 
         mutableStateOf(chapters.map { it.chapter.id }.toSet()) 
     }
-    var showUnitGrid by remember { mutableStateOf(true) } // Visible by default
+    var showUnitGrid by remember { mutableStateOf(false) } // Collapsed by default
 
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
+    val popupShape = ContinuousRoundedRectangle(32.dp)
+
+    // Outer Scrim
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        // Frosted Glass Popup Container
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = ContinuousRoundedRectangle(32.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {}
+                )
+                .cloudy(
+                    sky = sky,
+                    radius = 35,
+                    tint = containerColor.copy(alpha = 0.72f),
+                    shape = popupShape
+                )
+                .clip(popupShape)
+                .border(
+                    width = 1.dp,
+                    color = accentColor.copy(alpha = 0.35f),
+                    shape = popupShape
+                )
         ) {
             Column(
                 modifier = Modifier
@@ -61,7 +99,8 @@ fun QuizCustomizationPopup(
                 Text(
                     text = "Quiz Settings",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Black
+                    fontWeight = FontWeight.Black,
+                    color = accentColor
                 )
 
                 // Number of Questions Slider
@@ -74,12 +113,13 @@ fun QuizCustomizationPopup(
                         Text(
                             text = "Questions",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = accentColor
                         )
                         Surface(
                             shape = CircleShape,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            contentColor = MaterialTheme.colorScheme.surface
+                            color = accentColor,
+                            contentColor = containerColor
                         ) {
                             Text(
                                 text = selectedCount.toString(),
@@ -96,9 +136,9 @@ fun QuizCustomizationPopup(
                         valueRange = 0f..5f,
                         steps = 4,
                         colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.onSurface,
-                            activeTrackColor = MaterialTheme.colorScheme.onSurface,
-                            inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
+                            thumbColor = accentColor,
+                            activeTrackColor = accentColor,
+                            inactiveTrackColor = accentColor.copy(alpha = 0.15f),
                             activeTickColor = Color.Transparent,
                             inactiveTickColor = Color.Transparent
                         )
@@ -114,7 +154,7 @@ fun QuizCustomizationPopup(
                                 text = count.toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isSelected) accentColor else accentColor.copy(alpha = 0.6f)
                             )
                         }
                     }
@@ -125,7 +165,8 @@ fun QuizCustomizationPopup(
                     Text(
                         text = "Difficulty",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor
                     )
                     
                     SingleChoiceSegmentedButtonRow(
@@ -137,9 +178,10 @@ fun QuizCustomizationPopup(
                                 onClick = { selectedDifficulty = difficulty },
                                 selected = selectedDifficulty == difficulty,
                                 colors = SegmentedButtonDefaults.colors(
-                                    activeContainerColor = MaterialTheme.colorScheme.onSurface,
-                                    activeContentColor = MaterialTheme.colorScheme.surface,
-                                    inactiveContainerColor = Color.Transparent
+                                    activeContainerColor = accentColor,
+                                    activeContentColor = containerColor,
+                                    inactiveContainerColor = Color.Transparent,
+                                    inactiveContentColor = accentColor
                                 )
                             ) {
                                 Text(difficulty.name.lowercase().replaceFirstChar { it.uppercase() })
@@ -153,7 +195,8 @@ fun QuizCustomizationPopup(
                     Text(
                         text = "Unit Selection",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor
                     )
 
                     SplitButtonLayout(
@@ -168,7 +211,7 @@ fun QuizCustomizationPopup(
                         isAllSelected = selectedChapterIds.size == chapters.size,
                         selectedCount = selectedChapterIds.size,
                         showUnitGrid = showUnitGrid,
-                        accentColor = MaterialTheme.colorScheme.onSurface
+                        accentColor = accentColor
                     )
 
                     if (showUnitGrid) {
@@ -190,7 +233,8 @@ fun QuizCustomizationPopup(
                                             selectedChapterIds + chapterWithTopics.chapter.id
                                         }
                                     },
-                                    accentColor = MaterialTheme.colorScheme.onSurface
+                                    accentColor = accentColor,
+                                    containerColor = containerColor
                                 )
                             }
                         }
@@ -207,8 +251,9 @@ fun QuizCustomizationPopup(
                         modifier = Modifier.weight(1f),
                         shape = ContinuousRoundedRectangle(20.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        )
+                            contentColor = accentColor
+                        ),
+                        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
                     ) {
                         Text("Cancel")
                     }
@@ -228,8 +273,8 @@ fun QuizCustomizationPopup(
                         modifier = Modifier.weight(1f),
                         shape = ContinuousRoundedRectangle(20.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onSurface,
-                            contentColor = MaterialTheme.colorScheme.surface
+                            containerColor = accentColor,
+                            contentColor = containerColor
                         )
                     ) {
                         Text("Start Quiz", fontWeight = FontWeight.Bold)
@@ -299,7 +344,8 @@ private fun ChapterChip(
     title: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    accentColor: Color
+    accentColor: Color,
+    containerColor: Color
 ) {
     FilterChip(
         selected = isSelected,
@@ -321,9 +367,10 @@ private fun ChapterChip(
         } else null,
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = accentColor,
-            selectedLabelColor = MaterialTheme.colorScheme.surface,
-            selectedLeadingIconColor = MaterialTheme.colorScheme.surface,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            selectedLabelColor = containerColor,
+            selectedLeadingIconColor = containerColor,
+            containerColor = accentColor.copy(alpha = 0.1f),
+            labelColor = accentColor
         ),
         border = FilterChipDefaults.filterChipBorder(
             enabled = true,

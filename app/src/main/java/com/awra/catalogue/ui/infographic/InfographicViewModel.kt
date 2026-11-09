@@ -3,21 +3,17 @@ package com.awra.catalogue.ui.infographic
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.awra.catalogue.data.model.ChapterWithInfographicTopics
-import com.awra.catalogue.data.model.MaterialType
 import com.awra.catalogue.data.repository.CatalogueRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 class InfographicViewModel(
-    private val repository: CatalogueRepository,
+    repository: CatalogueRepository,
     val subjectId: Long
 ) : ViewModel() {
 
-    val chapters: Flow<List<ChapterWithInfographicTopics>> = repository.getChaptersWithInfographics(subjectId)
-
-    fun markRecentlyOpened(infographicId: Long) {
-        viewModelScope.launch {
-            repository.markAsRecentlyOpened(infographicId, MaterialType.INFOGRAPHIC)
-        }
-    }
+    val chapters: StateFlow<List<ChapterWithInfographicTopics>> =
+        repository.getChaptersWithInfographics(subjectId)
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 }

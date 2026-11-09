@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (C) 2026 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <group>
+    <clip-path
+        android:pathData="M0,0h24v24h-24z"/>
+    <path
+        android:pathData="M9.15,7.49C8.59,7.49 8.15,7.94 8.15,8.49C8.15,9.04 8.6,9.49 9.15,9.49C9.7,9.49 10.15,9.04 10.15,8.49C10.15,7.94 9.7,7.49 9.15,7.49Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M21.46,5.04C20.62,3.09 18.77,2 16.19,2H7.81C4.6,2 2,4.6 2,7.81V16.19C2,18.77 3.09,20.62 5.04,21.46C5.23,21.54 5.45,21.49 5.59,21.35L21.35,5.59C21.5,5.44 21.55,5.22 21.46,5.04ZM10.53,12.24C10.14,12.62 9.63,12.8 9.12,12.8C8.61,12.8 8.1,12.61 7.71,12.24C6.69,11.28 5.57,9.75 6,7.93C6.38,6.28 7.84,5.54 9.12,5.54C10.4,5.54 11.86,6.28 12.24,7.94C12.66,9.75 11.54,11.28 10.53,12.24Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M19.47,20.529C19.69,20.75 19.66,21.11 19.39,21.26C18.51,21.75 17.44,22 16.19,22H7.81C7.52,22 7.4,21.66 7.6,21.459L13.64,15.42C13.84,15.219 14.15,15.219 14.35,15.42L19.47,20.529Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M22,7.811V16.191C22,17.441 21.75,18.521 21.26,19.391C21.11,19.661 20.75,19.681 20.53,19.471L15.41,14.351C15.21,14.151 15.21,13.841 15.41,13.641L21.45,7.601C21.66,7.401 22,7.521 22,7.811Z"
+        android:fillColor="#ffffff"/>
+  </group>
+</vector>

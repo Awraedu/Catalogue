@@ -1,6 +1,8 @@
 package com.awra.catalogue.ui.infographic
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -19,11 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.awra.catalogue.data.model.*
-import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -35,55 +43,139 @@ fun InfographicListScreen(
     onInfographicClick: (Infographic) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState(initial = emptyList())
-    val subjectColors = getSubjectAdaptiveColors(subject.id)
-    val accentColor = subjectColors.content
+    val accentColor = MaterialTheme.colorScheme.error
+    val backdrop = rememberLayerBackdrop()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Column {
-                        Text(subject.name, style = MaterialTheme.typography.titleMedium)
-                        Text("Infographics", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+            AmbientMeshBackground(
+                modifier = Modifier.fillMaxSize(),
+                primaryColor = accentColor
             )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+            item(key = "top_spacer") {
+                Spacer(modifier = Modifier.statusBarsPadding().height(72.dp))
+            }
+
+            item(key = "subject_header") {
+                Column(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = subject.name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Infographics",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White.copy(alpha = 0.85f)
+                    )
+                }
+            }
+
             chapters.forEachIndexed { index, chapterWithTopics ->
                 chapterSection(
                     chapterWithTopics = chapterWithTopics,
                     onInfographicClick = onInfographicClick,
-                    accentColor = accentColor
+                    accentColor = Color.White
                 )
-                
+
                 if (index < chapters.size - 1) {
-                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    item(key = "sep_${chapterWithTopics.chapter.id}") {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                 }
             }
+
+            item(key = "bottom_spacer") {
+                Spacer(modifier = Modifier.height(100.dp))
+            }
+        }
+        }
+
+        // Top Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(135.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
+        // Bottom Bar Progressive Blur
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(140.dp)
+                .drawPlainBackdrop(
+                    backdrop = backdrop,
+                    shape = { RectangleShape },
+                    effects = {
+                        blur(40f.dp.toPx())
+                        runtimeShaderEffect(
+                            "ProgressiveBlur",
+                            """
+                            uniform shader content;
+                            uniform float2 size;
+                            half4 main(float2 coord) {
+                                float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                                return content.eval(coord) * alpha;
+                            }
+                            """,
+                            "content"
+                        ) {
+                            setFloatUniform("size", size.width, size.height)
+                        }
+                    }
+                )
+        )
+
+        // Floating Circular Translucent Glass Back Button
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .size(48.dp)
+                .align(Alignment.TopStart)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.25f))
+                .border(1.dp, Color.White.copy(alpha = 0.35f), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier.size(22.dp)
+            )
         }
     }
 }
@@ -97,7 +189,8 @@ private fun LazyListScope.chapterSection(
     item(key = "ch_${chapterWithTopics.chapter.id}") {
         Text(
             text = "Chapter ${chapterWithTopics.chapter.number}: ${chapterWithTopics.chapter.title}",
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
             color = accentColor,
             modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
         )
@@ -156,7 +249,7 @@ private fun TopicItem(
             Text("Visual topic summary")
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
         )
     ) {
         Text(

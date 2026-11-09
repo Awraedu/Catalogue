@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="schedule"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_schedule"
+        android:shortcutShortLabel="@string/shortcut_schedule_short"
+        android:shortcutLongLabel="@string/shortcut_schedule_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.awra.catalogue"
+            android:targetClass="com.awra.catalogue.MainActivity">
+            <extra
+                android:name="shortcut_destination"
+                android:value="SCHEDULE" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="daily_quiz"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_quiz"
+        android:shortcutShortLabel="@string/shortcut_quiz_short"
+        android:shortcutLongLabel="@string/shortcut_quiz_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.awra.catalogue"
+            android:targetClass="com.awra.catalogue.MainActivity">
+            <extra
+                android:name="shortcut_destination"
+                android:value="DAILY_QUIZ" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="terms"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_terms"
+        android:shortcutShortLabel="@string/shortcut_terms_short"
+        android:shortcutLongLabel="@string/shortcut_terms_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.awra.catalogue"
+            android:targetClass="com.awra.catalogue.MainActivity">
+            <extra
+                android:name="shortcut_destination"
+                android:value="TERMS" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="analytics"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_analytics"
+        android:shortcutShortLabel="@string/shortcut_analytics_short"
+        android:shortcutLongLabel="@string/shortcut_analytics_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.awra.catalogue"
+            android:targetClass="com.awra.catalogue.MainActivity">
+            <extra
+                android:name="shortcut_destination"
+                android:value="ANALYTICS" />
+        </intent>
+    </shortcut>
+
+</shortcuts>

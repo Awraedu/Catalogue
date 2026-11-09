@@ -70,7 +70,7 @@ fun HomeHeroCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 200.dp)
+            .height(200.dp)
             .clip(cardShape)
             .background(MaterialTheme.colorScheme.surface)
             .clickable(onClick = onClick)

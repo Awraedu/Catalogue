@@ -1,7 +1,7 @@
 package com.awra.catalogue.ui.handout
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -12,7 +12,9 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -21,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -28,10 +32,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.awra.catalogue.data.model.*
+import com.awra.catalogue.ui.home.components.AmbientMeshBackground
 import com.awra.catalogue.ui.theme.YourAppTheme
-import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.runtimeShaderEffect
 import com.kyant.capsule.ContinuousRoundedRectangle
 import kotlinx.coroutines.launch
 
@@ -43,14 +51,23 @@ fun HandoutListScreen(
     onBackClick: () -> Unit,
     onHandoutClick: (Handout) -> Unit
 ) {
-    val chapters by viewModel.chapters.collectAsState(initial = emptyList())
+    val chapters by viewModel.chapters.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    
+    val downloadStates by viewModel.downloadStates.collectAsState()
+
+    // Handout category card primary color theme
+    val accentColor = MaterialTheme.colorScheme.primary
+
     val textFieldState = rememberTextFieldState(searchQuery)
     val searchBarState = rememberSearchBarState()
     val scope = rememberCoroutineScope()
-    
-    val neutralColor = MaterialTheme.colorScheme.onSurface
+
+    val isSearchActive by remember {
+        derivedStateOf {
+            searchBarState.currentValue == SearchBarValue.Expanded ||
+                    searchBarState.targetValue == SearchBarValue.Expanded
+        }
+    }
 
     LaunchedEffect(textFieldState.text) {
         viewModel.onSearchQueryChange(textFieldState.text.toString())
@@ -62,7 +79,12 @@ fun HandoutListScreen(
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text("Search handouts or chapters...") },
+                placeholder = {
+                    Text(
+                        "Search handouts or chapters...",
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
+                    )
+                },
                 leadingIcon = {
                     IconButton(onClick = {
                         if (searchBarState.currentValue == SearchBarValue.Expanded) {
@@ -72,113 +94,238 @@ fun HandoutListScreen(
                         }
                     }) {
                         Icon(
-                            imageVector = if (searchBarState.currentValue == SearchBarValue.Expanded)
-                                Icons.AutoMirrored.Filled.ArrowBack else Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 },
                 trailingIcon = {
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(onClick = { textFieldState.clearText() }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = "Clear",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                     } else if (searchBarState.currentValue == SearchBarValue.Collapsed) {
-                        Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.padding(end = 12.dp))
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
                     }
-                }
+                },
+                colors = SearchBarDefaults.inputFieldColors(
+                    focusedTextColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.surface,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.surface,
+                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .semantics { isTraversalGroup = true }
-        ) {
-            // Main Content
-            LazyColumn(
+    val backdrop = rememberLayerBackdrop()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().layerBackdrop(backdrop)) {
+            // Handout card theme background gradient
+            AmbientMeshBackground(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
+                primaryColor = accentColor
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .semantics { isTraversalGroup = true }
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(72.dp)) // Space for SearchBar
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                item(key = "top_spacer") {
+                    Spacer(modifier = Modifier.statusBarsPadding().height(72.dp))
                 }
-                
-                // Big Subject Title
-                item {
-                    Text(
-                        text = subject.name,
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-                    )
+
+                item(key = "subject_header") {
+                    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
+                        Text(
+                            text = subject.name,
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Handouts",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White.copy(alpha = 0.85f)
+                        )
+                    }
                 }
 
                 chapters.forEachIndexed { index, chapterWithTopics ->
                     chapterSection(
                         chapterWithTopics = chapterWithTopics,
+                        viewModel = viewModel,
+                        downloadStates = downloadStates,
                         onHandoutClick = onHandoutClick,
-                        accentColor = neutralColor
+                        accentColor = Color.White
                     )
 
                     if (index < chapters.size - 1) {
-                        item { Spacer(modifier = Modifier.height(24.dp)) }
+                        item(key = "sep_${chapterWithTopics.chapter.id}") {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
                     }
                 }
-                
-                item {
+
+                item(key = "bottom_spacer") {
                     Spacer(modifier = Modifier.height(100.dp))
                 }
             }
+        }
+    }
 
-            // Search Bar
-            SearchBar(
+    // Top Bar Progressive Blur
+    Box(
+        Modifier
+            .align(Alignment.TopCenter)
+            .fillMaxWidth()
+            .height(135.dp)
+            .drawPlainBackdrop(
+                backdrop = backdrop,
+                shape = { RectangleShape },
+                effects = {
+                    blur(40f.dp.toPx())
+                    runtimeShaderEffect(
+                        "ProgressiveBlur",
+                        """
+                        uniform shader content;
+                        uniform float2 size;
+                        half4 main(float2 coord) {
+                            float alpha = 1.0 - smoothstep(size.y * 0.1, size.y, coord.y);
+                            return content.eval(coord) * alpha;
+                        }
+                        """,
+                        "content"
+                    ) {
+                        setFloatUniform("size", size.width, size.height)
+                    }
+                }
+            )
+    )
+
+    // Bottom Bar Progressive Blur
+    Box(
+        Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .height(140.dp)
+            .drawPlainBackdrop(
+                backdrop = backdrop,
+                shape = { RectangleShape },
+                effects = {
+                    blur(40f.dp.toPx())
+                    runtimeShaderEffect(
+                        "ProgressiveBlur",
+                        """
+                        uniform shader content;
+                        uniform float2 size;
+                        half4 main(float2 coord) {
+                            float alpha = smoothstep(0.0, size.y * 0.9, coord.y);
+                            return content.eval(coord) * alpha;
+                        }
+                        """,
+                        "content"
+                    ) {
+                        setFloatUniform("size", size.width, size.height)
+                    }
+                }
+            )
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        SearchBar(
                 state = searchBarState,
                 inputField = inputField,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics { traversalIndex = 0f },
                 colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    containerColor = MaterialTheme.colorScheme.onSurface
                 ),
                 shape = CircleShape
             )
 
-            // Full Screen Search Overlay
-            ExpandedFullScreenSearchBar(
-                state = searchBarState,
-                inputField = inputField
-            ) {
-                if (chapters.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("No results found", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
+            if (isSearchActive) {
+                ExpandedFullScreenSearchBar(
+                    state = searchBarState,
+                    inputField = inputField,
+                    colors = SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
-                    chapters.forEachIndexed { index, chapterWithTopics ->
-                        chapterSection(
-                            chapterWithTopics = chapterWithTopics,
-                            onHandoutClick = {
-                                scope.launch { searchBarState.animateToCollapsed() }
-                                onHandoutClick(it)
-                            },
-                            accentColor = neutralColor
-                        )
+                    val query = textFieldState.text.toString().trim()
+                    if (query.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Type to search handouts or chapters",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                            )
+                        }
+                    } else if (chapters.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No matches found for \"$query\"",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            chapters.forEachIndexed { index, chapterWithTopics ->
+                                chapterSection(
+                                    chapterWithTopics = chapterWithTopics,
+                                    viewModel = viewModel,
+                                    downloadStates = downloadStates,
+                                    onHandoutClick = {
+                                        scope.launch { searchBarState.animateToCollapsed() }
+                                        onHandoutClick(it)
+                                    },
+                                    accentColor = Color.White
+                                )
 
-                        if (index < chapters.size - 1) {
-                            item { Spacer(modifier = Modifier.height(24.dp)) }
+                                if (index < chapters.size - 1) {
+                                    item(key = "s_sep_${chapterWithTopics.chapter.id}") {
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -190,6 +337,8 @@ fun HandoutListScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyListScope.chapterSection(
     chapterWithTopics: ChapterWithTopics,
+    viewModel: HandoutViewModel? = null,
+    downloadStates: Map<Long, HandoutDownloadState> = emptyMap(),
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
@@ -207,14 +356,26 @@ private fun LazyListScope.chapterSection(
         items = chapterWithTopics.topics,
         key = { _, topicWithHandout -> "top_${topicWithHandout.topic.id}" }
     ) { index, topicWithHandout ->
+        val context = LocalContext.current
+        val handout = topicWithHandout.handout
+        val stateForHandout = handout?.let { downloadStates[it.id] }
+
+        val isDownloaded = remember(handout?.id, stateForHandout) {
+            when (stateForHandout) {
+                is HandoutDownloadState.Downloaded -> true
+                else -> handout?.let { viewModel?.isHandoutDownloaded(context, it) } ?: false
+            }
+        }
+
         TopicItem(
             topicWithHandout = topicWithHandout,
             index = index,
             count = chapterWithTopics.topics.size,
+            isDownloaded = isDownloaded,
             onHandoutClick = onHandoutClick,
             accentColor = accentColor
         )
-        
+
         if (index < chapterWithTopics.topics.size - 1) {
             Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
         }
@@ -227,10 +388,10 @@ private fun TopicItem(
     topicWithHandout: TopicWithHandout,
     index: Int,
     count: Int,
+    isDownloaded: Boolean,
     onHandoutClick: (Handout) -> Unit,
     accentColor: Color
 ) {
-    // High-expressive smooth shapes for segmented items with further increased radius
     val outerRadius = 38.dp
     val innerRadius = 6.dp
     val itemShape = remember(index, count) {
@@ -243,19 +404,35 @@ private fun TopicItem(
     }
 
     SegmentedListItem(
-        onClick = { 
+        onClick = {
             topicWithHandout.handout?.let { onHandoutClick(it) }
         },
-        // Overriding the default shapes with our custom high-radius expressive shapes
         shapes = ListItemDefaults.shapes(shape = itemShape),
         leadingContent = {
             Icon(Icons.Default.Description, contentDescription = null, tint = accentColor)
         },
         supportingContent = {
-            Text("Topic study materials")
+            Text(if (isDownloaded) "Saved & Encrypted offline" else "Tap to download & study")
+        },
+        trailingContent = {
+            if (isDownloaded) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Downloaded",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.CloudDownload,
+                    contentDescription = "Available for download",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
         )
     ) {
         Text(
@@ -278,7 +455,7 @@ fun HandoutListPreview() {
             TopicWithHandout(mockTopic, Handout(id = 1, topicId = 1, content = "Some content"))
         )
     )
-    
+
     YourAppTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             val primaryColor = MaterialTheme.colorScheme.primary

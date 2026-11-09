@@ -4,11 +4,29 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/AndroidLiquidGlass-kmp" name="Glass">
+                <projects>
+                  <project path="$PROJECT_DIR$/AndroidLiquidGlass-kmp" />
+                  <project path="$PROJECT_DIR$/AndroidLiquidGlass-kmp/androidApp" />
+                  <project path="$PROJECT_DIR$/AndroidLiquidGlass-kmp/app" />
+                  <project path="$PROJECT_DIR$/AndroidLiquidGlass-kmp/backdrop" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AndroidLiquidGlass-kmp" />
+            <option value="$PROJECT_DIR$/AndroidLiquidGlass-kmp/androidApp" />
+            <option value="$PROJECT_DIR$/AndroidLiquidGlass-kmp/app" />
+            <option value="$PROJECT_DIR$/AndroidLiquidGlass-kmp/backdrop" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

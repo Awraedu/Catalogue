@@ -22,6 +22,7 @@ class FlashcardViewModel(
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()
 
     private var sessionStartTime = System.currentTimeMillis()
+    private var sessionRecorded = false
 
     init {
         loadFlashcards()
@@ -34,9 +35,11 @@ class FlashcardViewModel(
                 topicId != null -> repository.getFlashcards(topicId)
                 else -> emptyFlow()
             }
-            flow.collect {
-                _flashcards.value = it
-            }
+            // FIXED: Use firstOrNull() instead of collect{} so recording a flashcard attempt
+            // never triggers a Room invalidation that reshuffles the deck mid-session!
+            val loaded = flow.firstOrNull() ?: emptyList()
+            sessionStartTime = System.currentTimeMillis()
+            _flashcards.value = loaded
         }
     }
 
@@ -56,8 +59,10 @@ class FlashcardViewModel(
     }
 
     private fun recordSession() {
-        val timeSpent = System.currentTimeMillis() - sessionStartTime
+        if (sessionRecorded) return
         val firstCard = _flashcards.value.firstOrNull() ?: return
+        sessionRecorded = true
+        val timeSpent = (System.currentTimeMillis() - sessionStartTime).coerceAtLeast(1000L)
         viewModelScope.launch {
             repository.recordStudySession(
                 topicId = firstCard.topicId,

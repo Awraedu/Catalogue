@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Catalogue</string>
+    <string name="shortcut_schedule_short">Schedule</string>
+    <string name="shortcut_schedule_long">View Class Timetable</string>
+    <string name="shortcut_quiz_short">Daily Quiz</string>
+    <string name="shortcut_quiz_long">Start Daily Review Quiz</string>
+    <string name="shortcut_terms_short">Dictionary</string>
+    <string name="shortcut_terms_long">Search Dictionary &amp; Terms</string>
+    <string name="shortcut_analytics_short">Stats</string>
+    <string name="shortcut_analytics_long">View Study Progress &amp; Streaks</string>
 </resources>

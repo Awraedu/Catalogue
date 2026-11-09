@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,8 @@ import androidx.compose.ui.graphics.painter.Painter
 @Composable
 fun AmbientMeshBackground(
     modifier: Modifier = Modifier,
-    primaryColor: Color? = null
+    primaryColor: Color? = null,
+    animationProgress: Float = 1f
 ) {
     // Strongest, full-opacity vibrant color shade for top & mid rows
     val skyBlueTop = primaryColor ?: Color(0xFF4792FB)
@@ -59,7 +61,6 @@ fun AmbientMeshBackground(
                 setVertex(3, 3, Offset(1.0f, 1.0f), cleanWhiteBottom)
             }
         } catch (_: Throwable) {
-            // Fallback Mesh Gradient painter
             MeshGradientFallbackPainter(
                 skyBlueTop = skyBlueTop,
                 oceanBlueMid = oceanBlueMid,
@@ -70,8 +71,29 @@ fun AmbientMeshBackground(
     }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        with(gradientPainter) {
-            draw(size)
+        val w = size.width
+        val h = size.height
+        if (w <= 0f || h <= 0f) return@Canvas
+
+        val progress = animationProgress.coerceIn(0f, 1f)
+        val currentHeight = h * progress
+
+        // Fill below with bottom color
+        if (currentHeight < h) {
+            drawRect(
+                color = cleanWhiteBottom,
+                topLeft = Offset(0f, currentHeight),
+                size = Size(w, h - currentHeight)
+            )
+        }
+
+        if (currentHeight > 0f) {
+            drawContext.canvas.save()
+            drawContext.canvas.clipRect(Rect(0f, 0f, w, currentHeight))
+            with(gradientPainter) {
+                draw(size)
+            }
+            drawContext.canvas.restore()
         }
     }
 }

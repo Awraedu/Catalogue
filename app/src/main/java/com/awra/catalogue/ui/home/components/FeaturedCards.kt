@@ -34,6 +34,8 @@ import com.awra.catalogue.data.model.FeaturedItem
 import com.awra.catalogue.ui.theme.getSubjectAdaptiveColors
 import com.awra.catalogue.data.model.ExpressiveShape
 import com.awra.catalogue.ui.theme.toShape
+import com.awra.catalogue.ui.theme.YourAppTheme
+import androidx.compose.ui.tooling.preview.Preview
 import com.kyant.capsule.ContinuousRoundedRectangle
 
 class TicketShape(
@@ -573,3 +575,38 @@ fun PremiumTicketCard(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DailyInsightCardPreview() {
+    YourAppTheme {
+        Box(modifier = Modifier.width(220.dp).padding(16.dp)) {
+            DailyInsightCard(
+                item = FeaturedItem.DailyInsight(
+                    word = "Photosynthesis",
+                    definition = "The process by which green plants and some other organisms use sunlight to synthesize foods from carbon dioxide and water.",
+                    subjectName = "Biology"
+                )
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NextClassCardPreview() {
+    YourAppTheme {
+        Box(modifier = Modifier.width(220.dp).padding(16.dp)) {
+            NextClassCard(
+                item = FeaturedItem.NextClass(
+                    subjectName = "Biology",
+                    startTime = "10:30 AM",
+                    room = "302",
+                    timeRemainingMins = 45
+                )
+            )
+        }
+    }
+}
+
+

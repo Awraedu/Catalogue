@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -239,7 +240,7 @@ fun TermsScreen(
                         .align(Alignment.TopCenter)
                         .fillMaxWidth()
                         .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SearchBar(
@@ -247,6 +248,8 @@ fun TermsScreen(
                         inputField = inputField,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .shadow(6.dp, CircleShape)
                             .semantics { traversalIndex = 0f },
                         colors = SearchBarDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -255,7 +258,8 @@ fun TermsScreen(
                     )
 
                     LazyRow(
-                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -264,6 +268,7 @@ fun TermsScreen(
                             FilterChip(
                                 selected = isSelected,
                                 onClick = { viewModel.selectSubject(null) },
+                                modifier = Modifier.shadow(4.dp, CircleShape),
                                 label = {
                                     Text(
                                         "All",
@@ -309,6 +314,7 @@ fun TermsScreen(
                             FilterChip(
                                 selected = isSelected,
                                 onClick = { viewModel.selectSubject(sub.id) },
+                                modifier = Modifier.shadow(4.dp, CircleShape),
                                 label = {
                                     Text(
                                         shortName,

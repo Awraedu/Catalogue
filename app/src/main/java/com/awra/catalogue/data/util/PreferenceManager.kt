@@ -9,7 +9,7 @@ import java.util.Calendar
 class PreferenceManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
 
-    private val _darkMode = MutableStateFlow(prefs.getString("dark_mode", "LIGHT") ?: "LIGHT")
+    private val _darkMode = MutableStateFlow(prefs.getString("dark_mode", "SYSTEM") ?: "SYSTEM")
     val darkMode: StateFlow<String> = _darkMode
 
     private val _studyReminders = MutableStateFlow(prefs.getBoolean("study_reminders", true))
